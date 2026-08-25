@@ -164,7 +164,7 @@ export default function HomePage() {
               href="/offerings"
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#610C1B] hover:text-[#8B1428] underline underline-offset-4"
             >
-              <span>{language === 'en' ? 'Explore All Offerings (12+)' : 'എല്ലാ വഴിപാടുകളും കാണുക'}</span>
+              <span>{language === 'en' ? 'Explore All Offerings (73)' : 'എല്ലാ വഴിപാടുകളും കാണുക (73)'}</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
@@ -182,7 +182,7 @@ export default function HomePage() {
                       {offering.tag ? offering.tag[language] : 'Pradhana Vazhipadu'}
                     </span>
                     <span className="font-cinzel font-bold text-lg text-[#610C1B]">
-                      ₹{offering.price}
+                      ₹{offering.price.toLocaleString('en-IN')}
                     </span>
                   </div>
 

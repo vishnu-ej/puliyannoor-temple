@@ -15,7 +15,6 @@ import {
   Phone,
   Send,
   CheckCircle2,
-  Share2,
 } from 'lucide-react';
 
 interface OfferingModalProps {
@@ -94,7 +93,7 @@ export const OfferingModal: React.FC<OfferingModalProps> = ({
     const message = `*Puliyannoor Sree Mahadeva Temple - Vazhipadu Booking Inquiry*
 --------------------------------------------
 *Devotee Name:* ${devoteeName || 'Devotee'}
-*Offering (വഴിപാട്):* ${currentOffering.name.en} / ${currentOffering.name.ml} (₹${currentOffering.price})
+*Offering (വഴിപാട്):* #${currentOffering.slNo} ${currentOffering.name.en} / ${currentOffering.name.ml} (₹${currentOffering.price.toLocaleString('en-IN')})
 *Birth Star (നക്ഷത്രം):* ${starText}
 *Preferred Date:* ${offeringDate}
 *Gotram / Family:* ${gotram || 'N/A'}
@@ -136,7 +135,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
           </button>
         </div>
 
-        {/* Modal Body with smooth mobile scroll */}
+        {/* Modal Body */}
         <div className="p-4 sm:p-6 overflow-y-auto flex-1">
           {isSubmitted ? (
             /* Submission Confirmation State */
@@ -163,7 +162,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
                 <div className="flex justify-between">
                   <span className="text-[#8C6219] font-bold">Vazhipadu:</span>
                   <span className="font-semibold text-[#610C1B]">
-                    {currentOffering.name[language]} (₹{currentOffering.price})
+                    #{currentOffering.slNo} {currentOffering.name[language]} (₹{currentOffering.price.toLocaleString('en-IN')})
                   </span>
                 </div>
                 {selectedStar && (
@@ -182,7 +181,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
               <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
                 <button
                   onClick={handleWhatsAppSend}
-                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all"
+                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   <span>{t('modal_btn_whatsapp')}</span>
@@ -190,7 +189,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
 
                 <button
                   onClick={onClose}
-                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#FAF5E8] border border-[#C99738] text-[#610C1B] font-semibold text-xs sm:text-sm active:scale-95 transition-all"
+                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#FAF5E8] border border-[#C99738] text-[#610C1B] font-semibold text-xs sm:text-sm active:scale-95 transition-all cursor-pointer"
                 >
                   {t('modal_close')}
                 </button>
@@ -199,10 +198,10 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
           ) : (
             /* Booking Form */
             <form onSubmit={handleSubmit} className="space-y-3.5 text-left">
-              {/* Offering Selector Dropdown */}
+              {/* Offering Selector Dropdown (All 73 offerings) */}
               <div>
                 <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-                  {t('modal_selected_offering')} *
+                  {t('modal_selected_offering')} * (73 Available)
                 </label>
                 <select
                   value={selectedOfferingId}
@@ -212,7 +211,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
                 >
                   {OFFERINGS.map((offering) => (
                     <option key={offering.id} value={offering.id}>
-                      {offering.name[language]} — ₹{offering.price}
+                      #{offering.slNo} {offering.name[language]} — ₹{offering.price.toLocaleString('en-IN')}
                     </option>
                   ))}
                 </select>
@@ -329,7 +328,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
               <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
                 <button
                   type="submit"
-                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-[#FAF5E8] font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform"
+                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-[#FAF5E8] font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4 text-[#E6BE65]" />
                   <span>{t('modal_btn_submit')}</span>
@@ -338,7 +337,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
                 <button
                   type="button"
                   onClick={handleWhatsAppSend}
-                  className="py-3 px-4 rounded-xl bg-[#25D366] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform"
+                  className="py-3 px-4 rounded-xl bg-[#25D366] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform cursor-pointer"
                   title="Direct WhatsApp Inquiry"
                 >
                   <Send className="w-4 h-4" />

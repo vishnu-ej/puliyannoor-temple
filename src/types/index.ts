@@ -1,12 +1,22 @@
 export type Language = 'en' | 'ml';
 
+export type OfferingCategory = 
+  | 'all' 
+  | 'pooja_homam' 
+  | 'abhishekam_dhara' 
+  | 'archana_pushpanjali' 
+  | 'nivedyam_payasam' 
+  | 'vilakku_mala' 
+  | 'special_sevas';
+
 export interface OfferingItem {
+  slNo: number;
   id: string;
   name: {
     en: string;
     ml: string;
   };
-  category: 'daily' | 'special' | 'homam' | 'archana' | 'nivedyam';
+  category: 'pooja_homam' | 'abhishekam_dhara' | 'archana_pushpanjali' | 'nivedyam_payasam' | 'vilakku_mala' | 'special_sevas';
   price: number;
   description: {
     en: string;
@@ -39,8 +49,8 @@ export interface PoojaTiming {
     ml: string;
   };
   period: 'morning' | 'evening';
-  startMinutes: number; // minutes from midnight, e.g. 4:30 AM = 270
-  endMinutes: number;   // e.g. 5:30 AM = 330
+  startMinutes: number;
+  endMinutes: number;
   description: {
     en: string;
     ml: string;
@@ -72,7 +82,7 @@ export interface FestivalEvent {
   };
   iconName: string;
   isMajor?: boolean;
-  upcomingDateStr?: string; // ISO date for countdown calculation
+  upcomingDateStr?: string;
 }
 
 export interface ArchitectureFeature {
