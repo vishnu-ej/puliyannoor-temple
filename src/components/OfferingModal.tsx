@@ -201,7 +201,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
               {/* Offering Selector Dropdown (All 73 offerings) */}
               <div>
                 <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-                  {t('modal_selected_offering')} * (73 Available)
+                  {t('modal_selected_offering')} * ({OFFERINGS.length} Available)
                 </label>
                 <select
                   value={selectedOfferingId}

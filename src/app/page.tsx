@@ -164,7 +164,7 @@ export default function HomePage() {
               href="/offerings"
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#610C1B] hover:text-[#8B1428] underline underline-offset-4"
             >
-              <span>{language === 'en' ? 'Explore All Offerings (73)' : 'എല്ലാ വഴിപാടുകളും കാണുക (73)'}</span>
+              <span>{language === 'en' ? 'Explore All Offerings (88)' : 'എല്ലാ വഴിപാടുകളും കാണുക (88)'}</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
           </div>

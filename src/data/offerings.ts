@@ -260,28 +260,6 @@ export const OFFERINGS: OfferingItem[] = [
   },
   {
     slNo: 14,
-    id: 'aayiram_kudam_abhishekam',
-    name: {
-      en: 'Aayiram Kudam Abhishekam (1000 Pots)',
-      ml: 'ആയിരം കുടം അഭിഷേകം',
-    },
-    category: 'abhishekam_dhara',
-    price: 12500,
-    description: {
-      en: 'Grand ceremonial bathing of Mahadeva with sanctified holy water poured from 1,000 brass pots with Vedic chanting.',
-      ml: 'വേദമന്ത്രോച്ചാരണങ്ങളോടെ 1000 കുടം പുണ്യതീർത്ഥം ഭഗവാന് അഭിഷേകം ചെയ്യുന്ന മഹാ സമർപ്പണം.',
-    },
-    significance: {
-      en: 'Immense spiritual purification, cooling of cosmic energies, and ancestral deliverance.',
-      ml: 'മഹാപുണ്യം, കുടുംബശാന്തി, തീരാദുരിത നിവാരണം.',
-    },
-    tag: {
-      en: 'Grand Abhishekam',
-      ml: 'മഹാഭിഷേകം',
-    },
-  },
-  {
-    slNo: 15,
     id: 'ashtabhishekam',
     name: {
       en: 'Ashtabhishekam',
@@ -300,7 +278,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 16,
+    slNo: 15,
     id: 'pushpanjali',
     name: {
       en: 'Pushpanjali (Floral Offering)',
@@ -319,7 +297,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 17,
+    slNo: 16,
     id: 'mrityunjaya_pushpanjali',
     name: {
       en: 'Mrityunjaya Pushpanjali',
@@ -338,7 +316,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 18,
+    slNo: 17,
     id: 'bhagya_sooktha_pushpanjali',
     name: {
       en: 'Bhagya Sooktha Pushpanjali',
@@ -357,11 +335,11 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 19,
+    slNo: 18,
     id: 'vidya_sooktha_pushpanjali',
     name: {
       en: 'Vidya Sooktha Pushpanjali',
-      ml: 'വിദ്യാസൂക്ത പുഷ്പാഞ്ജലി',
+      ml: 'വിദ്യാസക്ത പുഷ്പാഞ്ജലി',
     },
     category: 'archana_pushpanjali',
     price: 45,
@@ -376,7 +354,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 20,
+    slNo: 19,
     id: 'swayamvara_pushpanjali',
     name: {
       en: 'Swayamvara Pushpanjali',
@@ -395,7 +373,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 21,
+    slNo: 20,
     id: 'aghora_manthra_pushpanjali',
     name: {
       en: 'Aghora Manthra Pushpanjali',
@@ -413,7 +391,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 22,
+    slNo: 21,
     id: 'thrayambaka_pushpanjali',
     name: {
       en: 'Thrayambaka Pushpanjali',
@@ -431,7 +409,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 23,
+    slNo: 22,
     id: 'purusha_sooktharchana',
     name: {
       en: 'Purusha Sooktharchana',
@@ -449,7 +427,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 24,
+    slNo: 23,
     id: 'shiva_sahasranamarchana',
     name: {
       en: 'Shiva Sahasranamarchana (1,000 Names)',
@@ -468,7 +446,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 25,
+    slNo: 24,
     id: 'ashtotharanamarchana',
     name: {
       en: 'Ashtotharanamarchana (108 Names)',
@@ -486,7 +464,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 26,
+    slNo: 25,
     id: 'dhara',
     name: {
       en: 'Dhara (Continuous Holy Water Bath)',
@@ -505,7 +483,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 27,
+    slNo: 26,
     id: 'ghrithadhara',
     name: {
       en: 'Ghrithadhara (Pure Ghee Dhara)',
@@ -524,7 +502,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 28,
+    slNo: 27,
     id: 'visheshaldhara',
     name: {
       en: 'Visheshaldhara (Special Dhara)',
@@ -542,7 +520,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 29,
+    slNo: 28,
     id: 'mala',
     name: {
       en: 'Mala (Floral Garland Offering)',
@@ -560,7 +538,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 30,
+    slNo: 29,
     id: 'niramala',
     name: {
       en: 'Niramala (Complete Temple Garland Decoration)',
@@ -579,7 +557,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 31,
+    slNo: 30,
     id: 'kalabham_charthu',
     name: {
       en: 'Kalabham Charthu (Sandalwood Paste Anointing)',
@@ -598,7 +576,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 32,
+    slNo: 31,
     id: 'chathussatham',
     name: {
       en: 'Chathusshatham (Grand Nivedyam)',
@@ -620,7 +598,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 33,
+    slNo: 32,
     id: 'aranazhi',
     name: {
       en: 'Aranazhi Payasam',
@@ -638,26 +616,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 34,
-    id: 'palpayasam',
-    name: {
-      en: 'Palpayasam (Milk Kheer)',
-      ml: 'പാൽപായസം',
-    },
-    category: 'nivedyam_payasam',
-    price: 160,
-    description: {
-      en: 'Sweet and creamy milk payasam prepared with pure cow milk, rice, and sugar.',
-      ml: 'ശുദ്ധമായ പശുവിൻ പാലും അരിയും ചേർത്ത് തയ്യാറാക്കുന്ന രുചികരമായ പാൽപായസം.',
-    },
-    significance: {
-      en: 'Bestows good health, happiness in family, and contentment.',
-      ml: 'സന്താനസൗഭാഗ്യം, മനഃശാന്തി, കുടുംബൈശ്വര്യം.',
-    },
-    popular: true,
-  },
-  {
-    slNo: 35,
+    slNo: 33,
     id: 'kadumpayasam',
     name: {
       en: 'Kadumpayasam (Rich Jaggery Payasam)',
@@ -676,7 +635,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 36,
+    slNo: 34,
     id: 'koottupayasam',
     name: {
       en: 'Koottupayasam',
@@ -694,7 +653,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 37,
+    slNo: 35,
     id: 'pradosha_payasam',
     name: {
       en: 'Pradosha Payasam',
@@ -713,7 +672,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 38,
+    slNo: 36,
     id: 'vellanivedyam',
     name: {
       en: 'Vella Nivedyam (Cooked White Rice)',
@@ -731,7 +690,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 39,
+    slNo: 37,
     id: 'thidappalli_nivedyam',
     name: {
       en: 'Thidappalli Nivedyam',
@@ -749,26 +708,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 40,
-    id: 'purakil_vilakku',
-    name: {
-      en: 'Purakil Vilakku (Rear Sanctum Lamp)',
-      ml: 'പുറകിൽ വിളക്ക്',
-    },
-    category: 'vilakku_mala',
-    price: 35,
-    description: {
-      en: 'Lighting the sacred oil lamp behind the Sreekovil dedicated to the divine presence of Goddess Parvathi.',
-      ml: 'ശ്രീകോവിലിന്റെ പുറകിൽ ശ്രീപാർവ്വതി സങ്കൽപ്പത്തിൽ തെളിയിക്കുന്ന വിശേഷാൽ വിളക്ക്.',
-    },
-    significance: {
-      en: 'Removes marriage obstacles, ensures happy matrimony and female well-being.',
-      ml: 'മാംഗല്യഭാഗ്യം, ദാമ്പത്യ ഐക്യം, സ്ത്രീകളുടെ ക്ഷേമം.',
-    },
-    popular: true,
-  },
-  {
-    slNo: 41,
+    slNo: 38,
     id: 'neyvilakku',
     name: {
       en: 'Neyvilakku (Ghee Lamp)',
@@ -787,7 +727,26 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 42,
+    slNo: 39,
+    id: 'purakil_vilakku',
+    name: {
+      en: 'Purakil Vilakku (Rear Sanctum Lamp)',
+      ml: 'പുറകിൽ വിളക്ക്',
+    },
+    category: 'vilakku_mala',
+    price: 35,
+    description: {
+      en: 'Lighting the sacred oil lamp behind the Sreekovil dedicated to the divine presence of Goddess Parvathi.',
+      ml: 'ശ്രീകോവിലിന്റെ പുറകിൽ ശ്രീപാർവ്വതി സങ്കൽപ്പത്തിൽ തെളിയിക്കുന്ന വിശേഷാൽ വിളക്ക്.',
+    },
+    significance: {
+      en: 'Removes marriage obstacles, ensures happy matrimony and female well-being.',
+      ml: 'മാംഗല്യഭാഗ്യം, ദാമ്പത്യ ഐക്യം, സ്ത്രീകളുടെ ക്ഷേമം.',
+    },
+    popular: true,
+  },
+  {
+    slNo: 40,
     id: 'neeranjanam',
     name: {
       en: 'Neeranjanam (Sesame Lamp for Sastha & Shani)',
@@ -806,7 +765,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 43,
+    slNo: 41,
     id: 'thrimadhuram',
     name: {
       en: 'Thrimadhuram Nivedyam',
@@ -824,11 +783,11 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 44,
+    slNo: 42,
     id: 'aayilyam_pooja',
     name: {
       en: 'Aayilyam Pooja (Serpent Deity Puja)',
-      ml: 'ആയില്യം',
+      ml: 'ആയില്ല്യം',
     },
     category: 'pooja_homam',
     price: 45,
@@ -843,25 +802,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 45,
-    id: 'noorum_palum',
-    name: {
-      en: 'Noorum Palum (Milk & Turmeric to Nagas)',
-      ml: 'നൂറും പാലും',
-    },
-    category: 'pooja_homam',
-    price: 45,
-    description: {
-      en: 'Traditional offering of milk, rice powder, turmeric, and lime to the Serpent Deities.',
-      ml: 'നൂറും പാലും മഞ്ഞൾപ്പൊടിയും ചേർത്ത് സർപ്പദേവതകൾക്ക് സമർപ്പിക്കുന്ന പവിത്ര നിവേദ്യം.',
-    },
-    significance: {
-      en: 'Deep ancestral curse relief and health for generations.',
-      ml: 'നാഗപ്രീതി, വംശവർദ്ധനവ്, ത്വഗ്രോഗ ശമനം.',
-    },
-  },
-  {
-    slNo: 46,
+    slNo: 43,
     id: 'bhagavath_seva',
     name: {
       en: 'Bhagavath Seva',
@@ -879,7 +820,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 47,
+    slNo: 44,
     id: 'yakshippattu',
     name: {
       en: 'Yakshippattu',
@@ -897,7 +838,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 48,
+    slNo: 45,
     id: 'vara_nivedyam',
     name: {
       en: 'Vara Nivedyam (for Yakshi Amma)',
@@ -915,7 +856,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 49,
+    slNo: 46,
     id: 'deeparadhana_upadevathas',
     name: {
       en: 'Deeparadhana for Upadevathas',
@@ -933,7 +874,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 50,
+    slNo: 47,
     id: 'annaprashanam',
     name: {
       en: 'Annaprashanam (First Rice Feeding for Infants)',
@@ -952,7 +893,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 51,
+    slNo: 48,
     id: 'vidyarambham',
     name: {
       en: 'Vidyarambham (Initiation into Learning)',
@@ -971,7 +912,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 52,
+    slNo: 49,
     id: 'vivaha_nadappanam',
     name: {
       en: 'Vivaha Nadappanam (Temple Wedding Fee)',
@@ -989,7 +930,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 53,
+    slNo: 50,
     id: 'thulabharam_nadappanam',
     name: {
       en: 'Thulabharam Nadappanam (Weighing Scale Offering)',
@@ -1008,7 +949,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 54,
+    slNo: 51,
     id: 'adima_nadappanam',
     name: {
       en: 'Adima Nadappanam (Child Surrender Seva)',
@@ -1026,7 +967,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 55,
+    slNo: 52,
     id: 'kavadi_nadappanam',
     name: {
       en: 'Kavadi Nadappanam',
@@ -1044,7 +985,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 56,
+    slNo: 53,
     id: 'bhajana_nadappanam',
     name: {
       en: 'Bhajana Nadappanam',
@@ -1062,7 +1003,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 57,
+    slNo: 54,
     id: 'chuttu_vilakku',
     name: {
       en: 'Chuttu Vilakku (Illuminating Entire Outer Perimeter)',
@@ -1085,7 +1026,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 58,
+    slNo: 55,
     id: 'vahana_pooja_two_wheeler',
     name: {
       en: 'Vahana Pooja (Two Wheeler)',
@@ -1103,7 +1044,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 59,
+    slNo: 56,
     id: 'vahana_pooja_four_wheeler',
     name: {
       en: 'Vahana Pooja (Four Wheeler / Heavy Vehicle)',
@@ -1122,7 +1063,7 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 60,
+    slNo: 57,
     id: 'mala_pooja',
     name: {
       en: 'Mala Pooja (Pilgrimage Bead Garland Puja)',
@@ -1140,7 +1081,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 61,
+    slNo: 58,
     id: 'charadu_japam',
     name: {
       en: 'Charadu Japam (Sanctified Protective Thread)',
@@ -1158,7 +1099,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 62,
+    slNo: 59,
     id: 'kettunira',
     name: {
       en: 'Kettunira (Irumudi Kettu Preparation)',
@@ -1176,7 +1117,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 63,
+    slNo: 60,
     id: 'utsavabali_registration',
     name: {
       en: 'Utsavabali Registration',
@@ -1194,7 +1135,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 64,
+    slNo: 61,
     id: 'chelavinum_vilakkinum',
     name: {
       en: 'Chelavinum Vilakkinum (Temple Upkeep & Lamp Fund)',
@@ -1212,7 +1153,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 65,
+    slNo: 62,
     id: 'namaskaram',
     name: {
       en: 'Namaskaram (Priestly Feast & Blessing)',
@@ -1230,7 +1171,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 66,
+    slNo: 63,
     id: 'koottu_namaskaram',
     name: {
       en: 'Koottu Namaskaram',
@@ -1248,7 +1189,7 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 67,
+    slNo: 64,
     id: 'thoolika_pooja',
     name: {
       en: 'Thoolika Pooja (Pen & Study Tool Puja)',
@@ -1266,7 +1207,107 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
+    slNo: 65,
+    id: 'samvada_sooktha_pushpanjali',
+    name: {
+      en: 'Samvada Sooktha Pushpanjali',
+      ml: 'സംവാദസൂക്ത പുഷ്പാഞ്ജലി',
+    },
+    category: 'archana_pushpanjali',
+    price: 45,
+    description: {
+      en: 'Pushpanjali chanting the Vedic Samvada Sooktham for dispute resolution, harmony, and mutual understanding.',
+      ml: 'തർക്കങ്ങളും ഭിന്നതകളും പരിഹരിക്കാനും സൗഹൃദവും ധാരണയും വർദ്ധിക്കാനും നടത്തുന്ന പുഷ്പാഞ്ജലി.',
+    },
+    significance: {
+      en: 'Resolves family, property, and partnership disputes peacefully.',
+      ml: 'കുടുംബ-തൊഴിൽ തർക്കങ്ങൾ തീരാൻ, രമ്യത, ശാന്തി.',
+    },
+    popular: true,
+  },
+  {
+    slNo: 66,
+    id: 'utsavabali',
+    name: {
+      en: 'Utsavabali (Grand Tantric Festival Offering)',
+      ml: 'ഉത്സവബലി',
+    },
+    category: 'special_sevas',
+    price: 50000,
+    description: {
+      en: 'Grand solemn sponsorship of the supreme Utsavabali tantric rites performed during the annual temple festival.',
+      ml: 'വാർഷിക ഉത്സവത്തിൽ തന്ത്രിമുഖ്യരുടെ കാർമ്മികത്വത്തിൽ നടക്കുന്ന പരമപവിത്രമായ ഉത്സവബലി സമർപ്പണം.',
+    },
+    significance: {
+      en: 'Supreme generational merit, cosmic balance, and fulfillment of all family prayers.',
+      ml: 'മഹാപുണ്യം, കുടുംബ ശാന്തി, സർവ്വൈശ്വര്യം, പിതൃമോക്ഷം.',
+    },
+    tag: {
+      en: 'Festival Supreme',
+      ml: 'ഉത്സവ സമർപ്പണം',
+    },
+  },
+  {
+    slNo: 67,
+    id: 'pashupadha_manthrarchana',
+    name: {
+      en: 'Pashupadha Manthrarchana',
+      ml: 'പാശുപദമന്ത്രാർച്ചന',
+    },
+    category: 'archana_pushpanjali',
+    price: 45,
+    description: {
+      en: 'Archana chanting the supreme Pashupatastra mantra of Lord Shiva.',
+      ml: 'ശിവന്റെ അതിശക്തമായ പാശുപതാസ്ത്ര മന്ത്രം ചൊല്ലി നടത്തുന്ന അർച്ചന.',
+    },
+    significance: {
+      en: 'Overcomes severe litigations, rivals, black magic, and insurmountable crises.',
+      ml: 'ശത്രുജയം, കോടതി വ്യവഹാരങ്ങളിൽ വിജയം, കഠിന ബാധകളിൽ നിന്നുള്ള മോചനം.',
+    },
+    popular: true,
+  },
+  {
     slNo: 68,
+    id: 'munvilakku',
+    name: {
+      en: 'Munvilakku (Front Sanctum Lamp)',
+      ml: 'മുൻവിളക്ക്',
+    },
+    category: 'vilakku_mala',
+    price: 30,
+    description: {
+      en: 'Lighting the sacred oil lamp directly before the deity at the sanctum entrance.',
+      ml: 'ശ്രീകോവിലിന് മുൻപിൽ ഭഗവാന്റെ നേരിട്ടുള്ള ദർശനത്തിനായി തെളിയിക്കുന്ന പവിത്ര വിളക്ക്.',
+    },
+    significance: {
+      en: 'Attracts divine illumination, eliminates darkness, and brings clarity.',
+      ml: 'ഐശ്വര്യം, മനോതെളിച്ചം, ജീവിതവിജയം.',
+    },
+  },
+  {
+    slNo: 69,
+    id: 'auditorium_vadaka',
+    name: {
+      en: 'Auditorium Rent (Full Function)',
+      ml: 'ഓഡിറ്റോറിയം വാടക',
+    },
+    category: 'special_sevas',
+    price: 35000,
+    description: {
+      en: 'Full-day rental of the spacious temple auditorium and dining hall for weddings, cultural events, and receptions.',
+      ml: 'വിവാഹം, സാംസ്കാരിക ചടങ്ങുകൾ, വിരുന്ന് എന്നിവയ്ക്കായി ക്ഷേത്ര ഓഡിറ്റോറിയം മുഴുവൻ ദിവസത്തേക്ക് വാടകയ്ക്ക്.',
+    },
+    significance: {
+      en: 'Sanctified wedding and event venue blessed by the divine presence of Lord Mahadeva.',
+      ml: 'വിവാഹ-സാംസ്കാരിക മംഗള ചടങ്ങുകൾ ഭക്തിസാന്ദ്രമായി നടത്താൻ.',
+    },
+    tag: {
+      en: 'Event Hall',
+      ml: 'കല്യാണമണ്ഡപം',
+    },
+  },
+  {
+    slNo: 70,
     id: 'dakshinamoorthy_namarchana',
     name: {
       en: 'Dakshinamoorthy Namarchana',
@@ -1285,7 +1326,25 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 69,
+    slNo: 71,
+    id: 'noorum_palum',
+    name: {
+      en: 'Noorum Palum (Milk & Turmeric to Nagas)',
+      ml: 'നൂറും പാലും',
+    },
+    category: 'pooja_homam',
+    price: 45,
+    description: {
+      en: 'Traditional offering of milk, rice powder, turmeric, and lime to the Serpent Deities.',
+      ml: 'നൂറും പാലും മഞ്ഞൾപ്പൊടിയും ചേർത്ത് സർപ്പദേവതകൾക്ക് സമർപ്പിക്കുന്ന പവിത്ര നിവേദ്യം.',
+    },
+    significance: {
+      en: 'Deep ancestral curse relief and health for generations.',
+      ml: 'നാഗപ്രീതി, വംശവർദ്ധനവ്, ത്വഗ്രോഗ ശമനം.',
+    },
+  },
+  {
+    slNo: 72,
     id: 'kuda_nadappanam',
     name: {
       en: 'Kuda Nadappanam (Umbrella Offering)',
@@ -1303,7 +1362,79 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 70,
+    slNo: 73,
+    id: 'auditorium_booking',
+    name: {
+      en: 'Auditorium Advance Booking',
+      ml: 'ഓഡിറ്റോറിയം ബുക്കിംഗ്',
+    },
+    category: 'special_sevas',
+    price: 10000,
+    description: {
+      en: 'Advance token registration to reserve the temple marriage auditorium for a scheduled date.',
+      ml: 'ക്ഷേത്ര ഓഡിറ്റോറിയം മുൻകൂട്ടി തീയതി നിശ്ചയിച്ചു ബുക്ക് ചെയ്യുന്നതിനുള്ള അഡ്വാൻസ് തുക.',
+    },
+    significance: {
+      en: 'Guaranteed reservation for sacred temple weddings.',
+      ml: 'വിവാഹ തീയതി മുൻകൂട്ടി ഉറപ്പാക്കൽ.',
+    },
+  },
+  {
+    slNo: 74,
+    id: 'kadumpayasam_uri',
+    name: {
+      en: 'Kadumpayasam (Uri Measure)',
+      ml: 'കടുംപായസം (ഉരി)',
+    },
+    category: 'nivedyam_payasam',
+    price: 80,
+    description: {
+      en: 'Small traditional Uri measure portion of rich dark jaggery payasam.',
+      ml: 'ഉരി അളവിൽ തയ്യാറാക്കുന്ന പവിത്രമായ കടുംപായസ നിവേദ്യം.',
+    },
+    significance: {
+      en: 'Personal obstacle removal and quick fulfillment of vows.',
+      ml: 'കാര്യവിജയം, കാര്യതടസ്സ നിവാരണം.',
+    },
+  },
+  {
+    slNo: 75,
+    id: 'kadumpayasam_nazhiyuri',
+    name: {
+      en: 'Kadumpayasam (Nazhiyuri Measure)',
+      ml: 'കടുംപായസം (നാഴിയുരി)',
+    },
+    category: 'nivedyam_payasam',
+    price: 240,
+    description: {
+      en: 'Larger Nazhiyuri portion of thick jaggery payasam for family offering.',
+      ml: 'നാഴിയുരി അളവിൽ തയ്യാറാക്കുന്ന വിശേഷാൽ കടുംപായസം.',
+    },
+    significance: {
+      en: 'Family health, protection from evil eye, and peace.',
+      ml: 'കുടുംബസംരക്ഷണം, ശത്രുദോഷ ശമനം.',
+    },
+  },
+  {
+    slNo: 76,
+    id: 'koottupayasam_nazhiyuri',
+    name: {
+      en: 'Koottupayasam (Nazhiyuri Measure)',
+      ml: 'കൂട്ടുപായസം (നാഴിയുരി)',
+    },
+    category: 'nivedyam_payasam',
+    price: 180,
+    description: {
+      en: 'Nazhiyuri portion of sweet mixed-grain payasam.',
+      ml: 'നാഴിയുരി അളവിൽ തയ്യാറാക്കുന്ന കൂട്ടുപായസ നിവേദ്യം.',
+    },
+    significance: {
+      en: 'Harmony in domestic life and auspicious joy.',
+      ml: 'ദാമ്പത്യ ഐക്യം, കുടുംബ സന്തോഷം.',
+    },
+  },
+  {
+    slNo: 77,
     id: 'nilavilakku_nadappanam',
     name: {
       en: 'Nilavilakku Nadappanam (Brass Lamp Offering)',
@@ -1321,7 +1452,82 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 71,
+    slNo: 78,
+    id: 'yogeeshwara_pooja',
+    name: {
+      en: 'Yogeeshwara Pooja',
+      ml: 'യോഗീശ്വരപൂജ',
+    },
+    category: 'pooja_homam',
+    price: 150,
+    description: {
+      en: 'Special pooja dedicated to Sri Yogeeshwaran / Guru Chaithanyam residing in the temple.',
+      ml: 'ക്ഷേത്ര സങ്കേതത്തിലെ യോഗീശ്വര ചൈതന്യത്തിനും ഗുരുക്കന്മാർക്കുമായി സമർപ്പിക്കുന്ന പൂജ.',
+    },
+    significance: {
+      en: 'Brings spiritual wisdom, mental clarity, and removal of unknown obstacles.',
+      ml: 'ഗുരുപ്രീതി, ജ്ഞാനം, അദൃശ്യ തടസ്സങ്ങൾ നീങ്ങാൻ.',
+    },
+    popular: true,
+  },
+  {
+    slNo: 79,
+    id: 'samvada_sooktham',
+    name: {
+      en: 'Samvada Sooktham',
+      ml: 'സംവാദസൂക്തം',
+    },
+    category: 'archana_pushpanjali',
+    price: 45,
+    description: {
+      en: 'Vedic recitation of the Rigvedic Samvada Sooktham for peace and agreement.',
+      ml: 'സമാധാനത്തിനും അഭിപ്രായഐക്യത്തിനുമായി സംവാദസൂക്ത മന്ത്രങ്ങൾ ചൊല്ലി നടത്തുന്ന അർച്ചന.',
+    },
+    significance: {
+      en: 'Enhances communication, resolves disputes, and brings concord in partnership.',
+      ml: 'വാക്സാമർത്ഥ്യം, തർക്കപരിഹാരം, കുടുംബ ഐക്യം.',
+    },
+  },
+  {
+    slNo: 80,
+    id: 'aikya_manthrarchana',
+    name: {
+      en: 'Aikya Manthrarchana (Unity Hymn Archana)',
+      ml: 'ഐക്യമന്ത്രാർച്ചന',
+    },
+    category: 'archana_pushpanjali',
+    price: 45,
+    description: {
+      en: 'Archana chanting the Vedic Aikya Manthram for profound unity and mutual love.',
+      ml: 'മനസ്സുകൾ തമ്മിൽ ഒന്നാകാനും ഐക്യമുണ്ടാകാനും വേദമന്ത്രങ്ങളാൽ നടത്തുന്ന അർച്ചന.',
+    },
+    significance: {
+      en: 'Fosters unity between couples, family members, and business partners.',
+      ml: 'കുടുംബൈക്യം, ഭാര്യാഭർതൃ സ്നേഹം, കൂട്ടായ്മയുടെ വിജയം.',
+    },
+    popular: true,
+  },
+  {
+    slNo: 81,
+    id: 'ksheeradhara',
+    name: {
+      en: 'Ksheeradhara (Continuous Holy Milk Dhara)',
+      ml: 'ക്ഷീരധാര',
+    },
+    category: 'abhishekam_dhara',
+    price: 60,
+    description: {
+      en: 'Continuous stream of pure cow milk poured over the sacred Shivalinga.',
+      ml: 'ശുദ്ധമായ പശുവിൻ പാൽ തുടർച്ചയായി ശിവലിംഗത്തിൽ ധാരയായി ഒഴിക്കുന്ന അഭിഷേകം.',
+    },
+    significance: {
+      en: 'Mental tranquility, emotional balance, child welfare, and spiritual joy.',
+      ml: 'മനഃശാന്തി, സന്താനഗുണം, ശരീരസൗഖ്യം, ശിവപ്രീതി.',
+    },
+    popular: true,
+  },
+  {
+    slNo: 82,
     id: 'ellu_payasam',
     name: {
       en: 'Ellu Payasam (Sesame Payasam)',
@@ -1339,7 +1545,63 @@ export const OFFERINGS: OfferingItem[] = [
     },
   },
   {
-    slNo: 72,
+    slNo: 83,
+    id: 'sukrutha_sooktham',
+    name: {
+      en: 'Sukrutha Sooktham',
+      ml: 'സുകൃത സൂക്തം',
+    },
+    category: 'archana_pushpanjali',
+    price: 45,
+    description: {
+      en: 'Archana chanting the Vedic Sukrutha Sooktham to augment merits and good karma.',
+      ml: 'നന്മകളും പുണ്യങ്ങളും വർദ്ധിക്കാനായി സുകൃതസൂക്ത മന്ത്രജപത്തോടെ നടത്തുന്ന അർച്ചന.',
+    },
+    significance: {
+      en: 'Destroys past bad karma, attracts auspicious opportunities and prosperity.',
+      ml: 'പാപവിമുക്തി, ഭാഗ്യവർദ്ധനവ്, പുണ്യവർദ്ധനവ്.',
+    },
+    popular: true,
+  },
+  {
+    slNo: 84,
+    id: 'neelakantha_yantrakshari_archana',
+    name: {
+      en: 'Neelakantha Yantrakshari Archana',
+      ml: 'നീലകണ്ഠയന്ത്രാക്ഷരി അർച്ചന',
+    },
+    category: 'archana_pushpanjali',
+    price: 45,
+    description: {
+      en: 'Esoteric tantric archana chanting the sacred mystic letters of Lord Neelakantha.',
+      ml: 'നീലകണ്ഠനായ പരമശിവന്റെ താന്ത്രിക യന്ത്രാക്ഷര മന്ത്രങ്ങൾ ജപിച്ചു നടത്തുന്ന വിശേഷാൽ അർച്ചന.',
+    },
+    significance: {
+      en: 'Cures chronic ailments, neutralizes poison and toxicity, and gives spiritual shield.',
+      ml: 'വിഷബാധ-രോഗ ശമനം, കഠിന ദുരിതങ്ങളിൽ നിന്നുള്ള മോചനം, ശിവകവചം.',
+    },
+  },
+  {
+    slNo: 85,
+    id: 'panchakshari_manthrarchana',
+    name: {
+      en: 'Panchakshari Manthrarchana',
+      ml: 'പഞ്ചാക്ഷരി മന്ത്രാർച്ചന',
+    },
+    category: 'archana_pushpanjali',
+    price: 45,
+    description: {
+      en: 'Archana offering Bilwa leaves while chanting the supreme five-lettered Shiva mantra "Namah Shivaya".',
+      ml: 'കൂവളയിലകളാൽ "നമഃ ശിവായ" പഞ്ചാക്ഷരീ മന്ത്രം ജപിച്ചു ഭഗവാന് സമർപ്പിക്കുന്ന അർച്ചന.',
+    },
+    significance: {
+      en: 'Complete spiritual liberation, mental purity, and supreme Shiva grace.',
+      ml: 'ശിവസാന്നിധ്യം, സർവ്വപാപ ശമനം, ആത്മീയ ഉന്നതി.',
+    },
+    popular: true,
+  },
+  {
+    slNo: 86,
     id: 'umamaheswararchana',
     name: {
       en: 'Umamaheswararchana',
@@ -1358,21 +1620,43 @@ export const OFFERINGS: OfferingItem[] = [
     popular: true,
   },
   {
-    slNo: 73,
-    id: 'ksheeradhara',
+    slNo: 87,
+    id: 'aayiram_kudam_abhishekam',
     name: {
-      en: 'Ksheeradhara (Continuous Holy Milk Dhara)',
-      ml: 'ക്ഷീരധാര',
+      en: 'Aayiram Kudam Abhishekam (1,000 Pots)',
+      ml: 'ആയിരം കുടം അഭിഷേകം',
     },
     category: 'abhishekam_dhara',
-    price: 60,
+    price: 12500,
     description: {
-      en: 'Continuous stream of pure cow milk poured over the sacred Shivalinga.',
-      ml: 'ശുദ്ധമായ പശുവിൻ പാൽ തുടർച്ചയായി ശിവലിംഗത്തിൽ ധാരയായി ഒഴിക്കുന്ന അഭിഷേകം.',
+      en: 'Grand ceremonial bathing of Mahadeva with sanctified holy water poured from 1,000 brass pots with Vedic chanting.',
+      ml: 'വേദമന്ത്രോച്ചാരണങ്ങളോടെ 1000 കുടം പുണ്യതീർത്ഥം ഭഗവാന് അഭിഷേകം ചെയ്യുന്ന മഹാ സമർപ്പണം.',
     },
     significance: {
-      en: 'Mental tranquility, emotional balance, child welfare, and spiritual joy.',
-      ml: 'മനഃശാന്തി, സന്താനഗുണം, ശരീരസൗഖ്യം, ശിവപ്രീതി.',
+      en: 'Immense spiritual purification, cooling of cosmic energies, and ancestral deliverance.',
+      ml: 'മഹാപുണ്യം, കുടുംബശാന്തി, തീരാദുരിത നിവാരണം.',
+    },
+    tag: {
+      en: 'Grand Abhishekam',
+      ml: 'മഹാഭിഷേകം',
+    },
+  },
+  {
+    slNo: 88,
+    id: 'palpayasam',
+    name: {
+      en: 'Palpayasam (Milk Kheer)',
+      ml: 'പാൽപായസം',
+    },
+    category: 'nivedyam_payasam',
+    price: 160,
+    description: {
+      en: 'Sweet and creamy milk payasam prepared with pure cow milk, rice, and sugar.',
+      ml: 'ശുദ്ധമായ പശുവിൻ പാലും അരിയും ചേർത്ത് തയ്യാറാക്കുന്ന രുചികരമായ പാൽപായസം.',
+    },
+    significance: {
+      en: 'Bestows good health, happiness in family, and contentment.',
+      ml: 'സന്താനസൗഭാഗ്യം, മനഃശാന്തി, കുടുംബൈശ്വര്യം.',
     },
     popular: true,
   },
