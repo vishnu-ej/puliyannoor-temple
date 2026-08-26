@@ -2,6 +2,42 @@ import { FestivalEvent } from '../types';
 
 export const FESTIVALS: FestivalEvent[] = [
   {
+    id: 'annual_utsavam_2027',
+    title: {
+      en: '2027 Annual Temple Festival (തിരുവുത്സവം)',
+      ml: '2027 വാർഷിക തിരുവുത്സവം',
+    },
+    subtitle: {
+      en: 'Feb 28, 2027 (Sunday) – Mar 07, 2027 (Sunday)',
+      ml: '2027 ഫെബ്രുവരി 28 ഞായർ – മാർച്ച് 07 ഞായർ',
+    },
+    malayalamMonth: {
+      en: '1202 Kumbham 16 – Kumbham 23',
+      ml: '1202 കുംഭം 16 – കുംഭം 23',
+    },
+    description: {
+      en: 'The 8-day grand annual festival of Puliyannoor Sree Mahadeva Temple celebrated with divine grandeur, Kodiyettu by the Oorayma Thanthri, Panchavadyam, Chenda Melam, Pallivetta, and sacred Aarattu procession.',
+      ml: 'പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രത്തിലെ 8 ദിവസം നീണ്ടുനിൽക്കുന്ന വാർഷിക തിരുവുത്സവം. തന്ത്രിമുഖ്യന്റെ കാർമ്മികത്വത്തിൽ കൊടിയേറ്റോടെ ആരംഭിച്ച് പഞ്ചവാദ്യം, ചെണ്ടമേളം, പള്ളിവേട്ട, ആറാട്ട് എന്നിവയോടെ ഭക്തിസാന്ദ്രമായി ആഘോഷിക്കുന്നു.',
+    },
+    highlights: {
+      en: [
+        'Feb 28, 2027 (Kumbham 16, Sun): Sacred Flag Hoisting (Kodiyettu)',
+        'Daily Utsava Poojas, Sreebhoothabali & Melam by renowned maestros',
+        'Mar 06, 2027 (Kumbham 22, Sat): Royal Pallivetta & Utsavabali',
+        'Mar 07, 2027 (Kumbham 23, Sun): Holy Aarattu Bath & Kodi-irakku',
+      ],
+      ml: [
+        '2027 ഫെബ്രുവരി 28 (കുംഭം 16, ഞായർ): തന്ത്രിമുഖ്യ കാർമ്മികത്വത്തിൽ കൊടിയേറ്റ്',
+        'ദിവസേനയുള്ള ഉത്സവ പൂജകൾ, ശ്രീഭൂതബലി, പഞ്ചവാദ്യം, പാണ്ടിമേളം',
+        '2027 മാർച്ച് 06 (കുംഭം 22, ശനി): ഭക്തിസാന്ദ്രമായ പള്ളിവേട്ടയും ഉത്സവബലിയും',
+        '2027 മാർച്ച് 07 (കുംഭം 23, ഞായർ): മഹാ ആറാട്ട് മഹോത്സവം, കൊടിയിറക്ക്',
+      ],
+    },
+    iconName: 'Crown',
+    isMajor: true,
+    upcomingDateStr: '2027-02-28T04:00:00+05:30',
+  },
+  {
     id: 'maha_shivaratri',
     title: {
       en: 'Maha Shivaratri',
@@ -35,7 +71,6 @@ export const FESTIVALS: FestivalEvent[] = [
     },
     iconName: 'Flame',
     isMajor: true,
-    upcomingDateStr: '2027-03-06T04:30:00+05:30',
   },
   {
     id: 'thiruvathira',
@@ -68,41 +103,6 @@ export const FESTIVALS: FestivalEvent[] = [
       ],
     },
     iconName: 'Sparkles',
-    isMajor: true,
-  },
-  {
-    id: 'annual_utsavam',
-    title: {
-      en: 'Annual Temple Utsavam (Festival)',
-      ml: 'വാർഷിക തിരുവുത്സവം',
-    },
-    subtitle: {
-      en: '8-Day Grand Temple Festival with Tantric Rites',
-      ml: 'എട്ടു ദിവസത്തെ വാർഷിക തിരുവുത്സവം',
-    },
-    malayalamMonth: {
-      en: 'Meenam / Medam (March – April)',
-      ml: 'മീനം / മേടം (മാർച്ച് – ഏപ്രിൽ)',
-    },
-    description: {
-      en: 'The annual temple festival marked by ceremonial flag hoisting (Kodiyettu) by the Oorayma Thanthri, Panchavadyam, Chenda Melam, temple elephant processions, Pallivetta and holy immersion (Aarattu) in the sacred river.',
-      ml: 'തന്ത്രിമുഖ്യന്റെ കാർമ്മികത്വത്തിൽ കൊടിയേറ്റോടെ ആരംഭിച്ച് ചെണ്ടമേളം, പഞ്ചവാദ്യം, പള്ളിവേട്ട, ആറാട്ട് എന്നിവയോടെ എട്ടു ദിവസങ്ങളിലായി നടക്കുന്ന മഹാ ഉത്സവം.',
-    },
-    highlights: {
-      en: [
-        'Solemn Flag Hoisting (Kodiyettu) Ceremony',
-        'Panchavadyam & Pandi Melam by renowned maestros',
-        'Pallivetta (Royal Hunt) and sacred Aarattu procession',
-        'Community Annadanam (Feast) for thousands of devotees',
-      ],
-      ml: [
-        'പവിത്രമായ തന്ത്രിമുഖ്യ കൊടിയേറ്റ് ചടങ്ങ്',
-        'പ്രസിദ്ധ കലാകാരന്മാരുടെ പഞ്ചവാദ്യവും പാണ്ടിമേളവും',
-        'ഭക്തിസാന്ദ്രമായ പള്ളിവേട്ടയും പുണ്യതീർത്ഥ ആറാട്ടും',
-        'ആയിരക്കണക്കിന് ഭക്തർക്ക് അന്നദാനം',
-      ],
-    },
-    iconName: 'Crown',
     isMajor: true,
   },
   {

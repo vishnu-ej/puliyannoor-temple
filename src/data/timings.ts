@@ -7,17 +7,17 @@ export const POOJA_TIMINGS: PoojaTiming[] = [
       en: 'Nirmalyam & Morning Darshan',
       ml: 'നിർമ്മാല്യ ദർശനവും പ്രഭാത പൂജയും',
     },
-    time: '4:30 AM',
+    time: '4:00 AM',
     timeLabel: {
-      en: '4:30 AM – 5:15 AM',
-      ml: 'രാവിലെ 4:30 – 5:15',
+      en: '4:00 AM – 5:00 AM',
+      ml: 'രാവിലെ 4:00 – 5:00',
     },
     period: 'morning',
-    startMinutes: 270, // 4:30 AM
-    endMinutes: 315,   // 5:15 AM
+    startMinutes: 240, // 4:00 AM
+    endMinutes: 300,   // 5:00 AM
     description: {
-      en: 'The sanctum doors open to reveal Mahadeva in the prior evening’s sacred floral decorations (Nirmalyam). Extremely auspicious for meditation.',
-      ml: 'തലേദിവസത്തെ പൂക്കളോടെ ഭഗവാനെ ദർശിക്കുന്ന നിർമ്മാല്യ ദർശനം. അതീവ പുണ്യകരവും മനസ്സമാധാനദായകവുമാണ്.',
+      en: 'The sanctum doors open at 4:00 AM to reveal Mahadeva in the prior evening’s sacred floral decorations (Nirmalyam). Extremely auspicious for meditation and prayers.',
+      ml: 'പുലർച്ചെ 4:00 മണിക്ക് നടതുറപ്പ്. തലേദിവസത്തെ പൂക്കളോടെ ഭഗവാനെ ദർശിക്കുന്ന നിർമ്മാല്യ ദർശനം. അതീവ പുണ്യകരവും മനസ്സമാധാനദായകവുമാണ്.',
     },
     isVerified: true,
   },
@@ -36,10 +36,10 @@ export const POOJA_TIMINGS: PoojaTiming[] = [
     startMinutes: 330, // 5:30 AM
     endMinutes: 390,   // 6:30 AM
     description: {
-      en: 'Dawn worship rituals, sacred Jalabhishekam / Dhara with holy chants, and morning naivedyam offering.',
+      en: 'Dawn worship rituals, sacred Jalabhishekam / Dhara with holy Vedic chants, and morning naivedyam offering.',
       ml: 'പ്രഭാത പൂജ, മന്ത്രസഹിതമായ ജലാഭിഷേകം, ധാര എന്നിവയും നൈവേദ്യ സമർപ്പണവും.',
     },
-    isVerified: false,
+    isVerified: true,
   },
   {
     id: 'pantheeradi',
@@ -59,7 +59,7 @@ export const POOJA_TIMINGS: PoojaTiming[] = [
       en: 'Mid-morning traditional pooja conducted when the shadow measures 12 feet, adhering to ancient Vastu Agama rules.',
       ml: 'പരമ്പരാഗത തന്ത്രവിധിപ്രകാരം നടത്തുന്ന പന്തീരടി പൂജയും പ്രത്യേക അർച്ചനകളും.',
     },
-    isVerified: false,
+    isVerified: true,
   },
   {
     id: 'ucha_pooja',
@@ -76,10 +76,10 @@ export const POOJA_TIMINGS: PoojaTiming[] = [
     startMinutes: 570, // 9:30 AM
     endMinutes: 600,   // 10:00 AM
     description: {
-      en: 'Midday major pooja, concluding the morning darshan with Deeparadhana before the shrine closes for the afternoon recess.',
-      ml: 'ഉച്ചപൂജ, മഹാദീപാരാധന. തുടർന്ന് ഉച്ചയ്ക്ക് 10 മണിക്ക് ക്ഷേത്രനട അടയ്ക്കുന്നു.',
+      en: 'Midday major pooja, concluding the morning darshan with Deeparadhana before the shrine closes at 10:00 AM for the afternoon recess.',
+      ml: 'ഉച്ചപൂജ, മഹാദീപാരാധന. തുടർന്ന് രാവിലെ 10:00 മണിക്ക് ക്ഷേത്രനട അടയ്ക്കുന്നു.',
     },
-    isVerified: false,
+    isVerified: true,
   },
   {
     id: 'evening_open',
@@ -87,19 +87,19 @@ export const POOJA_TIMINGS: PoojaTiming[] = [
       en: 'Evening Darshan Opens',
       ml: 'വൈകുന്നേരത്തെ നടതുറക്കൽ',
     },
-    time: '5:00 PM',
+    time: '5:30 PM',
     timeLabel: {
-      en: '5:00 PM – 6:30 PM',
-      ml: 'വൈകിട്ട് 5:00 – 6:30',
+      en: '5:30 PM – 6:15 PM',
+      ml: 'വൈകിട്ട് 5:30 – 6:15',
     },
     period: 'evening',
-    startMinutes: 1020, // 5:00 PM
-    endMinutes: 1110,   // 6:30 PM
+    startMinutes: 1050, // 5:30 PM
+    endMinutes: 1095,   // 6:15 PM
     description: {
-      en: 'Sanctum re-opens for the evening session. Devotees light ghee lamps (Neyvilakku) in the Chuttambalam.',
-      ml: 'വൈകുന്നേരത്തെ ദർശനത്തിനായി നടതുറക്കുന്നു. ഭക്തർ ചുറ്റുവിളക്കുകൾ കൊളുത്തുന്നു.',
+      en: 'Sanctum re-opens at 5:30 PM for the evening session. Devotees light ghee lamps (Neyvilakku) in the Chuttambalam.',
+      ml: 'വൈകുന്നേരം 5:30ന് ദർശനത്തിനായി നടതുറക്കുന്നു. ഭക്തർ ചുറ്റുവിളക്കുകളും നെയ്‌വിളക്കുകളും കൊളുത്തുന്നു.',
     },
-    isVerified: false,
+    isVerified: true,
   },
   {
     id: 'deeparadhana',
@@ -107,14 +107,14 @@ export const POOJA_TIMINGS: PoojaTiming[] = [
       en: 'Deeparadhana (Sandhya Pooja)',
       ml: 'സന്ധ്യാ ദീപാരാധന',
     },
-    time: '6:45 PM',
+    time: '6:15 PM',
     timeLabel: {
-      en: '6:45 PM – 7:15 PM',
-      ml: 'സന്ധ്യയ്ക്ക് 6:45 – 7:15',
+      en: '6:15 PM – 6:45 PM',
+      ml: 'സന്ധ്യയ്ക്ക് 6:15 – 6:45',
     },
     period: 'evening',
-    startMinutes: 1125, // 6:45 PM
-    endMinutes: 1155,   // 7:15 PM
+    startMinutes: 1095, // 6:15 PM
+    endMinutes: 1125,   // 6:45 PM
     description: {
       en: 'The grand evening lamp ritual accompanied by sacred conch blowing, bell chimes, and traditional temple hymns.',
       ml: 'ശംഖനാദവും മണിമുഴക്കവും ദീപാലങ്കാരങ്ങളുമായി ഭക്തിസാന്ദ്രമായ സന്ധ്യാ ദീപാരാധന.',
@@ -127,19 +127,19 @@ export const POOJA_TIMINGS: PoojaTiming[] = [
       en: 'Athazha Pooja & Night Closing',
       ml: 'അത്താഴപൂജയും നടയടപ്പും',
     },
-    time: '7:30 PM',
+    time: '6:45 PM',
     timeLabel: {
-      en: '7:30 PM – 8:00 PM',
-      ml: 'രാത്രി 7:30 – 8:00',
+      en: '6:45 PM – 7:00 PM',
+      ml: 'രാത്രി 6:45 – 7:00',
     },
     period: 'evening',
-    startMinutes: 1170, // 7:30 PM
-    endMinutes: 1200,   // 8:00 PM
+    startMinutes: 1125, // 6:45 PM
+    endMinutes: 1140,   // 7:00 PM
     description: {
-      en: 'The night offering and final darshan before the temple sanctum is closed for the day.',
-      ml: 'ദിവസത്തെ അവസാന പൂജയും ദർശനവും. രാത്രി 8 മണിക്ക് നടയടയ്ക്കുന്നു.',
+      en: 'The night offering and final darshan before the temple sanctum is closed at 7:00 PM.',
+      ml: 'ദിവസത്തെ അവസാന പൂജയും ദർശനവും. രാത്രി 7:00 മണിക്ക് നടയടയ്ക്കുന്നു.',
     },
-    isVerified: false,
+    isVerified: true,
   },
 ];
 
@@ -163,8 +163,8 @@ export interface LiveTempleStatus {
 export function calculateLiveTempleStatus(date = new Date()): LiveTempleStatus {
   const currentMinutes = date.getHours() * 60 + date.getMinutes();
 
-  // Morning Session: 4:30 AM (270) to 10:00 AM (600)
-  if (currentMinutes >= 270 && currentMinutes < 600) {
+  // Morning Session: 4:00 AM (240) to 10:00 AM (600)
+  if (currentMinutes >= 240 && currentMinutes < 600) {
     const activePooja = POOJA_TIMINGS.find(
       (p) => currentMinutes >= p.startMinutes && currentMinutes <= p.endMinutes
     );
@@ -190,9 +190,9 @@ export function calculateLiveTempleStatus(date = new Date()): LiveTempleStatus {
     };
   }
 
-  // Afternoon Break: 10:00 AM (600) to 5:00 PM (1020)
-  if (currentMinutes >= 600 && currentMinutes < 1020) {
-    const remainingMins = 1020 - currentMinutes;
+  // Afternoon Break: 10:00 AM (600) to 5:30 PM (1050)
+  if (currentMinutes >= 600 && currentMinutes < 1050) {
+    const remainingMins = 1050 - currentMinutes;
     const hours = Math.floor(remainingMins / 60);
     const mins = remainingMins % 60;
     const timeRemainingStr = hours > 0 ? `${hours} hr ${mins} min` : `${mins} min`;
@@ -204,19 +204,19 @@ export function calculateLiveTempleStatus(date = new Date()): LiveTempleStatus {
         ml: 'ഉച്ചസമയത്ത് നട അടച്ചിരിക്കുന്നു',
       },
       subText: {
-        en: `Opens for Evening Darshan at 5:00 PM (in ~${timeRemainingStr})`,
-        ml: `വൈകുന്നേരം 5:00 മണിക്ക് നട തുറക്കും (~${timeRemainingStr} കഴിഞ്ഞ്)`,
+        en: `Opens for Evening Darshan at 5:30 PM (in ~${timeRemainingStr})`,
+        ml: `വൈകുന്നേരം 5:30 മണിക്ക് നട തുറക്കും (~${timeRemainingStr} കഴിഞ്ഞ്)`,
       },
       currentOrNextPoojaName: {
-        en: 'Evening Darshan (5:00 PM)',
-        ml: 'സന്ധ്യാ ദർശനം (വൈകിട്ട് 5:00)',
+        en: 'Evening Darshan (5:30 PM)',
+        ml: 'സന്ധ്യാ ദർശനം (വൈകിട്ട് 5:30)',
       },
       badgeColor: 'amber',
     };
   }
 
-  // Evening Session: 5:00 PM (1020) to 8:00 PM (1200)
-  if (currentMinutes >= 1020 && currentMinutes < 1200) {
+  // Evening Session: 5:30 PM (1050) to 7:00 PM (1140)
+  if (currentMinutes >= 1050 && currentMinutes < 1140) {
     const activePooja = POOJA_TIMINGS.find(
       (p) => currentMinutes >= p.startMinutes && currentMinutes <= p.endMinutes
     );
@@ -230,10 +230,10 @@ export function calculateLiveTempleStatus(date = new Date()): LiveTempleStatus {
       subText: {
         en: activePooja
           ? `Current Ritual: ${activePooja.name.en}`
-          : 'Deeparadhana & Athazha Pooja session active',
+          : 'Evening session closes at 7:00 PM',
         ml: activePooja
           ? `നിലവിലെ ചടങ്ങ്: ${activePooja.name.ml}`
-          : 'ദീപാരാധന, അത്താഴപൂജ സമയം',
+          : 'വൈകുന്നേരത്തെ ദർശനം രാത്രി 7:00 മണിക്ക് അവസാനിക്കും',
       },
       currentOrNextPoojaName: activePooja
         ? activePooja.name
@@ -242,12 +242,12 @@ export function calculateLiveTempleStatus(date = new Date()): LiveTempleStatus {
     };
   }
 
-  // Night / Pre-dawn: 8:00 PM (1200) to 4:30 AM (270)
+  // Night / Pre-dawn: 7:00 PM (1140) to 4:00 AM (240)
   let remainingMinsToDawn = 0;
-  if (currentMinutes >= 1200) {
-    remainingMinsToDawn = 1440 - currentMinutes + 270;
+  if (currentMinutes >= 1140) {
+    remainingMinsToDawn = 1440 - currentMinutes + 240;
   } else {
-    remainingMinsToDawn = 270 - currentMinutes;
+    remainingMinsToDawn = 240 - currentMinutes;
   }
   const hours = Math.floor(remainingMinsToDawn / 60);
   const mins = remainingMinsToDawn % 60;
@@ -259,12 +259,12 @@ export function calculateLiveTempleStatus(date = new Date()): LiveTempleStatus {
       ml: 'രാത്രി നട അടച്ചിരിക്കുന്നു',
     },
     subText: {
-      en: `Nirmalyam & Morning Darshan opens at 4:30 AM (in ~${hours} hr ${mins} min)`,
-      ml: `നിർമ്മാല്യ ദർശനത്തിനായി പുലർച്ചെ 4:30ന് നട തുറക്കും (~${hours} മണിക്കൂർ ${mins} മിനിറ്റ്)`,
+      en: `Nirmalyam & Morning Darshan opens at 4:00 AM (in ~${hours} hr ${mins} min)`,
+      ml: `നിർമ്മാല്യ ദർശനത്തിനായി പുലർച്ചെ 4:00ന് നട തുറക്കും (~${hours} മണിക്കൂർ ${mins} മിനിറ്റ്)`,
     },
     currentOrNextPoojaName: {
-      en: 'Nirmalyam Darshan (4:30 AM)',
-      ml: 'നിർമ്മാല്യ ദർശനം (പുലർച്ചെ 4:30)',
+      en: 'Nirmalyam Darshan (4:00 AM)',
+      ml: 'നിർമ്മാല്യ ദർശനം (പുലർച്ചെ 4:00)',
     },
     badgeColor: 'crimson',
   };
