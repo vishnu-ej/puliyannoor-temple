@@ -65,27 +65,27 @@ export const Hero: React.FC = () => {
         </div>
 
         {/* Main Temple Name */}
-        <h1 className="font-cinzel text-2xl sm:text-4xl md:text-6xl font-extrabold tracking-tight text-[#FAF5E8] mb-2 sm:mb-3 leading-tight drop-shadow-md">
+        <h1 className="font-cinzel text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#FAF5E8] mb-2 sm:mb-3 leading-tight drop-shadow-md">
           {t('hero_title')}
         </h1>
 
         {/* Malayalam Sacred Title */}
-        <div className="font-malayalam-serif text-lg sm:text-2xl md:text-3xl text-[#E6BE65] font-semibold mb-4 sm:mb-5 tracking-wide drop-shadow">
+        <div className="font-malayalam-serif text-base sm:text-xl md:text-2xl text-[#E6BE65] font-semibold mb-3 sm:mb-4 tracking-wide drop-shadow">
           പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രം
         </div>
 
         {/* Popular Epithet Banner */}
-        <div className="inline-block px-3.5 py-1 rounded-lg bg-[#C99738]/20 border border-[#C99738]/40 text-xs sm:text-sm md:text-base font-cinzel font-semibold text-[#F9E7B3] mb-5">
+        <div className="inline-block px-3.5 py-1 rounded-lg bg-[#C99738]/20 border border-[#C99738]/40 text-xs sm:text-sm md:text-base font-cinzel font-semibold text-[#F9E7B3] mb-4 sm:mb-5">
           &ldquo;{t('temple_tagline_short')}&rdquo;
         </div>
 
         {/* Subtitle */}
-        <p className="max-w-3xl mx-auto text-xs sm:text-base md:text-lg text-[#FAF5E8]/90 font-light leading-relaxed mb-6 sm:mb-8 px-2">
+        <p className="max-w-3xl mx-auto text-xs sm:text-sm md:text-base text-[#FAF5E8]/90 font-light leading-relaxed mb-6 sm:mb-8 px-2">
           {t('hero_subtitle')}
         </p>
 
         {/* Verified Ratings Badges */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-7">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8">
           <div className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-[#FAF5E8]/10 border border-[#E6BE65]/40 backdrop-blur-md text-xs sm:text-sm text-[#FAF5E8] shadow-sm">
             <div className="flex text-[#E6BE65]">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -103,30 +103,36 @@ export const Hero: React.FC = () => {
           </div>
         </div>
 
-        {/* Action Buttons (Full width on small phones, grouped on tablet+) */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-10 w-full max-w-md sm:max-w-none mx-auto">
+        {/* Action Buttons (Balanced font sizes in Malayalam and English) */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3.5 mb-7 sm:mb-9 w-full max-w-md sm:max-w-none mx-auto">
           <Link
             href="/offerings"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#C99738] via-[#E6BE65] to-[#C99738] text-[#1A0409] font-bold text-sm md:text-base tracking-wide shadow-lg active:scale-95 transition-transform"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-[#C99738] via-[#E6BE65] to-[#C99738] text-[#1A0409] font-bold shadow-lg active:scale-95 transition-transform"
           >
-            <Sparkles className="w-4 h-4" />
-            <span>{t('btn_book_vazhipadu')}</span>
+            <Sparkles className="w-4 h-4 flex-shrink-0" />
+            <span className={language === 'ml' ? 'text-xs font-semibold font-malayalam-sans' : 'text-xs sm:text-sm tracking-wide'}>
+              {t('btn_book_vazhipadu')}
+            </span>
           </Link>
 
           <Link
             href="/timings"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] font-semibold text-sm md:text-base border border-[#C99738]/50 shadow-md active:scale-95 transition-transform"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] font-semibold border border-[#C99738]/50 shadow-md active:scale-95 transition-transform"
           >
-            <Calendar className="w-4 h-4 text-[#E6BE65]" />
-            <span>{t('btn_plan_darshan')}</span>
+            <Calendar className="w-4 h-4 text-[#E6BE65] flex-shrink-0" />
+            <span className={language === 'ml' ? 'text-xs font-medium font-malayalam-sans' : 'text-xs sm:text-sm tracking-wide'}>
+              {t('btn_plan_darshan')}
+            </span>
           </Link>
 
           <Link
             href="/about"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#FAF5E8]/10 hover:bg-[#FAF5E8]/20 text-[#FAF5E8] font-medium text-sm md:text-base border border-[#FAF5E8]/30 backdrop-blur-md active:scale-95 transition-transform"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-xl bg-[#FAF5E8]/10 hover:bg-[#FAF5E8]/20 text-[#FAF5E8] font-medium border border-[#FAF5E8]/30 backdrop-blur-md active:scale-95 transition-transform"
           >
-            <Landmark className="w-4 h-4 text-[#C99738]" />
-            <span>{t('btn_explore_about')}</span>
+            <Landmark className="w-4 h-4 text-[#C99738] flex-shrink-0" />
+            <span className={language === 'ml' ? 'text-xs font-medium font-malayalam-sans' : 'text-xs sm:text-sm tracking-wide'}>
+              {t('btn_explore_about')}
+            </span>
           </Link>
         </div>
 
@@ -136,41 +142,41 @@ export const Hero: React.FC = () => {
         </div>
       </div>
 
-      {/* Information Quick Strip (2x2 on mobile, 4 on desktop) */}
+      {/* Information Quick Strip (Fully bounded text without truncation) */}
       <div className="relative z-10 w-full bg-[#1A0409]/95 border-t border-[#C99738]/30 backdrop-blur-md">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[#C99738]/20 text-center py-2 sm:py-3">
-          <div className="px-2 sm:px-4 py-2.5">
-            <span className="block text-[10px] sm:text-[11px] uppercase tracking-wider text-[#C99738] font-semibold mb-0.5 truncate">
+          <div className="px-2 sm:px-4 py-2.5 flex flex-col justify-center">
+            <span className="block text-[10px] sm:text-[11px] uppercase tracking-wider text-[#C99738] font-semibold mb-0.5">
               {t('info_deity')}
             </span>
-            <span className="font-cinzel font-bold text-xs sm:text-sm md:text-base text-[#FAF5E8] truncate block">
+            <span className={`block font-bold text-xs sm:text-sm text-[#FAF5E8] leading-snug break-words ${language === 'ml' ? 'font-malayalam-sans text-xs' : 'font-cinzel'}`}>
               {t('info_deity_val')}
             </span>
           </div>
 
-          <div className="px-2 sm:px-4 py-2.5">
-            <span className="block text-[10px] sm:text-[11px] uppercase tracking-wider text-[#C99738] font-semibold mb-0.5 truncate">
+          <div className="px-2 sm:px-4 py-2.5 flex flex-col justify-center">
+            <span className="block text-[10px] sm:text-[11px] uppercase tracking-wider text-[#C99738] font-semibold mb-0.5">
               {t('info_opening')}
             </span>
-            <span className="font-cinzel font-bold text-xs sm:text-sm md:text-base text-[#FAF5E8] truncate block">
+            <span className={`block font-bold text-xs sm:text-sm text-[#FAF5E8] leading-snug break-words ${language === 'ml' ? 'font-malayalam-sans text-xs' : 'font-cinzel'}`}>
               {t('info_opening_val')}
             </span>
           </div>
 
-          <div className="px-2 sm:px-4 py-2.5 border-t md:border-t-0">
-            <span className="block text-[10px] sm:text-[11px] uppercase tracking-wider text-[#C99738] font-semibold mb-0.5 truncate">
+          <div className="px-2 sm:px-4 py-2.5 border-t md:border-t-0 flex flex-col justify-center">
+            <span className="block text-[10px] sm:text-[11px] uppercase tracking-wider text-[#C99738] font-semibold mb-0.5">
               {t('info_admin')}
             </span>
-            <span className="font-cinzel font-bold text-xs sm:text-sm md:text-base text-[#FAF5E8] truncate block">
+            <span className={`block font-bold text-xs sm:text-sm text-[#FAF5E8] leading-snug break-words ${language === 'ml' ? 'font-malayalam-sans text-xs' : 'font-cinzel'}`}>
               {t('info_admin_val')}
             </span>
           </div>
 
-          <div className="px-2 sm:px-4 py-2.5 border-t md:border-t-0">
-            <span className="block text-[10px] sm:text-[11px] uppercase tracking-wider text-[#C99738] font-semibold mb-0.5 truncate">
+          <div className="px-2 sm:px-4 py-2.5 border-t md:border-t-0 flex flex-col justify-center">
+            <span className="block text-[10px] sm:text-[11px] uppercase tracking-wider text-[#C99738] font-semibold mb-0.5">
               {t('info_parking')}
             </span>
-            <span className="font-cinzel font-bold text-xs sm:text-sm md:text-base text-[#FAF5E8] truncate block">
+            <span className={`block font-bold text-xs sm:text-sm text-[#FAF5E8] leading-snug break-words ${language === 'ml' ? 'font-malayalam-sans text-xs' : 'font-cinzel'}`}>
               {t('info_parking_val')}
             </span>
           </div>
