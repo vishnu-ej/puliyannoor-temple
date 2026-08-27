@@ -24,7 +24,7 @@ export const TRANSLATIONS: TranslationMap = {
     ml: 'പുലിയന്നൂർ, മുത്തോലി, പാലാ, കോട്ടയം',
   },
 
-  // Nav Items (Compact and elegant so Malayalam never stretches the header)
+  // Nav Items
   nav_home: { en: 'Home', ml: 'ഹോം' },
   nav_about: { en: 'About', ml: 'ക്ഷേത്രം' },
   nav_timings: { en: 'Darshan Timings', ml: 'ദർശന സമയം' },
@@ -44,8 +44,8 @@ export const TRANSLATIONS: TranslationMap = {
     ml: 'പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രം',
   },
   hero_subtitle: {
-    en: 'Known far and wide as "Cheruthil Valuthu Puliyannoor" — an ancient abode of Lord Shiva in Mutholy, lovingly nurtured by the Namboothiri families of the Puliyannoor Oorayma Temple Devaswom.',
-    ml: '“ചെറുതിൽ വലുത് പുലിയന്നൂർ” എന്ന പവിത്ര നാമത്തിൽ അറിയപ്പെടുന്ന മഹാദേവ ക്ഷേത്രം. പുലിയന്നൂർ ഊരായ്മ ക്ഷേത്ര ദേവസ്വത്തിലെ പാരമ്പര്യ നമ്പൂതിരി ഇല്ലങ്ങൾ ഭക്തിപൂർവ്വം കാത്തുസൂക്ഷിക്കുന്ന പുണ്യഭൂമി.',
+    en: 'Known far and wide as "Cheruthil Valuthu Puliyannoor" — an ancient abode of Lord Shiva in Mutholy, lovingly nurtured by the Namboothiri families of the Puliyannoor Ooranma Temple Devaswom.',
+    ml: '“ചെറുതിൽ വലുത് പുലിയന്നൂർ” എന്ന പവിത്ര നാമത്തിൽ അറിയപ്പെടുന്ന മഹാദേവ ക്ഷേത്രം. പുലിയന്നൂർ ഊരാണ്മ ക്ഷേത്ര ദേവസ്വത്തിലെ പാരമ്പര്യ നമ്പൂതിരി ഇല്ലങ്ങൾ ഭക്തിപൂർവ്വം കാത്തുസൂക്ഷിക്കുന്ന പുണ്യഭൂമി.',
   },
   btn_get_directions: { en: 'Get Directions', ml: 'റൂട്ട് മാപ്പ്' },
   btn_plan_darshan: { en: 'Darshan Timings', ml: 'ദർശന സമയം' },
@@ -60,9 +60,9 @@ export const TRANSLATIONS: TranslationMap = {
   info_opening: { en: 'Morning Nirmalyam', ml: 'നടതുറപ്പ് സമയം' },
   info_opening_val: { en: '4:00 AM Daily', ml: 'പുലർച്ചെ 4:00' },
   info_admin: { en: 'Temple Administration', ml: 'ഭരണനിർവഹണം' },
-  info_admin_val: { en: 'Puliyannoor Oorayma Devaswom', ml: 'പുലിയന്നൂർ ഊരായ്മ ദേവസ്വം' },
+  info_admin_val: { en: 'Puliyannoor Ooranma Devaswom', ml: 'പുലിയന്നൂർ ഊരാണ്മ ദേവസ്വം' },
   info_parking: { en: 'Vehicle Parking', ml: 'പാർക്കിംഗ്' },
-  info_parking_val: { en: 'Free Space in Front of Temple', ml: 'ക്ഷേത്രമുറ്റത്ത് സൗജന്യം' },
+  info_parking_val: { en: 'Available in the temple premise', ml: 'ക്ഷേത്ര വളപ്പിൽ സൗകര്യം ലഭ്യമാണ്' },
 
   // About & Heritage Section
   about_eyebrow: { en: 'History & Sacred Lineage', ml: 'ചരിത്രവും പൈതൃകവും' },
@@ -76,8 +76,8 @@ export const TRANSLATIONS: TranslationMap = {
     ml: 'ക്ഷേത്രത്തിന്റെ നിർമ്മിതി ഗ്രാമീണ തനിമയിലാണെങ്കിലും, ഭഗവാന്റെ ചൈതന്യവും ആചാരശുദ്ധിയും പരിഗണിച്ച് പഴമക്കാർ നൽകിയ നാമമാണ് "ചെറുതിൽ വലുത് പുലിയന്നൂർ". ക്ഷേത്രാങ്കണത്തിൽ പ്രവേശിക്കുമ്പോൾ തന്നെ അനുഭവപ്പെടുന്ന ശാന്തതയും പോസിറ്റീവ് എനർജിയും സന്ദർശകർ എടുത്തുപറയാറുണ്ട്.',
   },
   about_p2: {
-    en: 'The rituals, tantric ceremonies, and temple management are faithfully upheld by the Puliyannoor Oorayma Temple Devaswom, managed by traditional Namboothiri Illams (families). This community-trustee governance model preserves centuries-old Vedic chanting, festival traditions, and strict observance of daily pooja schedules.',
-    ml: 'പാരമ്പര്യ നമ്പൂതിരി കുടുംബങ്ങൾ ഉൾപ്പെടുന്ന പുലിയന്നൂർ ഊരായ്മ ക്ഷേത്ര ദേവസ്വമാണ് ക്ഷേത്രത്തിന്റെ നിത്യപൂജകളും തന്ത്രവിധികളും ഉത്സവങ്ങളും ഒരു വീഴ്ചയും കൂടാതെ കാത്തുസൂക്ഷിക്കുന്നത്. തലമുറകളായി പകർന്നുപോരുന്ന ഈ ആചാരനിഷ്ഠ ക്ഷേത്രത്തിന്റെ പവിത്രത കാത്തുസൂക്ഷിക്കുന്നു.',
+    en: 'The rituals, tantric ceremonies, and temple management are faithfully upheld by the Puliyannoor Ooranma Temple Devaswom, managed by traditional Namboothiri Illams (families). This community-trustee governance model preserves centuries-old Vedic chanting, festival traditions, and strict observance of daily pooja schedules.',
+    ml: 'പാരമ്പര്യ നമ്പൂതിരി കുടുംബങ്ങൾ ഉൾപ്പെടുന്ന പുലിയന്നൂർ ഊരാണ്മ ക്ഷേത്ര ദേവസ്വമാണ് ക്ഷേത്രത്തിന്റെ നിത്യപൂജകളും തന്ത്രവിധികളും ഉത്സവങ്ങളും ഒരു വീഴ്ചയും കൂടാതെ കാത്തുസൂക്ഷിക്കുന്നത്. തലമുറകളായി പകർന്നുപോരുന്ന ഈ ആചാരനിഷ്ഠ ക്ഷേത്രത്തിന്റെ പവിത്രത കാത്തുസൂക്ഷിക്കുന്നു.',
   },
   about_quote: {
     en: '"A peaceful spiritual oasis where the clamor of the world recedes into the sacred resonance of temple bells and Chandanam fragrance."',
@@ -127,35 +127,29 @@ export const TRANSLATIONS: TranslationMap = {
   filter_nivedyam_payasam: { en: 'Nivedyam & Payasam', ml: 'നിവേദ്യവും പായസങ്ങളും' },
   filter_vilakku_mala: { en: 'Vilakku & Mala', ml: 'വിളക്കും മാലയും' },
   filter_special_sevas: { en: 'Special Sevas & Samskaras', ml: 'വിശേഷാൽ ചടങ്ങുകൾ' },
-  search_offerings_placeholder: { en: 'Search 88 offerings by name or benefit (e.g. Dhara, Homam, വിവാഹം)...', ml: '88 വഴിപാടുകളിൽ തിരയുക (ഉദാ: ധാര, ഹോമം, പായസം)...' },
-  btn_inquire_offering: { en: 'Book / Inquire', ml: 'ബുക്ക് ചെയ്യുക' },
+  search_offerings_placeholder: { en: 'Search offerings...', ml: 'വഴിപാടുകൾ തിരയുക...' },
+  btn_inquire_offering: { en: 'Inquire', ml: 'അന്വേഷിക്കുക' },
   lbl_rate: { en: 'Offering Amount', ml: 'നിരക്ക്' },
   lbl_benefits: { en: 'Spiritual Benefit', ml: 'ഫലപ്രാപ്തി' },
 
   // Booking Modal
-  modal_title: { en: 'Vazhipadu Booking & Inquiry', ml: 'വഴിപാട് ബുക്കിംഗ് ഫോം' },
+  modal_title: { en: 'Vazhipadu Inquiry', ml: 'വഴിപാട് വിവരങ്ങൾ' },
   modal_subtitle: {
-    en: 'Submit details to book your pooja or generate an official WhatsApp inquiry with the Devaswom office.',
-    ml: 'വിവരങ്ങൾ നൽകി വഴിപാട് ബുക്ക് ചെയ്യുക അല്ലെങ്കിൽ ദേവസ്വം ഓഫീസിലേക്ക് നേരിട്ട് സന്ദേശം അയക്കുക.',
+    en: 'Add offerings to your cart and inquire directly with the Devaswom office via WhatsApp.',
+    ml: 'വഴിപാടുകൾ തിരഞ്ഞെടുത്ത് കാർട്ടിലേക്ക് ചേർക്കുകയോ നേരിട്ട് വാട്സാപ്പിൽ സന്ദേശം അയക്കുകയോ ചെയ്യാം.',
   },
   modal_devotee_name: { en: 'Devotee Full Name', ml: 'ഭക്തന്റെ പേര്' },
   modal_devotee_name_placeholder: { en: 'e.g., Ananthanarayanan', ml: 'ഉദാ: അനന്തനാരായണൻ' },
   modal_star: { en: 'Birth Star (Nakshatra)', ml: 'ജന്മ നക്ഷത്രം' },
   modal_select_star: { en: 'Select your birth star', ml: 'നക്ഷത്രം തിരഞ്ഞെടുക്കുക' },
   modal_date: { en: 'Preferred Date of Offering', ml: 'വഴിപാട് നടത്തേണ്ട തീയതി' },
-  modal_gotram: { en: 'Gotram / Family Name (Optional)', ml: 'ഗോത്രം / കുടുംബപ്പേര് (ഐച്ഛികം)' },
   modal_phone: { en: 'Contact Phone / WhatsApp Number', ml: 'ഫോൺ / വാട്സാപ്പ് നമ്പർ' },
   modal_phone_placeholder: { en: '+91 XXXXX XXXXX', ml: '+91 XXXXX XXXXX' },
   modal_selected_offering: { en: 'Selected Offering', ml: 'തിരഞ്ഞെടുത്ത വഴിപാട്' },
   modal_special_notes: { en: 'Special Prayer Intentions / Notes', ml: 'പ്രത്യേക പ്രാർത്ഥനാ വിഷയം' },
-  modal_btn_whatsapp: { en: 'Send via WhatsApp', ml: 'വാട്സാപ്പ് വഴി അയക്കുക' },
-  modal_btn_submit: { en: 'Submit Booking', ml: 'ബുക്കിംഗ് സമർപ്പിക്കുക' },
+  modal_btn_whatsapp: { en: 'Inquire via WhatsApp', ml: 'വാട്സാപ്പ് വഴി അന്വേഷിക്കുക' },
+  modal_btn_submit: { en: 'Add to Cart', ml: 'കാർട്ടിലേക്ക് ചേർക്കുക' },
   modal_close: { en: 'Close', ml: 'അടയ്ക്കുക' },
-  modal_success_title: { en: 'Inquiry Prepared Successfully!', ml: 'ബുക്കിംഗ് വിവരം തയ്യാറാക്കി!' },
-  modal_success_desc: {
-    en: 'Your offering details have been saved. You can directly connect with the temple office to confirm the booking.',
-    ml: 'നിങ്ങളുടെ വഴിപാട് വിവരങ്ങൾ രേഖപ്പെടുത്തി. ബുക്കിംഗ് സ്ഥിരീകരിക്കാൻ ദേവസ്വം ഓഫീസുമായി ബന്ധപ്പെടാം.',
-  },
 
   // Events & Festivals
   events_eyebrow: { en: 'Festival Calendar', ml: 'ഉത്സവ കലണ്ടർ' },
@@ -164,7 +158,7 @@ export const TRANSLATIONS: TranslationMap = {
     en: 'Experience the grandeur of traditional Kerala temple festivals, soul-stirring Melam, and sacred Vedic homams celebrated throughout the Malayalam year.',
     ml: 'മേളപ്പെരുക്കവും താന്ത്രിക ചടങ്ങുകളും കൊണ്ട് ഭക്തിസാന്ദ്രമാകുന്ന പുലിയന്നൂരിലെ ഉത്സവദിനങ്ങൾ.',
   },
-  countdown_heading: { en: 'Upcoming 2027 Festival: Feb 28 – Mar 07, 2027 (Kumbham 16 – 23)', ml: 'അടുത്ത വാർഷിക ഉത്സവം: 2027 ഫെബ്രുവരി 28 – മാർച്ച് 07 (കുംഭം 16 – 23)' },
+  countdown_heading: { en: 'Upcoming 2027 Festival: Feb 28 – Mar 07, 2027 (Kumbham 16 – 23)', ml: 'അടുത്ത വാർഷിക തിരുവുത്സവം: 2027 ഫെബ്രുവരി 28 – മാർച്ച് 07 (കുംഭം 16 – 23)' },
   countdown_days: { en: 'Days', ml: 'ദിവസങ്ങൾ' },
   countdown_hours: { en: 'Hours', ml: 'മണിക്കൂർ' },
   countdown_minutes: { en: 'Minutes', ml: 'മിനിറ്റ്' },
@@ -197,12 +191,8 @@ export const TRANSLATIONS: TranslationMap = {
   distance_ernakulam: { en: 'From Ernakulam / Kochi', ml: 'എറണാകുളത്ത് നിന്ന്' },
   dress_code_title: { en: 'Traditional Temple Dress Code', ml: 'ക്ഷേത്ര ദർശന വസ്ത്രധാരണം' },
   dress_code_men: {
-    en: 'Men: Traditional Mundu (Dhoti) / Kerala Set. Upper body bare or covered with Angavastram.',
-    ml: 'പുരുഷന്മാർ: മുണ്ട് / ദോത്തി. മേൽവസ്ത്രം ഒഴിവാക്കുകയോ തോർത്ത് ധരിക്കുകയോ ചെയ്യുക.',
-  },
-  dress_code_women: {
-    en: 'Women: Saree, Kerala Set Mundu, Half-saree (Dhavani), or decent Salwar Kameez.',
-    ml: 'സ്ത്രീകൾ: സാരി, സെറ്റ് മുണ്ട്, ദാവണി അല്ലെങ്കിൽ മാന്യമായ ചുരിദാർ.',
+    en: 'Men: Remove upper wear',
+    ml: 'പുരുഷന്മാർ: മേൽവസ്ത്രം ഒഴിവാക്കുക',
   },
   dress_code_note: {
     en: 'Please leave footwear at the dedicated shoe counter outside the Nadapanthal.',
@@ -235,13 +225,13 @@ export const TRANSLATIONS: TranslationMap = {
 
   // Audio / Chants
   audio_title: { en: 'Sacred Ambience', ml: 'മന്ത്രധ്വനി' },
-  audio_play: { en: 'Play Temple Bells & Chant', ml: 'മന്ത്രധ്വനി കേൾക്കുക' },
-  audio_pause: { en: 'Mute Temple Audio', ml: 'ശബ്ദം നിർത്തുക' },
+  audio_play: { en: 'Play Ohm Chanting & Shruti', ml: 'ഓംകാര മന്ത്രധ്വനി കേൾക്കുക' },
+  audio_pause: { en: 'Mute Ohm Chanting', ml: 'ശബ്ദം നിർത്തുക' },
 
   // Footer
   footer_desc: {
-    en: 'Puliyannoor Sree Mahadeva Temple (Cheruthil Valuthu Puliyannoor) is an ancient Hindu Shiva shrine in Mutholy Panchayath near Pala, Kottayam District, Kerala, lovingly administered across generations by the Puliyannoor Oorayma Temple Devaswom.',
-    ml: 'കോട്ടയം ജില്ലയിലെ പാലായ്ക്ക് സമീപം മുത്തോലി പഞ്ചായത്തിൽ സ്ഥിതി ചെയ്യുന്ന പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രം (ചെറുതിൽ വലുത് പുലിയന്നൂർ). പുലിയന്നൂർ ഊരായ്മ ക്ഷേത്ര ദേവസ്വം പവിത്രമായി പരിപാലിക്കുന്നു.',
+    en: 'Puliyannoor Sree Mahadeva Temple (Cheruthil Valuthu Puliyannoor) is an ancient Hindu Shiva shrine in Mutholy Panchayath near Pala, Kottayam District, Kerala, lovingly administered across generations by the Puliyannoor Ooranma Temple Devaswom.',
+    ml: 'കോട്ടയം ജില്ലയിലെ പാലായ്ക്ക് സമീപം മുത്തോലി പഞ്ചായത്തിൽ സ്ഥിതി ചെയ്യുന്ന പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രം (ചെറുതിൽ വലുത് പുലിയന്നൂർ). പുലിയന്നൂർ ഊരാണ്മ ക്ഷേത്ര ദേവസ്വം പവിത്രമായി പരിപാലിക്കുന്നു.',
   },
   footer_quick_links: { en: 'Quick Links', ml: 'പ്രധാന ലിങ്കുകൾ' },
   footer_temple_info: { en: 'Key Information', ml: 'പ്രധാന വിവരങ്ങൾ' },
@@ -250,5 +240,5 @@ export const TRANSLATIONS: TranslationMap = {
     en: 'All timings and offerings are compiled based on traditional temple customs. Ritual timings may vary on festival dates.',
     ml: 'ക്ഷേത്രാചാരങ്ങൾക്കനുസരിച്ച് വിവരങ്ങൾ നൽകിയിരിക്കുന്നു. വിശേഷ ദിവസങ്ങളിൽ സമയക്രമത്തിൽ മാറ്റമുണ്ടാകാം.',
   },
-  footer_rights: { en: 'All Rights Reserved · Puliyannoor Oorayma Temple Devaswom', ml: 'എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം · പുലിയന്നൂർ ഊരായ്മ ക്ഷേത്ര ദേവസ്വം' },
+  footer_rights: { en: 'All Rights Reserved · Puliyannoor Ooranma Temple Devaswom', ml: 'എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്തം · പുലിയന്നൂർ ഊരാണ്മ ക്ഷേത്ര ദേവസ്വം' },
 };

@@ -27,10 +27,26 @@ export const ContactSection: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.phone) {
+    if (!formData.name.trim() || !formData.phone.trim()) {
       alert(language === 'en' ? 'Please fill in required fields' : 'പേരും ഫോൺ നമ്പറും നൽകുക');
       return;
     }
+
+    const message = `*Puliyannoor Sree Mahadeva Temple - Devotee Inquiry*
+--------------------------------------------
+*From:* ${formData.name.trim()}
+*Phone:* ${formData.phone.trim()}
+${formData.email.trim() ? `*Email:* ${formData.email.trim()}\n` : ''}*Subject:* ${formData.subject.trim() || 'General Inquiry'}
+--------------------------------------------
+*Message Details:*
+${formData.message.trim()}
+--------------------------------------------
+_Sent via Puliyannoor Temple Official Web Portal_`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/919447000000?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+
     setIsSent(true);
     setTimeout(() => {
       setFormData({ name: '', phone: '', email: '', subject: '', message: '' });
@@ -95,7 +111,7 @@ export const ContactSection: React.FC = () => {
               href="https://wa.me/919447000000?text=Om%20Namah%20Shivaya%20-%20Pooja%20Inquiry"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#25D366] text-white text-xs font-bold shadow-sm hover:brightness-105"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#25D366] text-white text-xs font-bold shadow-sm hover:brightness-105 cursor-pointer"
             >
               <span>Chat on WhatsApp</span>
             </a>
@@ -134,7 +150,7 @@ export const ContactSection: React.FC = () => {
                 {t('form_success')}
               </h4>
               <p className="text-xs text-[#5A382A]">
-                The Devaswom office has received your prayer message.
+                Redirecting you to WhatsApp to connect with the Devaswom office...
               </p>
             </div>
           ) : (
@@ -148,6 +164,7 @@ export const ContactSection: React.FC = () => {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Your Name"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
                     required
                   />
@@ -161,6 +178,7 @@ export const ContactSection: React.FC = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="+91 XXXXX XXXXX"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
                     required
                   />
@@ -175,7 +193,7 @@ export const ContactSection: React.FC = () => {
                   type="text"
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  placeholder="e.g. Udayasthamana Pooja booking date enquiry"
+                  placeholder="e.g. Udayasthamana Pooja booking enquiry"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
                 />
               </div>
@@ -188,6 +206,7 @@ export const ContactSection: React.FC = () => {
                   rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  placeholder="Explain your inquiry details here..."
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] resize-none"
                   required
                 />

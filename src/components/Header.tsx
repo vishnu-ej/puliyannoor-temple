@@ -230,7 +230,7 @@ export const Header: React.FC = () => {
                 <div className="flex items-center justify-center gap-3 text-xs text-[#8C6219] pt-1">
                   <span>Mutholy, Pala, Kottayam</span>
                   <span>•</span>
-                  <span>Oorayma Devaswom</span>
+                  <span>Ooranma Devaswom</span>
                 </div>
               </div>
             </div>

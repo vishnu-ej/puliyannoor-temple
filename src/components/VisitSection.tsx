@@ -89,7 +89,7 @@ export const VisitSection: React.FC = () => {
                 >
                   <rect width="500" height="380" fill="#F3EBD7" />
 
-                  {/* Grid Lines representing local pathways */}
+                  {/* Grid Lines */}
                   <g stroke="#E4D5AE" strokeWidth="1">
                     <line x1="0" y1="70" x2="500" y2="70" />
                     <line x1="0" y1="140" x2="500" y2="140" />
@@ -245,13 +245,9 @@ export const VisitSection: React.FC = () => {
               </div>
 
               <ul className="space-y-2.5 text-xs sm:text-sm text-[#36241C] mb-4 font-light">
-                <li className="flex items-start gap-2">
+                <li className="flex items-start gap-2 font-medium text-[#38050E]">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#610C1B] mt-2 flex-shrink-0" />
                   <span>{t('dress_code_men')}</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#610C1B] mt-2 flex-shrink-0" />
-                  <span>{t('dress_code_women')}</span>
                 </li>
                 <li className="flex items-start gap-2 text-[#8C6219] font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#C99738] mt-2 flex-shrink-0" />
@@ -262,7 +258,11 @@ export const VisitSection: React.FC = () => {
               {/* Parking Info Banner */}
               <div className="p-3 rounded-xl bg-[#1F4E34]/10 border border-[#1F4E34]/20 text-xs text-[#1F4E34] font-medium flex items-center gap-2">
                 <Car className="w-4 h-4 flex-shrink-0" />
-                <span>Spacious vehicle parking space is available directly in front of the temple.</span>
+                <span>
+                  {language === 'en'
+                    ? 'Vehicle Parking: Available in the temple premise'
+                    : 'വാഹന പാർക്കിംഗ് സൗകര്യം ക്ഷേത്ര വളപ്പിൽ ലഭ്യമാണ്'}
+                </span>
               </div>
             </div>
           </div>

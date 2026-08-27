@@ -50,7 +50,7 @@ export const Footer: React.FC = () => {
 
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF5E8]/10 border border-[#C99738]/40 text-xs text-[#E6BE65]">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Oorayma Devaswom Administration</span>
+              <span>Ooranma Devaswom Administration</span>
             </div>
           </div>
 

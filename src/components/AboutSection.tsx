@@ -91,7 +91,7 @@ export const AboutSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Oorayma Devaswom Highlight Card */}
+            {/* Ooranma Devaswom Highlight Card */}
             <div className="rounded-2xl p-5 bg-[#FAF5E8] border border-[#C99738]/40 flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-[#C99738]/20 flex-shrink-0 flex items-center justify-center text-[#8C6219]">
                 <Users className="w-5 h-5" />
@@ -102,7 +102,7 @@ export const AboutSection: React.FC = () => {
                 </strong>
                 {language === 'en'
                   ? 'Administered by traditional Namboothiri families dedicated to preserving ancient Thantric customs.'
-                  : 'പാരമ്പര്യ നമ്പൂതിരി ഇല്ലങ്ങളാൽ ഭരിക്കപ്പെടുന്ന ഊരായ്മ ദേവസ്വം.'}
+                  : 'പാരമ്പര്യ നമ്പൂതിരി ഇല്ലങ്ങളാൽ ഭരിക്കപ്പെടുന്ന ഊരാണ്മ ദേവസ്വം.'}
               </div>
             </div>
           </div>

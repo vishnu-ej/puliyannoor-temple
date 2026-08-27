@@ -81,7 +81,7 @@ export default function HomePage() {
                   {t('about_quote')}
                 </p>
                 <div className="pt-3 border-t border-[#FAF5E8]/20 flex items-center justify-between text-xs text-[#FAF5E8]/80">
-                  <span className="font-cinzel font-semibold">Oorayma Devaswom</span>
+                  <span className="font-cinzel font-semibold">Ooranma Devaswom</span>
                   <span className="text-[#E6BE65]">Mutholy, Pala</span>
                 </div>
               </div>

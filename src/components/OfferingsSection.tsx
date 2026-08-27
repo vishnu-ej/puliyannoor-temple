@@ -17,8 +17,11 @@ import {
   Cookie,
   Crown,
   Sun,
-  Shield,
-  Layers,
+  Building,
+  Copy,
+  Check,
+  QrCode,
+  HeartHandshake,
 } from 'lucide-react';
 
 interface OfferingsSectionProps {
@@ -31,6 +34,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
   const { language, t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<OfferingCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const categories: { id: OfferingCategory; labelKey: string }[] = [
     { id: 'all', labelKey: 'filter_all' },
@@ -80,6 +84,12 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
       default:
         return <Sparkles className="w-4 h-4 text-[#C99738]" />;
     }
+  };
+
+  const handleCopy = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2500);
   };
 
   return (
@@ -171,7 +181,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-12">
             {filteredOfferings.map((offering) => (
               <div
                 key={offering.id}
@@ -225,7 +235,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
                     <span>{offering.significance[language]}</span>
                   </div>
 
-                  {/* Action Button */}
+                  {/* Action Button: Inquire */}
                   <button
                     onClick={() => onSelectOffering(offering)}
                     className="w-full py-2.5 px-4 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
@@ -238,6 +248,105 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
             ))}
           </div>
         )}
+
+        {/* Bank Details & Donations Box */}
+        <div className="max-w-4xl mx-auto glass-card rounded-3xl p-6 sm:p-8 border-2 border-[#C99738] shadow-xl bg-gradient-to-br from-[#FAF5E8] via-[#F3EBD7] to-[#FAF5E8] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-[#C99738]/10 rounded-full blur-2xl pointer-events-none" />
+          
+          <div className="flex flex-col md:flex-row items-stretch justify-between gap-6 md:gap-8 relative z-10">
+            {/* Left Side: Bank Details */}
+            <div className="flex-1 space-y-4 text-left">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-[#610C1B] text-[#E6BE65] flex items-center justify-center shadow-md">
+                  <Building className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-cinzel font-bold text-lg sm:text-xl text-[#38050E]">
+                    {language === 'en' ? 'Temple Donations & Direct Bank Transfer' : 'ക്ഷേത്ര സംഭാവനകൾ & ബാങ്ക് വിവരങ്ങൾ'}
+                  </h3>
+                  <p className="text-xs text-[#8C6219] font-medium font-cinzel">
+                    Puliyannoor Branch Managing Trustee & Treasurer
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white/90 border border-[#E4D5AE] shadow-inner space-y-2.5 text-xs sm:text-sm">
+                <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
+                  <span className="text-[#8C6219] font-bold">Bank:</span>
+                  <span className="font-bold text-[#38050E]">CANARA BANK (കനറാ ബാങ്ക്)</span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
+                  <span className="text-[#8C6219] font-bold">Account Name:</span>
+                  <span className="font-bold text-[#38050E]">Puliyannoor Devaswom</span>
+                </div>
+
+                <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
+                  <span className="text-[#8C6219] font-bold">Account Number:</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-sm sm:text-base text-[#610C1B]">
+                      5636101001111
+                    </span>
+                    <button
+                      onClick={() => handleCopy('5636101001111', 'account')}
+                      className="p-1 rounded text-[#8C6219] hover:text-[#610C1B] hover:bg-[#FAF5E8] transition-colors cursor-pointer"
+                      title="Copy Account Number"
+                    >
+                      {copiedField === 'account' ? (
+                        <Check className="w-3.5 h-3.5 text-[#1F4E34]" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-[#8C6219] font-bold">IFSC Code:</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-sm sm:text-base text-[#610C1B]">
+                      CNRB0005636
+                    </span>
+                    <button
+                      onClick={() => handleCopy('CNRB0005636', 'ifsc')}
+                      className="p-1 rounded text-[#8C6219] hover:text-[#610C1B] hover:bg-[#FAF5E8] transition-colors cursor-pointer"
+                      title="Copy IFSC Code"
+                    >
+                      {copiedField === 'ifsc' ? (
+                        <Check className="w-3.5 h-3.5 text-[#1F4E34]" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-[#5A382A] italic">
+                {language === 'en'
+                  ? '* Devotees transferring funds for major poojas or Annadanam are kindly requested to share the transaction screenshot to the Devaswom WhatsApp.'
+                  : '* ബാങ്ക് വഴി വഴിപാടുകൾക്ക് തുക അയക്കുന്ന ഭക്തർ രസീത് ദേവസ്വം വാട്സാപ്പിൽ അയച്ചു നൽകണമെന്ന് അഭ്യർത്ഥിക്കുന്നു.'}
+              </p>
+            </div>
+
+            {/* Right Side: QR Code Box Placeholder */}
+            <div className="w-full md:w-56 bg-white/90 rounded-2xl p-4 border-2 border-dashed border-[#C99738] flex flex-col items-center justify-center text-center shadow-inner flex-shrink-0">
+              <div className="w-32 h-32 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] flex flex-col items-center justify-center p-3 relative group">
+                <QrCode className="w-16 h-16 text-[#610C1B] mb-1" />
+                <span className="text-[9px] font-bold uppercase tracking-wider text-[#8C6219]">
+                  Scan & Pay
+                </span>
+                <span className="text-[8px] text-[#5A382A]">UPI / QR Code</span>
+              </div>
+              <span className="text-[11px] font-bold text-[#38050E] mt-3 font-cinzel">
+                Devaswom UPI QR
+              </span>
+              <span className="text-[10px] text-[#8C6219]">
+                {language === 'en' ? 'Direct UPI Payment' : 'നേരിട്ടുള്ള യുപിഐ പേയ്മെന്റ്'}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

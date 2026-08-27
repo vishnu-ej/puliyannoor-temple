@@ -16,20 +16,20 @@ export const FESTIVALS: FestivalEvent[] = [
       ml: '1202 കുംഭം 16 – കുംഭം 23',
     },
     description: {
-      en: 'The 8-day grand annual festival of Puliyannoor Sree Mahadeva Temple celebrated with divine grandeur, Kodiyettu by the Oorayma Thanthri, Panchavadyam, Chenda Melam, Pallivetta, and sacred Aarattu procession.',
-      ml: 'പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രത്തിലെ 8 ദിവസം നീണ്ടുനിൽക്കുന്ന വാർഷിക തിരുവുത്സവം. തന്ത്രിമുഖ്യന്റെ കാർമ്മികത്വത്തിൽ കൊടിയേറ്റോടെ ആരംഭിച്ച് പഞ്ചവാദ്യം, ചെണ്ടമേളം, പള്ളിവേട്ട, ആറാട്ട് എന്നിവയോടെ ഭക്തിസാന്ദ്രമായി ആഘോഷിക്കുന്നു.',
+      en: 'The 8-day grand annual festival of Puliyannoor Sree Mahadeva Temple celebrated with solemn tantric rites, Kodiyettu by the Ooranma Thanthri, daily Melam & Sreebhoothabali, Grand Utsavabali (Day 2 to Day 6), Maha Shivaratri celebrations on the Pallivetta day, and the sacred Aarattu procession.',
+      ml: 'പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രത്തിലെ 8 ദിവസം നീണ്ടുനിൽക്കുന്ന വാർഷിക തിരുവുത്സവം. തന്ത്രിമുഖ്യന്റെ കാർമ്മികത്വത്തിൽ കൊടിയേറ്റോടെ ആരംഭിച്ച്, 2-ാം ഉത്സവം മുതൽ 6-ാം ഉത്സവം വരെ ദിവസേന മഹാ ഉത്സവബലി, പള്ളിവേട്ട ദിനത്തിൽ മഹാശിവരാത്രി ആഘോഷം, തുടർന്ന് ഭക്തിസാന്ദ്രമായ ആറാട്ട് എന്നിവയോടെ ആഘോഷിക്കുന്നു.',
     },
     highlights: {
       en: [
         'Feb 28, 2027 (Kumbham 16, Sun): Sacred Flag Hoisting (Kodiyettu)',
-        'Daily Utsava Poojas, Sreebhoothabali & Melam by renowned maestros',
-        'Mar 06, 2027 (Kumbham 22, Sat): Royal Pallivetta & Utsavabali',
-        'Mar 07, 2027 (Kumbham 23, Sun): Holy Aarattu Bath & Kodi-irakku',
+        'Day 2 to Day 6 (Mar 01 – Mar 05): Daily Grand Utsavabali & Melam (Note: Utsavabali is performed from Day 2 to Day 6 only)',
+        'Mar 06, 2027 (Kumbham 22, Sat): Royal Pallivetta & Maha Shivaratri Celebrations',
+        'Mar 07, 2027 (Kumbham 23, Sun): Sacred Aarattu Holy Bath & Flag Lowering (Kodi-irakku)',
       ],
       ml: [
-        '2027 ഫെബ്രുവരി 28 (കുംഭം 16, ഞായർ): തന്ത്രിമുഖ്യ കാർമ്മികത്വത്തിൽ കൊടിയേറ്റ്',
-        'ദിവസേനയുള്ള ഉത്സവ പൂജകൾ, ശ്രീഭൂതബലി, പഞ്ചവാദ്യം, പാണ്ടിമേളം',
-        '2027 മാർച്ച് 06 (കുംഭം 22, ശനി): ഭക്തിസാന്ദ്രമായ പള്ളിവേട്ടയും ഉത്സവബലിയും',
+        '2027 ഫെബ്രുവരി 28 (കുംഭം 16, ഞായർ): തന്ത്രിമുഖ്യ കാർമ്മികത്വത്തിൽ തൃക്കൊടിയേറ്റ്',
+        '2-ാം ഉത്സവം മുതൽ 6-ാം ഉത്സവം വരെ (മാർച്ച് 01 – 05): ദിവസേന മഹാ ഉത്സവബലി, ശ്രീഭൂതബലി, മേളപ്പെരുക്കം (ശ്രദ്ധിക്കുക: ഉത്സവബലി 2 മുതൽ 6 വരെയുള്ള ദിവസങ്ങളിൽ മാത്രം)',
+        '2027 മാർച്ച് 06 (കുംഭം 22, ശനി): രാജകീയ പള്ളിവേട്ടയും പുണ്യ മഹാശിവരാത്രി ആഘോഷങ്ങളും',
         '2027 മാർച്ച് 07 (കുംഭം 23, ഞായർ): മഹാ ആറാട്ട് മഹോത്സവം, കൊടിയിറക്ക്',
       ],
     },
@@ -40,33 +40,33 @@ export const FESTIVALS: FestivalEvent[] = [
   {
     id: 'maha_shivaratri',
     title: {
-      en: 'Maha Shivaratri',
-      ml: 'മഹാശിവരാത്രി',
+      en: 'Maha Shivaratri (On Pallivetta Day)',
+      ml: 'മഹാശിവരാത്രി (പള്ളിവേട്ട ദിനത്തിൽ)',
     },
     subtitle: {
-      en: 'The Great Auspicious Night of Lord Shiva',
-      ml: 'പരമശിവന്റെ പവിത്രമായ മഹാരാത്രി',
+      en: 'Coincides with Pallivetta Day of Annual Festival',
+      ml: 'വാർഷിക ഉത്സവത്തിലെ പള്ളിവേട്ട ദിനത്തോടൊപ്പം',
     },
     malayalamMonth: {
-      en: 'Kumbham (Feb – Mar)',
-      ml: 'കുംഭം (ഫെബ്രുവരി – മാർച്ച്)',
+      en: 'Kumbham 22 (Mar 06, 2027)',
+      ml: 'കുംഭം 22 (2027 മാർച്ച് 06)',
     },
     description: {
-      en: 'The foremost festival celebrated with night-long vigil (Vrata), continuous Abhishekam on the Shivalinga, Rudra Japa recitation, devotional cultural programs, and special Deeparadhana at midnight.',
-      ml: 'ക്ഷേത്രത്തിലെ പ്രധാന ആഘോഷം. രാത്രി മുഴുവൻ നീളുന്ന ശിവരാത്രി വ്രതം, യാമപൂജകൾ, നിരന്തര അഭിഷേകങ്ങൾ, ലക്ഷാർച്ചന, അർദ്ധരാത്രി ദീപാരാധന എന്നിവയോടെ ഭക്തിസാന്ദ്രമായി ആചരിക്കുന്നു.',
+      en: 'In 2027, the divine night of Maha Shivaratri coincides with the grand Pallivetta Day of the Annual Festival, creating a doubly auspicious atmosphere with night-long Yaama poojas, continuous Dhara, and special midnight Deeparadhana.',
+      ml: '2027-ൽ മഹാശിവരാത്രി മഹോത്സവം വാർഷിക തിരുവുത്സവത്തിലെ പള്ളിവേട്ട ദിനത്തിൽ ഒരുമിച്ചു വരുന്നു. രാത്രി മുഴുവൻ നീളുന്ന ശിവരാത്രി വ്രതം, യാമപൂജകൾ, നിരന്തര അഭിഷേകങ്ങൾ, അർദ്ധരാത്രി ദീപാരാധന എന്നിവയോടെ അത്യധികം ഭക്തിസാന്ദ്രമായി ആചരിക്കുന്നു.',
     },
     highlights: {
       en: [
-        'Night-long Yaama Poojas & Dhara every 3 hours',
-        'Special Maha Abhishekam with 108 herbs & holy liquids',
-        'Grand midnight Deeparadhana with temple bells',
-        'Prasada distribution for all fasting devotees',
+        'Night-long Yaama Poojas & Continuous Dhara throughout the night',
+        'Special Maha Abhishekam with 108 sacred dravyas',
+        'Grand midnight Deeparadhana with temple bells & conch',
+        'Fasting prasada distribution for all devotees',
       ],
       ml: [
-        'രാത്രി മുഴുവൻ ഓരോ 3 മണിക്കൂറിലും വിശേഷാൽ യാമപൂജകളും ധാരയും',
-        '108 ദ്രവ്യങ്ങൾ കൊണ്ടുള്ള മഹാഭിഷേകം',
+        'രാത്രി മുഴുവൻ വിശേഷാൽ യാമപൂജകളും ധാരയും',
+        '108 ദ്രവ്യങ്ങൾ കൊണ്ടുള്ള വിശേഷാൽ മഹാഭിഷേകം',
         'മഹാ അർദ്ധരാത്രി ദീപാരാധന',
-        'വ്രതാനുഷ്ഠാനത്തിൽ പങ്കെടുക്കുന്ന ഭക്തർക്ക് വിശേഷാൽ പ്രസാദ വിതരണം',
+        'ശിവരാത്രി വ്രതാനുഷ്ഠാനത്തിൽ പങ്കെടുക്കുന്ന ഭക്തർക്ക് വിശേഷാൽ പ്രസാദ വിതരണം',
       ],
     },
     iconName: 'Flame',
@@ -106,6 +106,41 @@ export const FESTIVALS: FestivalEvent[] = [
     isMajor: true,
   },
   {
+    id: 'mandala_kalam',
+    title: {
+      en: 'Mandala Mahotsavam (42-Day Season)',
+      ml: 'മണ്ഡല മഹോത്സവം (42 ദിവസത്തെ മഹോത്സവം)',
+    },
+    subtitle: {
+      en: '42 Days with Daily Bhajana & Chuttu Vilakku',
+      ml: '42 ദിവസവും ദിവസേന ഭജനയും ചുറ്റുവിളക്കും',
+    },
+    malayalamMonth: {
+      en: 'Vrischikam 1 – Dhanu 11 (Nov – Dec)',
+      ml: 'വൃശ്ചികം 1 – ധനു 11 (നവംബർ – ഡിസംബർ)',
+    },
+    description: {
+      en: 'The sacred 42-day Mandala pilgrimage season observed at Puliyannoor with continuous daily evening Bhajana sessions and Chuttu Vilakku illuminations, welcoming Sabarimala pilgrims.',
+      ml: 'പുലിയന്നൂർ ക്ഷേത്രത്തിൽ 42 ദിവസം നീണ്ടുനിൽക്കുന്ന പവിത്രമായ മണ്ഡല മഹോത്സവം. 42 ദിവസവും ദിവസേനയുള്ള ഭജനയും സന്ധ്യാ ചുറ്റുവിളക്കും പ്രത്യേക ദീപാരാധനയും തീർത്ഥാടകർക്കുള്ള വിശ്രമ സൗകര്യങ്ങളും ഒരുക്കുന്നു.',
+    },
+    highlights: {
+      en: [
+        'Daily evening devotional Bhajana by temple samithi & devotees',
+        'Daily evening Chuttu Vilakku illuminations throughout the 42 days',
+        'Special Ganapathi Homam, Neyvilakku & Abhishekam',
+        'Warm hospitality & rest facilities for visiting Sabarimala pilgrims',
+      ],
+      ml: [
+        '42 ദിവസവും ദിവസേന സന്ധ്യാ ഭജന നാമസങ്കീർത്തനം',
+        '42 ദിവസവും മുടങ്ങാതെ നടക്കുന്ന സന്ധ്യാ ചുറ്റുവിളക്ക് ദീപക്കാഴ്ച',
+        'വിശേഷാൽ ഗണപതി ഹോമങ്ങളും നെയ്‌വിളക്കും അഭിഷേകങ്ങളും',
+        'ശബരിമല അയ്യപ്പ ഭക്തർക്കുള്ള ദർശന-വിശ്രമ സൗകര്യങ്ങൾ',
+      ],
+    },
+    iconName: 'Sun',
+    isMajor: true,
+  },
+  {
     id: 'pradosham',
     title: {
       en: 'Pradosha Pooja (Bi-Monthly)',
@@ -139,39 +174,6 @@ export const FESTIVALS: FestivalEvent[] = [
     isMajor: false,
   },
   {
-    id: 'mandala_kalam',
-    title: {
-      en: 'Mandala Pooja & Vrischika Masam',
-      ml: 'മണ്ഡലകാല പൂജകൾ (വൃശ്ചിക മാസം)',
-    },
-    subtitle: {
-      en: '41-Day Sacred Pilgrimage Season',
-      ml: '41 ദിവസത്തെ മണ്ഡലകാല മഹോത്സവം',
-    },
-    malayalamMonth: {
-      en: 'Vrischikam – Dhanu (Nov – Dec)',
-      ml: 'വൃശ്ചികം – ധനു (നവംബർ – ഡിസംബർ)',
-    },
-    description: {
-      en: 'The holy 41-day Mandala season observed with continuous special poojas, Namasankeerthanam, and evening deeparadhana hosting numerous Ayyappa devotees visiting on their pilgrimage route.',
-      ml: '41 ദിവസം നീണ്ടുനിൽക്കുന്ന മണ്ഡലകാലത്ത് വിശേഷാൽ നെയ്‌വിളക്ക്, നാമസങ്കീർത്തനം, തീർത്ഥാടകർക്ക് വിശ്രമ സൗകര്യങ്ങൾ എന്നിവ ഒരുക്കുന്നു.',
-    },
-    highlights: {
-      en: [
-        'Daily evening Deeparadhana with special oil lamps',
-        'Facilities and warm hospitality for visiting pilgrims',
-        'Special Sarpa & Ganapathi poojas during Vrischikam',
-      ],
-      ml: [
-        'ദിവസേനയുള്ള സന്ധ്യാ ദീപാലങ്കാരം',
-        'ശബരിമല തീർത്ഥാടകർക്കുള്ള ദർശന സൗകര്യങ്ങൾ',
-        'വിശേഷാൽ ഗണപതി ഹോമങ്ങളും പുഷ്പാഭിഷേകവും',
-      ],
-    },
-    iconName: 'Sun',
-    isMajor: false,
-  },
-  {
     id: 'vishu_sankranti',
     title: {
       en: 'Vishu Kani & Sankranti Darshan',
@@ -191,12 +193,12 @@ export const FESTIVALS: FestivalEvent[] = [
     },
     highlights: {
       en: [
-        'Traditional Vishu Kani viewing at early dawn',
+        'Traditional Vishu Kani viewing at early dawn (4:00 AM)',
         'Special Prasada distribution and Kaineettam',
         'First-of-the-month (Sankranti) special abhishekams',
       ],
       ml: [
-        'പുലർച്ചെയുള്ള വിഷുക്കണി ദർശനം',
+        'പുലർച്ചെ 4:00 മണിക്ക് വിഷുക്കണി ദർശനം',
         'വിശേഷാൽ പ്രസാദ വിതരണം',
         'മാസപ്പിറവി പ്രത്യേക പൂജകളും അഭിഷേകവും',
       ],

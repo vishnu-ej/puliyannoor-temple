@@ -37,6 +37,19 @@ export interface OfferingItem {
   };
 }
 
+export interface CartItem {
+  cartId: string;
+  offering: OfferingItem;
+  devoteeName?: string;
+  starNameEn?: string;
+  starNameMl?: string;
+  familyName?: string;
+  place?: string;
+  date: string;
+  notes?: string;
+  quantity: number;
+}
+
 export interface PoojaTiming {
   id: string;
   name: {
