@@ -137,7 +137,7 @@ export const Hero: React.FC = () => {
         </div>
 
         {/* Live Status Card inside Hero */}
-        <div className="max-w-2xl mx-auto mb-2">
+        <div className="max-w-3xl mx-auto mb-2 text-left">
           <LiveStatusBadge />
         </div>
       </div>
