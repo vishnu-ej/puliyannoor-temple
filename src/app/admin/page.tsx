@@ -327,8 +327,13 @@ export default function AdminPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setAuthMode('login')}
-                  className="w-full py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
+                  onClick={() => {
+                    setAuthMode('login');
+                    setUsername('');
+                    setPassword('');
+                    setAuthError('');
+                  }}
+                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-[#FAF5E8] font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md"
                 >
                   Admin Login
                 </button>
