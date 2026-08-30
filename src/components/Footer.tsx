@@ -33,12 +33,8 @@ export const Footer: React.FC = () => {
           {/* Col 1: Brand & Devaswom Info (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#C99738] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform bg-[#38050E] flex-shrink-0">
-                <img
-                  src="/aum-logo.png"
-                  alt="Puliyannoor Sree Mahadeva Temple Emblem"
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#610C1B] to-[#38050E] border-2 border-[#C99738] flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-xl shadow-md group-hover:scale-105 transition-transform flex-shrink-0">
+                ॐ
               </div>
               <div>
                 <h3 className="font-cinzel font-bold text-base md:text-lg text-[#FAF5E8] leading-tight">
