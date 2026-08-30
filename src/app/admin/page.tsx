@@ -40,6 +40,11 @@ import {
   ArrowLeft,
   Mail,
   Download,
+  Users,
+  UserPlus,
+  ShieldAlert,
+  AlertCircle,
+  Unlock,
 } from 'lucide-react';
 
 type AdminTab = 'chats' | 'offerings' | 'festivals' | 'contacts' | 'profile';
@@ -97,7 +102,23 @@ export default function AdminPage() {
 
   // Contacts Form State
   const [contactForm, setContactForm] = useState<TempleContactInfo>(contactInfo);
+  const [isEditingContacts, setIsEditingContacts] = useState(false);
   const [contactSaveStatus, setContactSaveStatus] = useState(false);
+
+  // Database Reset Authentication State
+  const [isResetUnlockModalOpen, setIsResetUnlockModalOpen] = useState(false);
+  const [resetPasscode, setResetPasscode] = useState('');
+  const [resetPasscodeError, setResetPasscodeError] = useState('');
+  const [showLockedTooltip, setShowLockedTooltip] = useState(false);
+
+  // Manage Users State
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserRole, setNewUserRole] = useState('Melsanthi / Chief Priest');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [customAdminUsers, setCustomAdminUsers] = useState<
+    { id: string; name: string; role: string; email: string; dateAdded: string }[]
+  >([]);
 
   // Success notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -1304,206 +1325,396 @@ export default function AdminPage() {
           {/* ----------------------------------------------------------------- */}
           {activeTab === 'contacts' && (
             <div className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-3xl border border-[#E4D5AE] shadow-sm">
-              <div className="flex items-center gap-3 border-b border-[#E4D5AE] pb-4 mb-6">
-                <Building className="w-6 h-6 text-[#610C1B]" />
-                <div>
-                  <h3 className="font-cinzel font-bold text-lg text-[#38050E]">
-                    Public Contacts & Bank Donation Info
-                  </h3>
-                  <p className="text-xs text-[#8C6219]">
-                    Changes here sync instantly with footer, donation cards, and contact page.
-                  </p>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E4D5AE] pb-4 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#610C1B] text-[#E6BE65] flex items-center justify-center shadow-md">
+                    <Building className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-cinzel font-bold text-lg text-[#38050E]">
+                      Public Contacts & Bank Donation Info
+                    </h3>
+                    <p className="text-xs text-[#8C6219]">
+                      {isEditingContacts
+                        ? 'Edit details below and click "Save & Sync" to apply live changes.'
+                        : 'Live synced with public footer, donation cards, and contact page.'}
+                    </p>
+                  </div>
                 </div>
+
+                {!isEditingContacts ? (
+                  <button
+                    onClick={() => {
+                      setContactForm(contactInfo);
+                      setIsEditingContacts(true);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer flex-shrink-0"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-[#E6BE65]" />
+                    <span>Edit Details</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setContactForm(contactInfo);
+                      setIsEditingContacts(false);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer flex-shrink-0"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    <span>Cancel Editing</span>
+                  </button>
+                )}
               </div>
 
-              <form onSubmit={handleSaveContacts} className="space-y-5 text-xs">
-                {/* Official Contact Info */}
-                <div className="p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
-                  <span className="font-cinzel font-bold text-xs text-[#610C1B] block uppercase tracking-wider">
-                    Official Devaswom Contacts
-                  </span>
-
-                  <div>
-                    <label className="block font-bold text-[#8C6219] mb-1">
-                      Official Email ID *
-                    </label>
-                    <input
-                      type="email"
-                      value={contactForm.email}
-                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                      required
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block font-bold text-[#8C6219] mb-1">Office Phone Number</label>
-                      <input
-                        type="text"
-                        value={contactForm.phoneDisplay}
-                        onChange={(e) => setContactForm({ ...contactForm, phoneDisplay: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
-                      />
+              {/* VIEW MODE: Clean Formatted Cards */}
+              {!isEditingContacts ? (
+                <div className="space-y-5 text-xs">
+                  {/* Official Contacts Card */}
+                  <div className="p-5 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#E4D5AE]/60 pb-2">
+                      <span className="font-cinzel font-bold text-xs text-[#610C1B] uppercase tracking-wider flex items-center gap-1.5">
+                        <Mail className="w-4 h-4 text-[#C99738]" />
+                        <span>Official Devaswom Contacts</span>
+                      </span>
                     </div>
 
-                    <div>
-                      <label className="block font-bold text-[#8C6219] mb-1">WhatsApp Number (with country code)</label>
-                      <input
-                        type="text"
-                        value={contactForm.whatsapp}
-                        onChange={(e) => setContactForm({ ...contactForm, whatsapp: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bank Account & UPI Details */}
-                <div className="p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
-                  <span className="font-cinzel font-bold text-xs text-[#610C1B] block uppercase tracking-wider">
-                    Bank Account & BHIM UPI Transfer
-                  </span>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block font-bold text-[#8C6219] mb-1">Bank Name</label>
-                      <input
-                        type="text"
-                        value={contactForm.bankName}
-                        onChange={(e) => setContactForm({ ...contactForm, bankName: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-[#8C6219] mb-1">Account Holder Name</label>
-                      <input
-                        type="text"
-                        value={contactForm.accountName}
-                        onChange={(e) => setContactForm({ ...contactForm, accountName: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block font-bold text-[#8C6219] mb-1">Account Number</label>
-                      <input
-                        type="text"
-                        value={contactForm.accountNumber}
-                        onChange={(e) => setContactForm({ ...contactForm, accountNumber: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono font-bold text-[#610C1B]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-[#8C6219] mb-1">IFSC Code</label>
-                      <input
-                        type="text"
-                        value={contactForm.ifscCode}
-                        onChange={(e) => setContactForm({ ...contactForm, ifscCode: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono font-bold"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-bold text-[#8C6219] mb-1">UPI ID</label>
-                      <input
-                        type="text"
-                        value={contactForm.upiId}
-                        onChange={(e) => setContactForm({ ...contactForm, upiId: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Official Bank QR Code Attachment (PDF / Image) */}
-                <div className="p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
-                  <span className="font-cinzel font-bold text-xs text-[#610C1B] block uppercase tracking-wider">
-                    Bank QR Code Attachment & File Management
-                  </span>
-
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-3.5 bg-white rounded-xl border border-[#E4D5AE]">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-[#C99738]/20 flex items-center justify-center text-[#610C1B]">
-                        <QrCode className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <span className="font-bold text-xs text-[#38050E] block">
-                          Current Attached QR PDF / File:
-                        </span>
-                        <span className="font-mono text-[11px] text-[#8C6219]">
-                          {contactForm.qrPdfName || 'Canara_Bank_BHIM_UPI_QR.pdf'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {contactForm.qrPdfUrl && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">Official Email Address:</span>
                         <a
-                          href={contactForm.qrPdfUrl}
-                          download={contactForm.qrPdfName || 'Puliyannoor-Devaswom-QR.pdf'}
-                          className="px-3 py-1.5 rounded-lg bg-[#FAF5E8] border border-[#C99738] text-[#38050E] hover:bg-[#E4D5AE] text-xs font-bold flex items-center gap-1 transition-colors"
+                          href={`mailto:${contactInfo.email}`}
+                          className="font-mono text-sm font-bold text-[#610C1B] hover:underline flex items-center gap-1"
                         >
-                          <Download className="w-3.5 h-3.5 text-[#610C1B]" />
-                          <span>Download PDF</span>
+                          <span>{contactInfo.email}</span>
+                          <ExternalLink className="w-3 h-3 text-[#8C6219]" />
                         </a>
-                      )}
+                      </div>
 
-                      <label className="px-3.5 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs">
-                        <Plus className="w-3.5 h-3.5 text-[#E6BE65]" />
-                        <span>Attach New QR PDF / Image</span>
-                        <input
-                          type="file"
-                          accept=".pdf,.png,.jpg,.jpeg"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (event) => {
-                                const result = event.target?.result as string;
-                                if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-                                  setContactForm({
-                                    ...contactForm,
-                                    qrPdfUrl: result,
-                                    qrPdfName: file.name,
-                                  });
-                                } else {
-                                  setContactForm({
-                                    ...contactForm,
-                                    qrImageUrl: result,
-                                    qrPdfName: file.name,
-                                  });
-                                }
-                                showToast(`Attached "${file.name}"! Click "Save" to apply.`);
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }}
-                        />
-                      </label>
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">Office Phone Number:</span>
+                        <span className="font-mono text-sm font-bold text-[#38050E]">
+                          {contactInfo.phoneDisplay}
+                        </span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">WhatsApp Devotee Line:</span>
+                        <span className="font-mono text-sm font-bold text-[#1F4E34]">
+                          {contactInfo.whatsappDisplay}
+                        </span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">Temple Address:</span>
+                        <span className="text-xs text-[#38050E] leading-relaxed">
+                          {contactInfo.address}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-[#5A382A] italic">
-                    * Attach official Canara Bank or UPI QR PDF files here. Devotees on the public website can scan the cropped QR or download the attached PDF directly.
-                  </p>
-                </div>
+                  {/* Bank Account Details Card */}
+                  <div className="p-5 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#E4D5AE]/60 pb-2">
+                      <span className="font-cinzel font-bold text-xs text-[#610C1B] uppercase tracking-wider flex items-center gap-1.5">
+                        <Building className="w-4 h-4 text-[#C99738]" />
+                        <span>Bank Account & BHIM UPI Transfer Details</span>
+                      </span>
+                    </div>
 
-                <div className="flex justify-end pt-3">
-                  <button
-                    type="submit"
-                    className="py-3 px-6 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-md cursor-pointer"
-                  >
-                    <Save className="w-4 h-4 text-[#E6BE65]" />
-                    <span>Save & Sync Public Pages</span>
-                  </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">Bank Name & Branch:</span>
+                        <span className="text-sm font-bold text-[#38050E]">
+                          {contactInfo.bankName} · {contactInfo.bankBranch}
+                        </span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">Account Holder Name:</span>
+                        <span className="text-sm font-bold text-[#38050E]">
+                          {contactInfo.accountName}
+                        </span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">Account Number:</span>
+                        <span className="font-mono text-base font-extrabold text-[#610C1B]">
+                          {contactInfo.accountNumber}
+                        </span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">IFSC Code:</span>
+                        <span className="font-mono text-base font-bold text-[#38050E]">
+                          {contactInfo.ifscCode}
+                        </span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE] sm:col-span-2">
+                        <span className="text-[#8C6219] font-bold block mb-1">Official UPI ID (VPA):</span>
+                        <span className="font-mono text-sm font-bold text-[#1A0409]">
+                          {contactInfo.upiId}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* QR Code & PDF File Card */}
+                  <div className="p-5 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#E4D5AE]/60 pb-2">
+                      <span className="font-cinzel font-bold text-xs text-[#610C1B] uppercase tracking-wider flex items-center gap-1.5">
+                        <QrCode className="w-4 h-4 text-[#C99738]" />
+                        <span>Official Bank QR Code & Attachment</span>
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-[#E4D5AE]">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-14 h-14 rounded-xl bg-white border border-[#E4D5AE] p-1 flex items-center justify-center shadow-xs">
+                          <img
+                            src={contactInfo.qrImageUrl || '/temple-qr-code.png'}
+                            alt="QR Code Preview"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-bold text-xs text-[#38050E] block">
+                            Active QR Code Asset & PDF
+                          </span>
+                          <span className="font-mono text-[11px] text-[#8C6219]">
+                            {contactForm.qrPdfName || 'Canara_Bank_BHIM_UPI_QR.pdf'}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {contactInfo.qrPdfUrl && (
+                          <a
+                            href={contactInfo.qrPdfUrl}
+                            download={contactInfo.qrPdfName || 'Puliyannoor-Devaswom-QR.pdf'}
+                            className="px-3 py-1.5 rounded-lg bg-[#FAF5E8] border border-[#C99738] text-[#38050E] hover:bg-[#E4D5AE] text-xs font-bold flex items-center gap-1 transition-colors"
+                          >
+                            <Download className="w-3.5 h-3.5 text-[#610C1B]" />
+                            <span>Download PDF</span>
+                          </a>
+                        )}
+                        <button
+                          onClick={() => {
+                            setContactForm(contactInfo);
+                            setIsEditingContacts(true);
+                          }}
+                          className="px-3.5 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-[#E6BE65]" />
+                          <span>Change QR / Attach File</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </form>
+              ) : (
+                /* EDIT MODE: Interactive Form */
+                <form onSubmit={handleSaveContacts} className="space-y-5 text-xs animate-fadeIn">
+                  {/* Official Contact Info */}
+                  <div className="p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
+                    <span className="font-cinzel font-bold text-xs text-[#610C1B] block uppercase tracking-wider">
+                      Official Devaswom Contacts
+                    </span>
+
+                    <div>
+                      <label className="block font-bold text-[#8C6219] mb-1">
+                        Official Email ID *
+                      </label>
+                      <input
+                        type="email"
+                        value={contactForm.email}
+                        onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                        required
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">Office Phone Number</label>
+                        <input
+                          type="text"
+                          value={contactForm.phoneDisplay}
+                          onChange={(e) => setContactForm({ ...contactForm, phoneDisplay: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">WhatsApp Number (with country code)</label>
+                        <input
+                          type="text"
+                          value={contactForm.whatsapp}
+                          onChange={(e) => setContactForm({ ...contactForm, whatsapp: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bank Account & UPI Details */}
+                  <div className="p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
+                    <span className="font-cinzel font-bold text-xs text-[#610C1B] block uppercase tracking-wider">
+                      Bank Account & BHIM UPI Transfer
+                    </span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">Bank Name</label>
+                        <input
+                          type="text"
+                          value={contactForm.bankName}
+                          onChange={(e) => setContactForm({ ...contactForm, bankName: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">Account Holder Name</label>
+                        <input
+                          type="text"
+                          value={contactForm.accountName}
+                          onChange={(e) => setContactForm({ ...contactForm, accountName: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">Account Number</label>
+                        <input
+                          type="text"
+                          value={contactForm.accountNumber}
+                          onChange={(e) => setContactForm({ ...contactForm, accountNumber: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono font-bold text-[#610C1B]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">IFSC Code</label>
+                        <input
+                          type="text"
+                          value={contactForm.ifscCode}
+                          onChange={(e) => setContactForm({ ...contactForm, ifscCode: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono font-bold"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">UPI ID</label>
+                        <input
+                          type="text"
+                          value={contactForm.upiId}
+                          onChange={(e) => setContactForm({ ...contactForm, upiId: e.target.value })}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Official Bank QR Code Attachment (PDF / Image) */}
+                  <div className="p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
+                    <span className="font-cinzel font-bold text-xs text-[#610C1B] block uppercase tracking-wider">
+                      Bank QR Code Attachment & File Management
+                    </span>
+
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-3.5 bg-white rounded-xl border border-[#E4D5AE]">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-[#C99738]/20 flex items-center justify-center text-[#610C1B]">
+                          <QrCode className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <span className="font-bold text-xs text-[#38050E] block">
+                            Current Attached QR PDF / File:
+                          </span>
+                          <span className="font-mono text-[11px] text-[#8C6219]">
+                            {contactForm.qrPdfName || 'Canara_Bank_BHIM_UPI_QR.pdf'}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {contactForm.qrPdfUrl && (
+                          <a
+                            href={contactForm.qrPdfUrl}
+                            download={contactForm.qrPdfName || 'Puliyannoor-Devaswom-QR.pdf'}
+                            className="px-3 py-1.5 rounded-lg bg-[#FAF5E8] border border-[#C99738] text-[#38050E] hover:bg-[#E4D5AE] text-xs font-bold flex items-center gap-1 transition-colors"
+                          >
+                            <Download className="w-3.5 h-3.5 text-[#610C1B]" />
+                            <span>Download PDF</span>
+                          </a>
+                        )}
+
+                        <label className="px-3.5 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs">
+                          <Plus className="w-3.5 h-3.5 text-[#E6BE65]" />
+                          <span>Attach New QR PDF / Image</span>
+                          <input
+                            type="file"
+                            accept=".pdf,.png,.jpg,.jpeg"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  const result = event.target?.result as string;
+                                  if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                                    setContactForm({
+                                      ...contactForm,
+                                      qrPdfUrl: result,
+                                      qrPdfName: file.name,
+                                    });
+                                  } else {
+                                    setContactForm({
+                                      ...contactForm,
+                                      qrImageUrl: result,
+                                      qrPdfName: file.name,
+                                    });
+                                  }
+                                  showToast(`Attached "${file.name}"! Click "Save & Sync" to apply.`);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <p className="text-[11px] text-[#5A382A] italic">
+                      * Attach official Canara Bank or UPI QR PDF files here. Devotees on the public website can scan the cropped QR or download the attached PDF directly.
+                    </p>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setContactForm(contactInfo);
+                        setIsEditingContacts(false);
+                      }}
+                      className="px-5 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="py-3 px-6 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-md cursor-pointer"
+                    >
+                      <Save className="w-4 h-4 text-[#E6BE65]" />
+                      <span>Save & Sync Public Pages</span>
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           )}
 
@@ -1532,7 +1743,71 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* System Maintenance & Reset */}
+              {/* Manage Users Section (Empty State) */}
+              <div className="bg-white p-6 rounded-3xl border border-[#E4D5AE] shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-[#E4D5AE] pb-3">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-[#610C1B]" />
+                    <h4 className="font-cinzel font-bold text-sm text-[#38050E] uppercase tracking-wider">
+                      Manage Authorized Administrative Users
+                    </h4>
+                  </div>
+                  <button
+                    onClick={() => setIsAddUserModalOpen(true)}
+                    className="px-3 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
+                  >
+                    <UserPlus className="w-3.5 h-3.5 text-[#E6BE65]" />
+                    <span>+ Add New Admin User</span>
+                  </button>
+                </div>
+
+                {customAdminUsers.length === 0 ? (
+                  <div className="py-8 px-4 text-center rounded-2xl bg-[#FAF5E8] border border-dashed border-[#C99738]/50 flex flex-col items-center justify-center space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-[#C99738]/20 flex items-center justify-center text-[#610C1B]">
+                      <Users className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h5 className="font-cinzel font-bold text-sm text-[#38050E]">
+                        No Additional Administrative Users Added Yet
+                      </h5>
+                      <p className="text-xs text-[#8C6219] max-w-md mx-auto mt-1 leading-relaxed">
+                        Currently, only the primary Managing Trustee & Treasurer account (<strong>PDTemple</strong>) has active administrative privileges.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setIsAddUserModalOpen(true)}
+                      className="text-xs font-bold text-[#610C1B] hover:text-[#8B1428] underline underline-offset-2 cursor-pointer"
+                    >
+                      Click here to invite a priest or committee clerk
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {customAdminUsers.map((u) => (
+                      <div
+                        key={u.id}
+                        className="p-3.5 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] flex items-center justify-between text-xs"
+                      >
+                        <div>
+                          <span className="font-bold text-[#38050E] block">{u.name}</span>
+                          <span className="text-[#8C6219]">{u.role} · {u.email}</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setCustomAdminUsers(customAdminUsers.filter((x) => x.id !== u.id));
+                            showToast(`Removed user ${u.name}`);
+                          }}
+                          className="p-1 text-[#610C1B] hover:bg-rose-50 rounded"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* System Maintenance & Locked Database Reset */}
               <div className="bg-white p-6 rounded-3xl border border-[#E4D5AE] shadow-sm space-y-4">
                 <h4 className="font-cinzel font-bold text-sm text-[#38050E] uppercase tracking-wider">
                   Database & System Management
@@ -1541,28 +1816,244 @@ export default function AdminPage() {
                   All offering changes, festival schedules, and bank details are synchronized to the local state storage. If needed, you can reset all data back to the default certified 88 offerings and festival timetable.
                 </p>
 
+                {/* Locked Tooltip Notice Banner */}
+                {showLockedTooltip && (
+                  <div className="p-3.5 rounded-xl bg-[#5C0A17]/10 border border-[#F43F5E]/40 text-xs text-[#610C1B] flex items-start gap-2 animate-fadeIn">
+                    <ShieldAlert className="w-4 h-4 text-[#610C1B] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold block">🔒 Action Locked by Security Policy</span>
+                      <span>Administrative Master Security Passcode required to unlock and reset the database. Click the button to enter passcode.</span>
+                    </div>
+                  </div>
+                )}
+
                 <div className="pt-2 flex items-center justify-between border-t border-[#E4D5AE]">
                   <span className="text-xs text-[#8C6219] font-semibold">
                     Reset all configurations:
                   </span>
-                  <button
-                    onClick={() => {
-                      if (confirm('Are you sure you want to reset all offerings, festivals, and contacts to default?')) {
-                        resetToDefaults();
-                        showToast('Reset to default configurations successfully.');
-                      }
-                    }}
-                    className="px-4 py-2 rounded-xl bg-[#F3EBD7] hover:bg-[#FFE4E6] text-[#610C1B] text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Reset to Defaults</span>
-                  </button>
+                  <div className="relative">
+                    <button
+                      onClick={() => {
+                        setShowLockedTooltip(true);
+                        setIsResetUnlockModalOpen(true);
+                      }}
+                      onMouseEnter={() => setShowLockedTooltip(true)}
+                      className="px-4 py-2.5 rounded-xl bg-[#F3EBD7] hover:bg-[#FFE4E6] text-[#610C1B] text-xs font-bold flex items-center gap-2 border border-[#C99738]/50 shadow-xs transition-all cursor-pointer"
+                    >
+                      <Lock className="w-3.5 h-3.5 text-[#610C1B]" />
+                      <span>Reset to Defaults (Locked)</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           )}
         </div>
       </main>
+
+
+
+      {/* ----------------------------------------------------------------- */}
+      {/* MODAL: UNLOCK RESET ACTION AUTHENTICATION */}
+      {/* ----------------------------------------------------------------- */}
+      {isResetUnlockModalOpen && (
+        <div
+          onClick={() => setIsResetUnlockModalOpen(false)}
+          className="fixed inset-0 z-50 bg-[#1A0409]/85 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-[#C99738] space-y-4 text-center animate-scaleUp"
+          >
+            <div className="w-14 h-14 rounded-2xl bg-[#610C1B]/10 border border-[#610C1B]/20 text-[#610C1B] flex items-center justify-center mx-auto shadow-xs">
+              <Lock className="w-7 h-7" />
+            </div>
+
+            <div>
+              <h3 className="font-cinzel font-bold text-lg text-[#38050E]">
+                Unlock Database Reset
+              </h3>
+              <p className="text-xs text-[#8C6219] mt-1 leading-relaxed">
+                This action will restore all 88 offerings, calendar festival schedules, and bank details back to official defaults.
+              </p>
+            </div>
+
+            {resetPasscodeError && (
+              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-semibold">
+                {resetPasscodeError}
+              </div>
+            )}
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setResetPasscodeError('');
+                if (resetPasscode.trim() === 'test1209' || resetPasscode.trim() === 'PDTemple') {
+                  resetToDefaults();
+                  setIsResetUnlockModalOpen(false);
+                  setResetPasscode('');
+                  showToast('Database reset to certified defaults successfully.');
+                } else {
+                  setResetPasscodeError('Incorrect Master Passcode. Use administrator password (test1209).');
+                }
+              }}
+              className="space-y-3 text-left pt-1"
+            >
+              <div>
+                <label className="block text-xs font-bold text-[#8C6219] uppercase tracking-wider mb-1 font-cinzel">
+                  Enter Master Security Passcode *
+                </label>
+                <div className="relative">
+                  <Key className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
+                  <input
+                    type="password"
+                    placeholder="Enter admin password (test1209)"
+                    value={resetPasscode}
+                    onChange={(e) => setResetPasscode(e.target.value)}
+                    required
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#E4D5AE] text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsResetUnlockModalOpen(false);
+                    setResetPasscode('');
+                    setResetPasscodeError('');
+                  }}
+                  className="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                >
+                  <Unlock className="w-3.5 h-3.5 text-[#E6BE65]" />
+                  <span>Verify & Reset</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ----------------------------------------------------------------- */}
+      {/* MODAL: ADD NEW ADMIN USER */}
+      {/* ----------------------------------------------------------------- */}
+      {isAddUserModalOpen && (
+        <div
+          onClick={() => setIsAddUserModalOpen(false)}
+          className="fixed inset-0 z-50 bg-[#1A0409]/80 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-[#C99738] space-y-4 animate-scaleUp text-left"
+          >
+            <div className="flex items-center justify-between border-b border-[#E4D5AE] pb-3">
+              <div className="flex items-center gap-2">
+                <UserPlus className="w-5 h-5 text-[#610C1B]" />
+                <h3 className="font-cinzel font-bold text-base text-[#38050E]">
+                  Provision Admin Account
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsAddUserModalOpen(false)}
+                className="text-[#8C6219] hover:text-[#610C1B]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newUserName.trim()) return;
+                const newUser = {
+                  id: `user_${Date.now()}`,
+                  name: newUserName.trim(),
+                  role: newUserRole,
+                  email: newUserEmail.trim() || 'Not provided',
+                  dateAdded: new Date().toLocaleDateString('en-IN'),
+                };
+                setCustomAdminUsers([...customAdminUsers, newUser]);
+                setIsAddUserModalOpen(false);
+                setNewUserName('');
+                setNewUserEmail('');
+                showToast(`Administrative account created for ${newUser.name}!`);
+              }}
+              className="space-y-3.5 text-xs"
+            >
+              <div>
+                <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
+                  User Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Narayanan Namboothiri"
+                  value={newUserName}
+                  onChange={(e) => setNewUserName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
+                  Administrative Role *
+                </label>
+                <select
+                  value={newUserRole}
+                  onChange={(e) => setNewUserRole(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                >
+                  <option value="Melsanthi / Chief Priest">Melsanthi / Chief Priest (മേൽശാന്തി)</option>
+                  <option value="Devaswom Office Clerk">Devaswom Office Clerk (ഓഫീസ് ക്ലർക്ക്)</option>
+                  <option value="Trustee Board Member">Trustee Board Member (ട്രസ്റ്റി അംഗം)</option>
+                  <option value="Auditor / Accountant">Auditor / Accountant (കണക്കപ്പിള്ള)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
+                  Official Email (Optional)
+                </label>
+                <input
+                  type="email"
+                  placeholder="user@puliyannoordevaswom.org"
+                  value={newUserEmail}
+                  onChange={(e) => setNewUserEmail(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                />
+              </div>
+
+              <div className="p-3 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] text-[11px] text-[#5A382A]">
+                ℹ️ This provisions local administrative role permissions. Ready for cloud auth synchronization.
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddUserModalOpen(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                >
+                  <UserPlus className="w-3.5 h-3.5 text-[#E6BE65]" />
+                  <span>Create Account</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
