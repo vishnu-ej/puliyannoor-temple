@@ -149,7 +149,7 @@ export default function AdminPage() {
       sessionStorage.setItem('puliyannoor_admin_session', 'true');
       showToast('Welcome to Puliyannoor Devaswom Admin Panel');
     } else {
-      setAuthError('Invalid credentials. Username: PDTemple / Password: test1209');
+      setAuthError('Wrong username/password');
     }
   };
 
@@ -1894,7 +1894,7 @@ export default function AdminPage() {
                   setResetPasscode('');
                   showToast('Database reset to certified defaults successfully.');
                 } else {
-                  setResetPasscodeError('Incorrect Master Passcode. Use administrator password (test1209).');
+                  setResetPasscodeError('Wrong passcode. Please try again.');
                 }
               }}
               className="space-y-3 text-left pt-1"
@@ -1907,7 +1907,7 @@ export default function AdminPage() {
                   <Key className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
                   <input
                     type="password"
-                    placeholder="Enter admin password (test1209)"
+                    placeholder="Enter security passcode"
                     value={resetPasscode}
                     onChange={(e) => setResetPasscode(e.target.value)}
                     required
