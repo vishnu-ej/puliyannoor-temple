@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useContent } from '../context/ContentContext';
 import { OfferingItem, OfferingCategory } from '../types';
@@ -25,6 +24,7 @@ import {
   Maximize2,
   X,
   Download,
+  ChevronDown,
 } from 'lucide-react';
 
 interface OfferingsSectionProps {
@@ -38,8 +38,14 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
   const { offerings, contactInfo } = useContent();
   const [selectedCategory, setSelectedCategory] = useState<OfferingCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState(9);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+
+  // Reset pagination when category or search changes
+  useEffect(() => {
+    setVisibleCount(9);
+  }, [selectedCategory, searchQuery]);
 
   const categories: { id: OfferingCategory; labelKey: string }[] = [
     { id: 'all', labelKey: 'filter_all' },
@@ -71,6 +77,8 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
 
     return matchesCategory && (matchesSlNo || matchesName || matchesDesc || matchesBenefit);
   });
+
+  const displayedOfferings = filteredOfferings.slice(0, visibleCount);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -161,15 +169,15 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
           <div className="text-center text-xs text-[#8C6219] font-medium">
             <span>
               {language === 'en'
-                ? `Showing ${filteredOfferings.length} of ${offerings.length} offerings`
-                : `${offerings.length} വഴിപാടുകളിൽ ${filteredOfferings.length} എണ്ണം കാണിക്കുന്നു`}
+                ? `Showing ${displayedOfferings.length} of ${filteredOfferings.length} offerings`
+                : `${filteredOfferings.length} വഴിപാടുകളിൽ ${displayedOfferings.length} എണ്ണം കാണിക്കുന്നു`}
             </span>
           </div>
         </div>
 
         {/* Offerings Grid */}
         {filteredOfferings.length === 0 ? (
-          <div className="text-center py-12 glass-card rounded-2xl max-w-md mx-auto">
+          <div className="text-center py-12 glass-card rounded-2xl max-w-md mx-auto mb-12">
             <p className="text-sm text-[#5A382A] mb-3">
               {language === 'en'
                 ? 'No offerings found matching your search.'
@@ -186,75 +194,99 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-12">
-            {filteredOfferings.map((offering) => (
-              <div
-                key={offering.id}
-                className="glass-card rounded-2xl p-5 sm:p-6 border border-[#E4D5AE] shadow-sm card-hover-effect flex flex-col justify-between"
-              >
-                <div>
-                  {/* Top Bar: Sl No badge, Category Icon, Tag, and Price */}
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="w-7 h-7 rounded-full bg-[#38050E] text-[#E6BE65] font-cinzel font-bold text-xs flex items-center justify-center border border-[#C99738]/50 shadow-sm flex-shrink-0">
-                        {offering.slNo}
-                      </span>
-                      <div className="p-1.5 rounded-lg bg-[#FAF5E8] border border-[#E4D5AE]">
-                        {getCategoryIcon(offering.category)}
-                      </div>
-                      {offering.tag && (
-                        <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#C99738]/20 text-[#8C6219] border border-[#C99738]/40 truncate max-w-[120px]">
-                          {offering.tag[language]}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-8">
+              {displayedOfferings.map((offering) => (
+                <div
+                  key={offering.id}
+                  className="glass-card rounded-2xl p-5 sm:p-6 border border-[#E4D5AE] shadow-sm card-hover-effect flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Top Bar: Sl No badge, Category Icon, Tag, and Price */}
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-full bg-[#38050E] text-[#E6BE65] font-cinzel font-bold text-xs flex items-center justify-center border border-[#C99738]/50 shadow-sm flex-shrink-0">
+                          {offering.slNo}
                         </span>
-                      )}
+                        <div className="p-1.5 rounded-lg bg-[#FAF5E8] border border-[#E4D5AE]">
+                          {getCategoryIcon(offering.category)}
+                        </div>
+                        {offering.tag && (
+                          <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#C99738]/20 text-[#8C6219] border border-[#C99738]/40 truncate max-w-[120px]">
+                            {offering.tag[language]}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="text-right flex-shrink-0">
+                        <span className="font-cinzel font-extrabold text-lg md:text-xl text-[#610C1B]">
+                          ₹{offering.price.toLocaleString('en-IN')}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="text-right flex-shrink-0">
-                      <span className="font-cinzel font-extrabold text-lg md:text-xl text-[#610C1B]">
-                        ₹{offering.price.toLocaleString('en-IN')}
+                    {/* Offering Name */}
+                    <h3 className="font-cinzel font-bold text-base md:text-lg text-[#38050E] mb-1">
+                      {offering.name[language]}
+                    </h3>
+                    <div className="font-malayalam-sans text-xs text-[#8C6219] font-medium mb-3">
+                      {offering.name[language === 'en' ? 'ml' : 'en']}
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs sm:text-sm text-[#36241C] leading-relaxed mb-4 font-light">
+                      {offering.description[language]}
+                    </p>
+                  </div>
+
+                  <div>
+                    {/* Significance / Benefits Callout */}
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-[#F3EBD7]/80 border border-[#E4D5AE] mb-4 text-xs text-[#5A382A]">
+                      <span className="font-bold text-[#8C6219] block mb-0.5 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-[#1F4E34]" />
+                        {t('lbl_benefits')}:
                       </span>
+                      <span>{offering.significance[language]}</span>
                     </div>
-                  </div>
 
-                  {/* Offering Name */}
-                  <h3 className="font-cinzel font-bold text-base md:text-lg text-[#38050E] mb-1">
-                    {offering.name[language]}
-                  </h3>
-                  <div className="font-malayalam-sans text-xs text-[#8C6219] font-medium mb-3">
-                    {offering.name[language === 'en' ? 'ml' : 'en']}
+                    {/* Action Button: Inquire */}
+                    <button
+                      onClick={() => onSelectOffering(offering)}
+                      className="w-full py-2.5 px-4 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
+                    >
+                      <span>{t('btn_inquire_offering')}</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#E6BE65]" />
+                    </button>
                   </div>
-
-                  {/* Description */}
-                  <p className="text-xs sm:text-sm text-[#36241C] leading-relaxed mb-4 font-light">
-                    {offering.description[language]}
-                  </p>
                 </div>
+              ))}
+            </div>
 
-                <div>
-                  {/* Significance / Benefits Callout */}
-                  <div className="p-2.5 sm:p-3 rounded-xl bg-[#F3EBD7]/80 border border-[#E4D5AE] mb-4 text-xs text-[#5A382A]">
-                    <span className="font-bold text-[#8C6219] block mb-0.5 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3 text-[#1F4E34]" />
-                      {t('lbl_benefits')}:
-                    </span>
-                    <span>{offering.significance[language]}</span>
-                  </div>
-
-                  {/* Action Button: Inquire */}
-                  <button
-                    onClick={() => onSelectOffering(offering)}
-                    className="w-full py-2.5 px-4 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
-                  >
-                    <span>{t('btn_inquire_offering')}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-[#E6BE65]" />
-                  </button>
+            {/* Load More (+9) Button with Down Arrow */}
+            {visibleCount < filteredOfferings.length && (
+              <div className="text-center mb-14">
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + 9)}
+                  className="inline-flex items-center gap-2.5 px-7 py-3 rounded-full bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] font-bold text-xs sm:text-sm shadow-md hover:shadow-xl active:scale-95 transition-all cursor-pointer"
+                >
+                  <span>
+                    {language === 'en'
+                      ? `Load More Offerings (+${Math.min(9, filteredOfferings.length - visibleCount)})`
+                      : `കൂടുതൽ വഴിപാടുകൾ കാണുക (+${Math.min(9, filteredOfferings.length - visibleCount)})`}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-[#E6BE65] animate-bounce" />
+                </button>
+                <div className="text-[11px] text-[#8C6219] font-medium mt-2">
+                  {language === 'en'
+                    ? `Showing ${displayedOfferings.length} of ${filteredOfferings.length} offerings`
+                    : `${filteredOfferings.length} വഴിപാടുകളിൽ ${displayedOfferings.length} എണ്ണം കാണിക്കുന്നു`}
                 </div>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
 
-        {/* Bank Details & Donations Box with Official Canara Bank QR */}
+        {/* Bank Details & Donations Box with Clean QR Code Image & UPI ID */}
         <div className="max-w-4xl mx-auto glass-card rounded-3xl p-6 sm:p-8 border-2 border-[#C99738] shadow-xl bg-gradient-to-br from-[#FAF5E8] via-[#F3EBD7] to-[#FAF5E8] relative overflow-hidden">
           <div className="absolute top-0 right-0 w-40 h-40 bg-[#C99738]/10 rounded-full blur-2xl pointer-events-none" />
           
@@ -354,45 +386,62 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
               </p>
             </div>
 
-            {/* Right Side: Official Bank QR Code Card */}
-            <div className="w-full md:w-64 bg-white/95 rounded-2xl p-4 border-2 border-[#C99738] flex flex-col items-center justify-center text-center shadow-md flex-shrink-0">
+            {/* Right Side: Clean QR Code & UPI ID Card (No Blue Background) */}
+            <div className="w-full md:w-56 bg-white rounded-2xl p-4 border-2 border-[#C99738] flex flex-col items-center justify-center text-center shadow-md flex-shrink-0">
               <div
                 onClick={() => setIsQrModalOpen(true)}
-                className="relative w-44 h-56 rounded-xl overflow-hidden border border-[#E4D5AE] cursor-pointer group shadow-sm hover:shadow-lg transition-all"
+                className="relative w-36 h-36 rounded-xl overflow-hidden border border-[#E4D5AE] cursor-pointer group shadow-sm hover:shadow-md transition-all bg-white p-1"
                 title="Click to zoom QR code"
               >
                 <img
-                  src={contactInfo.qrImageUrl}
-                  alt="Puliyannoor Devaswom Canara Bank BHIM UPI QR Code"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  src={contactInfo.qrImageUrl || '/temple-qr-code.png'}
+                  alt="Puliyannoor Devaswom UPI QR Code"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-[#1A0409]/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#1A0409]/80 text-[#FAF5E8] text-xs font-bold backdrop-blur-xs">
-                    <Maximize2 className="w-3.5 h-3.5 text-[#E6BE65]" />
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#1A0409]/85 text-[#FAF5E8] text-xs font-bold">
+                    <Maximize2 className="w-3 h-3 text-[#E6BE65]" />
                     <span>Zoom</span>
                   </span>
                 </div>
               </div>
 
-              <span className="text-xs font-bold text-[#38050E] mt-3 font-cinzel">
-                BHIM UPI QR Code
-              </span>
-              <span className="text-[11px] text-[#8C6219] font-medium">
-                {contactInfo.upiId}
-              </span>
+              {/* UPI ID under QR with 1-click copy */}
+              <div className="mt-3 w-full">
+                <span className="text-[10px] uppercase font-bold text-[#8C6219] tracking-wider block font-cinzel">
+                  Scan & Pay (BHIM UPI)
+                </span>
+                <div className="flex items-center justify-center gap-1.5 mt-1 bg-[#FAF5E8] px-2 py-1 rounded-lg border border-[#E4D5AE]">
+                  <span className="font-mono text-[11px] font-bold text-[#610C1B] truncate">
+                    {contactInfo.upiId}
+                  </span>
+                  <button
+                    onClick={() => handleCopy(contactInfo.upiId, 'upi-card')}
+                    className="text-[#8C6219] hover:text-[#610C1B] cursor-pointer"
+                    title="Copy UPI ID"
+                  >
+                    {copiedField === 'upi-card' ? (
+                      <Check className="w-3 h-3 text-[#1F4E34]" />
+                    ) : (
+                      <Copy className="w-3 h-3" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
               <button
                 onClick={() => setIsQrModalOpen(true)}
-                className="mt-2 text-[11px] font-bold text-[#610C1B] hover:text-[#8B1428] underline underline-offset-2 flex items-center gap-1 cursor-pointer"
+                className="mt-2 text-[10px] font-bold text-[#610C1B] hover:text-[#8B1428] underline underline-offset-2 flex items-center gap-1 cursor-pointer"
               >
-                <Maximize2 className="w-3 h-3" />
-                <span>View Full QR Card</span>
+                <Maximize2 className="w-2.5 h-2.5" />
+                <span>Zoom QR Code</span>
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* QR Code Fullscreen Modal */}
+      {/* QR Code Fullscreen Modal (Clean QR Code Only) */}
       {isQrModalOpen && (
         <div
           onClick={() => setIsQrModalOpen(false)}
@@ -400,7 +449,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-3xl p-5 max-w-sm sm:max-w-md w-full shadow-2xl border-2 border-[#C99738] relative flex flex-col items-center animate-scaleUp"
+            className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#C99738] relative flex flex-col items-center animate-scaleUp text-center"
           >
             <button
               onClick={() => setIsQrModalOpen(false)}
@@ -411,32 +460,62 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
             </button>
 
             <h4 className="font-cinzel font-bold text-base text-[#38050E] mb-1">
-              Official BHIM UPI QR Code
+              BHIM UPI QR Code
             </h4>
-            <p className="text-xs text-[#8C6219] mb-4 text-center font-medium">
+            <p className="text-xs text-[#8C6219] mb-4 font-medium">
               Puliyannoor Devaswom · Canara Bank
             </p>
 
-            <div className="w-full max-h-[70vh] rounded-2xl overflow-hidden border border-[#E4D5AE] shadow-inner mb-4 flex items-center justify-center bg-gray-50">
+            {/* Clean QR Box */}
+            <div className="w-64 h-64 rounded-2xl overflow-hidden border border-[#E4D5AE] shadow-inner mb-4 flex items-center justify-center bg-white p-3">
               <img
-                src={contactInfo.qrImageUrl}
-                alt="Full Puliyannoor Devaswom BHIM UPI QR Code"
-                className="max-h-[60vh] w-auto object-contain"
+                src={contactInfo.qrImageUrl || '/temple-qr-code.png'}
+                alt="Puliyannoor Devaswom BHIM UPI QR Code"
+                className="w-full h-full object-contain"
               />
             </div>
 
-            <div className="w-full flex items-center justify-between gap-3 text-xs">
-              <span className="font-mono font-bold text-[#610C1B] truncate">
-                {contactInfo.upiId}
+            {/* UPI ID Details */}
+            <div className="w-full p-2.5 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] mb-4">
+              <span className="text-[10px] text-[#8C6219] font-bold uppercase block">
+                UPI ID / VPA
               </span>
+              <div className="flex items-center justify-center gap-2 mt-0.5">
+                <span className="font-mono font-bold text-xs sm:text-sm text-[#610C1B]">
+                  {contactInfo.upiId}
+                </span>
+                <button
+                  onClick={() => handleCopy(contactInfo.upiId, 'modal-upi')}
+                  className="p-1 rounded text-[#8C6219] hover:text-[#610C1B] cursor-pointer"
+                  title="Copy UPI ID"
+                >
+                  {copiedField === 'modal-upi' ? (
+                    <Check className="w-3.5 h-3.5 text-[#1F4E34]" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-3 w-full">
               <a
-                href={contactInfo.qrImageUrl}
-                download="Puliyannoor-Devaswom-UPI-QR.jpg"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white font-bold transition-all flex-shrink-0"
+                href={contactInfo.qrImageUrl || '/temple-qr-code.png'}
+                download="Puliyannoor-Devaswom-UPI-QR.png"
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold transition-all shadow-sm flex-1"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Save QR</span>
+                <span>Save QR Image</span>
               </a>
+              {contactInfo.qrPdfUrl && (
+                <a
+                  href={contactInfo.qrPdfUrl}
+                  download={contactInfo.qrPdfName || 'Puliyannoor-Devaswom-QR.pdf'}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#38050E] border border-[#C99738] text-xs font-bold transition-all shadow-sm"
+                >
+                  <span>PDF</span>
+                </a>
+              )}
             </div>
           </div>
         </div>

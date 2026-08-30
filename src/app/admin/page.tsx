@@ -39,6 +39,7 @@ import {
   HelpCircle,
   ArrowLeft,
   Mail,
+  Download,
 } from 'lucide-react';
 
 type AdminTab = 'chats' | 'offerings' | 'festivals' | 'contacts' | 'profile';
@@ -65,8 +66,8 @@ export default function AdminPage() {
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('PDTemple');
+  const [password, setPassword] = useState('test1209');
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
   const [activeTab, setActiveTab] = useState<AdminTab>('chats');
@@ -254,7 +255,7 @@ export default function AdminPage() {
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      placeholder="e.g. PDTemple"
+                      placeholder="Username"
                       required
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
                     />
@@ -271,7 +272,7 @@ export default function AdminPage() {
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="Password"
                       required
                       className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
                     />
@@ -285,34 +286,12 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Demo Credentials Quick-Fill Pill */}
-                <div className="p-3 rounded-xl bg-[#F3EBD7] border border-[#E4D5AE] text-xs text-[#5A382A]">
-                  <div className="font-bold text-[#8C6219] mb-1 flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#1F4E34]" />
-                    <span>Demo Credentials:</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span>User: <strong className="font-mono text-[#610C1B]">PDTemple</strong></span>
-                    <span>Pass: <strong className="font-mono text-[#610C1B]">test1209</strong></span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUsername('PDTemple');
-                        setPassword('test1209');
-                      }}
-                      className="text-[10px] font-bold text-[#610C1B] underline hover:text-[#8B1428]"
-                    >
-                      Auto-fill
-                    </button>
-                  </div>
-                </div>
-
                 <button
                   type="submit"
                   className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-[#FAF5E8] font-bold text-sm tracking-wider uppercase shadow-md active:scale-98 transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <Lock className="w-4 h-4 text-[#E6BE65]" />
-                  <span>Enter Admin Dashboard</span>
+                  <span>Sign In to Admin Portal</span>
                 </button>
               </form>
             ) : (
@@ -1439,6 +1418,80 @@ export default function AdminPage() {
                       />
                     </div>
                   </div>
+                </div>
+
+                {/* Official Bank QR Code Attachment (PDF / Image) */}
+                <div className="p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
+                  <span className="font-cinzel font-bold text-xs text-[#610C1B] block uppercase tracking-wider">
+                    Bank QR Code Attachment & File Management
+                  </span>
+
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-3.5 bg-white rounded-xl border border-[#E4D5AE]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-[#C99738]/20 flex items-center justify-center text-[#610C1B]">
+                        <QrCode className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-xs text-[#38050E] block">
+                          Current Attached QR PDF / File:
+                        </span>
+                        <span className="font-mono text-[11px] text-[#8C6219]">
+                          {contactForm.qrPdfName || 'Canara_Bank_BHIM_UPI_QR.pdf'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {contactForm.qrPdfUrl && (
+                        <a
+                          href={contactForm.qrPdfUrl}
+                          download={contactForm.qrPdfName || 'Puliyannoor-Devaswom-QR.pdf'}
+                          className="px-3 py-1.5 rounded-lg bg-[#FAF5E8] border border-[#C99738] text-[#38050E] hover:bg-[#E4D5AE] text-xs font-bold flex items-center gap-1 transition-colors"
+                        >
+                          <Download className="w-3.5 h-3.5 text-[#610C1B]" />
+                          <span>Download PDF</span>
+                        </a>
+                      )}
+
+                      <label className="px-3.5 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs">
+                        <Plus className="w-3.5 h-3.5 text-[#E6BE65]" />
+                        <span>Attach New QR PDF / Image</span>
+                        <input
+                          type="file"
+                          accept=".pdf,.png,.jpg,.jpeg"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                const result = event.target?.result as string;
+                                if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                                  setContactForm({
+                                    ...contactForm,
+                                    qrPdfUrl: result,
+                                    qrPdfName: file.name,
+                                  });
+                                } else {
+                                  setContactForm({
+                                    ...contactForm,
+                                    qrImageUrl: result,
+                                    qrPdfName: file.name,
+                                  });
+                                }
+                                showToast(`Attached "${file.name}"! Click "Save" to apply.`);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-[#5A382A] italic">
+                    * Attach official Canara Bank or UPI QR PDF files here. Devotees on the public website can scan the cropped QR or download the attached PDF directly.
+                  </p>
                 </div>
 
                 <div className="flex justify-end pt-3">

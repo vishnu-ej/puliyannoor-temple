@@ -38,6 +38,8 @@ export interface TempleContactInfo {
   ifscCode: string;
   upiId: string;
   qrImageUrl: string;
+  qrPdfUrl?: string;
+  qrPdfName?: string;
   managingTrustee: string;
   officeHoursMorning: string;
   officeHoursEvening: string;
@@ -56,7 +58,9 @@ const DEFAULT_CONTACT_INFO: TempleContactInfo = {
   accountNumber: '5636101001111',
   ifscCode: 'CNRB0005636',
   upiId: '100027928001111@cnrb',
-  qrImageUrl: '/temple-upi-qr.jpg',
+  qrImageUrl: '/temple-qr-code.png',
+  qrPdfUrl: '/temple-qr.pdf',
+  qrPdfName: 'Canara_Bank_BHIM_UPI_QR.pdf',
   managingTrustee: 'Managing Trustee & Treasurer, Puliyannoor Devaswom',
   officeHoursMorning: '4:00 AM – 10:00 AM',
   officeHoursEvening: '5:30 PM – 7:00 PM',
