@@ -3,6 +3,7 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useContent } from '../context/ContentContext';
 import {
   ShoppingCart,
   X,
@@ -30,6 +31,7 @@ export const CartDrawer: React.FC = () => {
     setIsCartOpen,
   } = useCart();
   const { language, t } = useLanguage();
+  const { contactInfo } = useContent();
 
   if (items.length === 0 && !isCartOpen) return null;
 
@@ -64,7 +66,7 @@ export const CartDrawer: React.FC = () => {
 _Sent via Puliyannoor Temple Official Web Portal_`;
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/919447000000?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/${contactInfo.whatsapp}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 

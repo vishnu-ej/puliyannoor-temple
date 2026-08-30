@@ -1274,7 +1274,7 @@ export const OFFERINGS: OfferingItem[] = [
       ml: 'മുൻവിളക്ക്',
     },
     category: 'vilakku_mala',
-    price: 30,
+    price: 35,
     description: {
       en: 'Lighting the sacred oil lamp directly before the deity at the sanctum entrance.',
       ml: 'ശ്രീകോവിലിന് മുൻപിൽ ഭഗവാന്റെ നേരിട്ടുള്ള ദർശനത്തിനായി തെളിയിക്കുന്ന പവിത്ര വിളക്ക്.',

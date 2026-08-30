@@ -76,6 +76,7 @@ export default function AdminPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
   const [activeTab, setActiveTab] = useState<AdminTab>('chats');
+  const [activeRole, setActiveRole] = useState<'super_admin' | 'staff_admin'>('super_admin');
 
   // Chat State
   const [selectedChatId, setSelectedChatId] = useState<string>(chats[0]?.id || '');
@@ -104,6 +105,8 @@ export default function AdminPage() {
   const [contactForm, setContactForm] = useState<TempleContactInfo>(contactInfo);
   const [isEditingContacts, setIsEditingContacts] = useState(false);
   const [contactSaveStatus, setContactSaveStatus] = useState(false);
+  const [adminPhoneCountryCode, setAdminPhoneCountryCode] = useState('+91');
+  const [adminWhatsAppCountryCode, setAdminWhatsAppCountryCode] = useState('+91');
 
   // Database Reset Authentication State
   const [isResetUnlockModalOpen, setIsResetUnlockModalOpen] = useState(false);
@@ -114,7 +117,7 @@ export default function AdminPage() {
   // Manage Users State
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [newUserName, setNewUserName] = useState('');
-  const [newUserRole, setNewUserRole] = useState('Melsanthi / Chief Priest');
+  const [newUserRole, setNewUserRole] = useState('Admin');
   const [newUserEmail, setNewUserEmail] = useState('');
   const [customAdminUsers, setCustomAdminUsers] = useState<
     { id: string; name: string; role: string; email: string; dateAdded: string }[]
@@ -506,11 +509,30 @@ export default function AdminPage() {
             </h2>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1F4E34]/10 text-[#1F4E34] text-xs font-bold border border-[#1F4E34]/30">
-              <span className="w-2 h-2 rounded-full bg-[#1F4E34] animate-pulse" />
-              <span>Live Synced with Public Site</span>
-            </span>
+          <div className="flex items-center gap-2.5">
+            {/* Role Badge & Switcher */}
+            <div className="flex items-center gap-1.5 bg-[#FAF5E8] px-3 py-1 rounded-full border border-[#C99738]/50 shadow-xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#610C1B]" />
+              <span className="text-[11px] font-bold text-[#38050E]">
+                {activeRole === 'super_admin' ? 'Super Admin (Trustee)' : 'Staff Admin (Support)'}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  const nextRole = activeRole === 'super_admin' ? 'staff_admin' : 'super_admin';
+                  setActiveRole(nextRole);
+                  showToast(
+                    nextRole === 'super_admin'
+                      ? 'Switched to Super Admin (Full Edit Access)'
+                      : 'Switched to Staff Admin (Support Chats & View-Only Mode)'
+                  );
+                }}
+                className="text-[10px] text-[#610C1B] hover:text-[#8B1428] underline font-bold ml-1 cursor-pointer"
+                title="Switch between Super Admin and Staff Admin view"
+              >
+                ({activeRole === 'super_admin' ? 'Simulate Staff' : 'Switch Super Admin'})
+              </button>
+            </div>
 
             <button
               onClick={() => setActiveTab('profile')}
@@ -649,19 +671,24 @@ export default function AdminPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-bold text-[#8C6219] uppercase tracking-wider hidden sm:inline">
+                        Support Status:
+                      </span>
                       <select
                         value={selectedChat.status}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           updateChatStatus(
                             selectedChat.id,
                             e.target.value as 'active' | 'resolved' | 'pending'
-                          )
-                        }
-                        className="text-xs font-bold px-2.5 py-1 rounded-lg border border-[#E4D5AE] bg-white text-[#38050E] cursor-pointer"
+                          );
+                          showToast(`Support request status updated to ${e.target.value.toUpperCase()}`);
+                        }}
+                        className="text-xs font-bold px-2.5 py-1 rounded-lg border border-[#E4D5AE] bg-white text-[#38050E] cursor-pointer shadow-2xs"
+                        title="Support Request Status (Managed by Authorized Temple Admins)"
                       >
-                        <option value="active">Active</option>
-                        <option value="pending">Pending</option>
-                        <option value="resolved">Resolved</option>
+                        <option value="active">🟢 Active</option>
+                        <option value="pending">🟡 Pending</option>
+                        <option value="resolved">⚪ Resolved</option>
                       </select>
                     </div>
                   </div>
@@ -741,6 +768,16 @@ export default function AdminPage() {
           {/* ----------------------------------------------------------------- */}
           {activeTab === 'offerings' && (
             <div className="space-y-4">
+              {/* Staff Admin Notice Banner */}
+              {activeRole === 'staff_admin' && (
+                <div className="p-3.5 rounded-2xl bg-[#5C0A17]/10 border border-[#F43F5E]/40 text-xs text-[#610C1B] flex items-center gap-2 animate-fadeIn">
+                  <ShieldAlert className="w-4 h-4 flex-shrink-0 text-[#610C1B]" />
+                  <span>
+                    <strong>View-Only Mode:</strong> Logged in as Staff/Admin. Modifying offering rates, adding new poojas, or deleting items requires Super Admin (Managing Trustee & Treasurer) authorization.
+                  </span>
+                </div>
+              )}
+
               {/* Top Controls */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-[#E4D5AE] shadow-xs">
                 <div className="flex flex-1 items-center gap-3 w-full sm:w-auto">
@@ -770,13 +807,20 @@ export default function AdminPage() {
                   </select>
                 </div>
 
-                <button
-                  onClick={() => setIsAddingOffering(true)}
-                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                >
-                  <Plus className="w-4 h-4 text-[#E6BE65]" />
-                  <span>Add New Vazhipadu</span>
-                </button>
+                {activeRole === 'super_admin' ? (
+                  <button
+                    onClick={() => setIsAddingOffering(true)}
+                    className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4 text-[#E6BE65]" />
+                    <span>Add New Vazhipadu</span>
+                  </button>
+                ) : (
+                  <div className="text-xs text-[#8C6219] font-medium bg-[#FAF5E8] px-3.5 py-2 rounded-xl border border-[#E4D5AE] flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#610C1B]" />
+                    <span>View Only (Super Admin required to edit)</span>
+                  </div>
+                )}
               </div>
 
               {/* Offerings Table */}
@@ -816,27 +860,31 @@ export default function AdminPage() {
                             {item.significance.en}
                           </td>
                           <td className="p-3 text-center">
-                            <div className="flex items-center justify-center gap-1.5">
-                              <button
-                                onClick={() => setEditingOffering(item)}
-                                className="p-1.5 rounded-lg bg-[#F3EBD7] text-[#610C1B] hover:bg-[#610C1B] hover:text-white transition-colors cursor-pointer"
-                                title="Edit Vazhipadu"
-                              >
-                                <Edit3 className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => {
-                                  if (confirm(`Delete "${item.name.en}"?`)) {
-                                    deleteOffering(item.id);
-                                    showToast(`Deleted ${item.name.en}`);
-                                  }
-                                }}
-                                className="p-1.5 rounded-lg bg-[#FFE4E6] text-[#9F1239] hover:bg-[#9F1239] hover:text-white transition-colors cursor-pointer"
-                                title="Delete Vazhipadu"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
+                            {activeRole === 'super_admin' ? (
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button
+                                  onClick={() => setEditingOffering(item)}
+                                  className="p-1.5 rounded-lg bg-[#F3EBD7] text-[#610C1B] hover:bg-[#610C1B] hover:text-white transition-colors cursor-pointer"
+                                  title="Edit Vazhipadu"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (confirm(`Delete "${item.name.en}"?`)) {
+                                      deleteOffering(item.id);
+                                      showToast(`Deleted ${item.name.en}`);
+                                    }
+                                  }}
+                                  className="p-1.5 rounded-lg bg-[#FFE4E6] text-[#9F1239] hover:bg-[#9F1239] hover:text-white transition-colors cursor-pointer"
+                                  title="Delete Vazhipadu"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-[10px] text-gray-400 italic">View Only</span>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -1163,6 +1211,16 @@ export default function AdminPage() {
           {/* ----------------------------------------------------------------- */}
           {activeTab === 'festivals' && (
             <div className="space-y-4">
+              {/* Staff Admin Notice Banner */}
+              {activeRole === 'staff_admin' && (
+                <div className="p-3.5 rounded-2xl bg-[#5C0A17]/10 border border-[#F43F5E]/40 text-xs text-[#610C1B] flex items-center gap-2 animate-fadeIn">
+                  <ShieldAlert className="w-4 h-4 flex-shrink-0 text-[#610C1B]" />
+                  <span>
+                    <strong>View-Only Mode:</strong> Logged in as Staff/Admin. Festival schedule modifications and highlight edits are reserved for the Super Admin (Managing Trustee & Treasurer).
+                  </span>
+                </div>
+              )}
+
               <div className="p-4 bg-white rounded-2xl border border-[#E4D5AE] shadow-xs flex items-center justify-between">
                 <div>
                   <h3 className="font-cinzel font-bold text-sm text-[#38050E]">
@@ -1207,13 +1265,17 @@ export default function AdminPage() {
                       <div className="text-[11px] text-[#1F4E34] font-semibold">
                         ✓ {fest.highlights.en.length} highlights
                       </div>
-                      <button
-                        onClick={() => setEditingFestival(fest)}
-                        className="px-3 py-1 rounded-lg bg-[#F3EBD7] text-[#610C1B] hover:bg-[#610C1B] hover:text-white text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
-                      >
-                        <Edit3 className="w-3 h-3" />
-                        <span>Edit Event</span>
-                      </button>
+                      {activeRole === 'super_admin' ? (
+                        <button
+                          onClick={() => setEditingFestival(fest)}
+                          className="px-3 py-1 rounded-lg bg-[#F3EBD7] text-[#610C1B] hover:bg-[#610C1B] hover:text-white text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                          <span>Edit Event</span>
+                        </button>
+                      ) : (
+                        <span className="text-[10px] text-gray-400 italic">View Only</span>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -1267,7 +1329,7 @@ export default function AdminPage() {
                       </div>
 
                       <div>
-                        <label className="block font-bold text-[#8C6219] mb-1">Date & Month Note</label>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">Subtitle</label>
                         <input
                           type="text"
                           value={editingFestival.subtitle.en}
@@ -1277,12 +1339,12 @@ export default function AdminPage() {
                               subtitle: { ...editingFestival.subtitle, en: e.target.value },
                             })
                           }
-                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE]"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] text-sm"
                         />
                       </div>
 
                       <div>
-                        <label className="block font-bold text-[#8C6219] mb-1">Description (English)</label>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">Description (English)</label>
                         <textarea
                           rows={3}
                           value={editingFestival.description.en}
@@ -1292,8 +1354,84 @@ export default function AdminPage() {
                               description: { ...editingFestival.description, en: e.target.value },
                             })
                           }
-                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE]"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] text-sm resize-none"
                         />
+                      </div>
+
+                      {/* Key Highlights (Scrollable, up to 5) */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="block font-bold text-[#8C6219] font-cinzel">
+                            Key Highlights ({editingFestival.highlights?.en?.length || 0}/5)
+                          </label>
+                          {(!editingFestival.highlights?.en || editingFestival.highlights.en.length < 5) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const curEn = editingFestival.highlights?.en || [];
+                                const curMl = editingFestival.highlights?.ml || [];
+                                setEditingFestival({
+                                  ...editingFestival,
+                                  highlights: {
+                                    en: [...curEn, ''],
+                                    ml: [...curMl, ''],
+                                  },
+                                });
+                              }}
+                              className="text-[11px] font-bold text-[#610C1B] hover:text-[#8B1428] flex items-center gap-1 cursor-pointer bg-[#FAF5E8] px-2 py-0.5 rounded border border-[#C99738]/50"
+                            >
+                              <Plus className="w-3 h-3 text-[#610C1B]" />
+                              <span>+ Add Highlight</span>
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="max-h-44 overflow-y-auto pr-1 space-y-2 border border-[#E4D5AE] rounded-xl p-2.5 bg-[#FAF5E8]/40">
+                          {(!editingFestival.highlights?.en || editingFestival.highlights.en.length === 0) ? (
+                            <p className="text-[11px] text-gray-500 italic text-center py-2">
+                              No highlights added yet. Click &quot;+ Add Highlight&quot; above.
+                            </p>
+                          ) : (
+                            editingFestival.highlights.en.map((hl, idx) => (
+                              <div key={idx} className="flex items-center gap-2 bg-white p-2 rounded-lg border border-[#E4D5AE] shadow-xs">
+                                <span className="text-[10px] font-bold text-[#8C6219] min-w-[18px] text-center">
+                                  {idx + 1}.
+                                </span>
+                                <input
+                                  type="text"
+                                  placeholder={`Highlight #${idx + 1} (e.g. Utsava Bali & Pallivetta)`}
+                                  value={hl}
+                                  onChange={(e) => {
+                                    const newEn = [...(editingFestival.highlights?.en || [])];
+                                    newEn[idx] = e.target.value;
+                                    const newMl = [...(editingFestival.highlights?.ml || [])];
+                                    newMl[idx] = e.target.value;
+                                    setEditingFestival({
+                                      ...editingFestival,
+                                      highlights: { en: newEn, ml: newMl },
+                                    });
+                                  }}
+                                  className="flex-1 px-2.5 py-1.5 rounded-md border border-[#E4D5AE] text-xs focus:outline-none focus:ring-1 focus:ring-[#C99738]"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newEn = (editingFestival.highlights?.en || []).filter((_, i) => i !== idx);
+                                    const newMl = (editingFestival.highlights?.ml || []).filter((_, i) => i !== idx);
+                                    setEditingFestival({
+                                      ...editingFestival,
+                                      highlights: { en: newEn, ml: newMl },
+                                    });
+                                  }}
+                                  className="p-1 text-[#610C1B] hover:bg-rose-50 rounded cursor-pointer"
+                                  title="Remove highlight"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -1326,8 +1464,18 @@ export default function AdminPage() {
           {/* TAB 4: PUBLIC CONTACTS & BANK DETAILS */}
           {/* ----------------------------------------------------------------- */}
           {activeTab === 'contacts' && (
-            <div className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-3xl border border-[#E4D5AE] shadow-sm">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E4D5AE] pb-4 mb-6">
+            <div className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-3xl border border-[#E4D5AE] shadow-sm space-y-4">
+              {/* Staff Admin Notice Banner */}
+              {activeRole === 'staff_admin' && (
+                <div className="p-3.5 rounded-2xl bg-[#5C0A17]/10 border border-[#F43F5E]/40 text-xs text-[#610C1B] flex items-center gap-2 animate-fadeIn">
+                  <ShieldAlert className="w-4 h-4 flex-shrink-0 text-[#610C1B]" />
+                  <span>
+                    <strong>View-Only Mode:</strong> Logged in as Staff/Admin. Contact information, official bank details, and QR attachments are managed exclusively by the Super Admin (Managing Trustee & Treasurer).
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E4D5AE] pb-4 mb-2">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-[#610C1B] text-[#E6BE65] flex items-center justify-center shadow-md">
                     <Building className="w-5 h-5" />
@@ -1344,28 +1492,32 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {!isEditingContacts ? (
-                  <button
-                    onClick={() => {
-                      setContactForm(contactInfo);
-                      setIsEditingContacts(true);
-                    }}
-                    className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer flex-shrink-0"
-                  >
-                    <Edit3 className="w-3.5 h-3.5 text-[#E6BE65]" />
-                    <span>Edit Details</span>
-                  </button>
+                {activeRole === 'super_admin' ? (
+                  !isEditingContacts ? (
+                    <button
+                      onClick={() => {
+                        setContactForm(contactInfo);
+                        setIsEditingContacts(true);
+                      }}
+                      className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer flex-shrink-0"
+                    >
+                      <Edit3 className="w-3.5 h-3.5 text-[#E6BE65]" />
+                      <span>Edit Details</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setContactForm(contactInfo);
+                        setIsEditingContacts(false);
+                      }}
+                      className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer flex-shrink-0"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      <span>Cancel Editing</span>
+                    </button>
+                  )
                 ) : (
-                  <button
-                    onClick={() => {
-                      setContactForm(contactInfo);
-                      setIsEditingContacts(false);
-                    }}
-                    className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer flex-shrink-0"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                    <span>Cancel Editing</span>
-                  </button>
+                  <span className="text-[10px] text-gray-400 italic">View Only</span>
                 )}
               </div>
 
@@ -1421,69 +1573,58 @@ export default function AdminPage() {
                     <div className="flex items-center justify-between border-b border-[#E4D5AE]/60 pb-2">
                       <span className="font-cinzel font-bold text-xs text-[#610C1B] uppercase tracking-wider flex items-center gap-1.5">
                         <Building className="w-4 h-4 text-[#C99738]" />
-                        <span>Bank Account & BHIM UPI Transfer Details</span>
+                        <span>Canara Bank Account & UPI Details</span>
                       </span>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                       <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
-                        <span className="text-[#8C6219] font-bold block mb-1">Bank Name & Branch:</span>
-                        <span className="text-sm font-bold text-[#38050E]">
-                          {contactInfo.bankName} · {contactInfo.bankBranch}
-                        </span>
+                        <span className="text-[#8C6219] font-bold block mb-1">Bank Name:</span>
+                        <span className="font-medium text-sm text-[#38050E]">{contactInfo.bankName}</span>
                       </div>
 
                       <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
                         <span className="text-[#8C6219] font-bold block mb-1">Account Holder Name:</span>
-                        <span className="text-sm font-bold text-[#38050E]">
-                          {contactInfo.accountName}
-                        </span>
+                        <span className="font-medium text-sm text-[#38050E]">{contactInfo.accountName}</span>
                       </div>
 
                       <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
                         <span className="text-[#8C6219] font-bold block mb-1">Account Number:</span>
-                        <span className="font-mono text-base font-extrabold text-[#610C1B]">
+                        <span className="font-mono text-base font-bold text-[#610C1B]">
                           {contactInfo.accountNumber}
                         </span>
                       </div>
 
                       <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
                         <span className="text-[#8C6219] font-bold block mb-1">IFSC Code:</span>
-                        <span className="font-mono text-base font-bold text-[#38050E]">
-                          {contactInfo.ifscCode}
-                        </span>
+                        <span className="font-mono text-sm font-bold text-[#38050E]">{contactInfo.ifscCode}</span>
                       </div>
 
                       <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE] sm:col-span-2">
-                        <span className="text-[#8C6219] font-bold block mb-1">Official UPI ID (VPA):</span>
-                        <span className="font-mono text-sm font-bold text-[#1A0409]">
-                          {contactInfo.upiId}
-                        </span>
+                        <span className="text-[#8C6219] font-bold block mb-1">BHIM UPI ID:</span>
+                        <span className="font-mono text-sm font-bold text-[#1F4E34]">{contactInfo.upiId}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* QR Code & PDF File Card */}
+                  {/* QR Code PDF Attachment View Card */}
                   <div className="p-5 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
-                    <div className="flex items-center justify-between border-b border-[#E4D5AE]/60 pb-2">
-                      <span className="font-cinzel font-bold text-xs text-[#610C1B] uppercase tracking-wider flex items-center gap-1.5">
-                        <QrCode className="w-4 h-4 text-[#C99738]" />
-                        <span>Official Bank QR Code & Attachment</span>
-                      </span>
-                    </div>
+                    <span className="font-cinzel font-bold text-xs text-[#610C1B] block uppercase tracking-wider">
+                      Active QR Code & Transaction PDF File
+                    </span>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-[#E4D5AE]">
-                      <div className="flex items-center gap-3.5">
-                        <div className="w-14 h-14 rounded-xl bg-white border border-[#E4D5AE] p-1 flex items-center justify-center shadow-xs">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-[#E4D5AE]">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-[#FAF5E8] border border-[#C99738] p-1 flex items-center justify-center flex-shrink-0 shadow-xs">
                           <img
-                            src={contactInfo.qrImageUrl || '/temple-qr-code.png'}
-                            alt="QR Code Preview"
+                            src="/temple-qr-code.png"
+                            alt="Temple QR Code"
                             className="w-full h-full object-contain"
                           />
                         </div>
                         <div>
                           <span className="font-bold text-xs text-[#38050E] block">
-                            Active QR Code Asset & PDF
+                            Current Attached QR PDF / File
                           </span>
                           <span className="font-mono text-[11px] text-[#8C6219]">
                             {contactForm.qrPdfName || 'Canara_Bank_BHIM_UPI_QR.pdf'}
@@ -1502,16 +1643,18 @@ export default function AdminPage() {
                             <span>Download PDF</span>
                           </a>
                         )}
-                        <button
-                          onClick={() => {
-                            setContactForm(contactInfo);
-                            setIsEditingContacts(true);
-                          }}
-                          className="px-3.5 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-                        >
-                          <Edit3 className="w-3.5 h-3.5 text-[#E6BE65]" />
-                          <span>Change QR / Attach File</span>
-                        </button>
+                        {activeRole === 'super_admin' && (
+                          <button
+                            onClick={() => {
+                              setContactForm(contactInfo);
+                              setIsEditingContacts(true);
+                            }}
+                            className="px-3.5 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                          >
+                            <Edit3 className="w-3.5 h-3.5 text-[#E6BE65]" />
+                            <span>Change QR / Attach File</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1541,22 +1684,50 @@ export default function AdminPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block font-bold text-[#8C6219] mb-1">Office Phone Number</label>
-                        <input
-                          type="text"
-                          value={contactForm.phoneDisplay}
-                          onChange={(e) => setContactForm({ ...contactForm, phoneDisplay: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
-                        />
+                        <div className="flex gap-2">
+                          <select
+                            value={adminPhoneCountryCode}
+                            onChange={(e) => setAdminPhoneCountryCode(e.target.value)}
+                            className="w-32 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E]"
+                          >
+                            <option value="+91">+91 (India 🇮🇳)</option>
+                            <option value="+1">+1 (USA 🇺🇸)</option>
+                            <option value="+971">+971 (UAE 🇦🇪)</option>
+                            <option value="+966">+966 (Saudi 🇸🇦)</option>
+                            <option value="+44">+44 (UK 🇬🇧)</option>
+                          </select>
+                          <input
+                            type="text"
+                            value={contactForm.phoneDisplay}
+                            onChange={(e) => setContactForm({ ...contactForm, phoneDisplay: e.target.value })}
+                            placeholder="e.g. +91 4822 212345"
+                            className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
+                          />
+                        </div>
                       </div>
 
                       <div>
-                        <label className="block font-bold text-[#8C6219] mb-1">WhatsApp Number (with country code)</label>
-                        <input
-                          type="text"
-                          value={contactForm.whatsapp}
-                          onChange={(e) => setContactForm({ ...contactForm, whatsapp: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
-                        />
+                        <label className="block font-bold text-[#8C6219] mb-1">WhatsApp Line (with Country Code)</label>
+                        <div className="flex gap-2">
+                          <select
+                            value={adminWhatsAppCountryCode}
+                            onChange={(e) => setAdminWhatsAppCountryCode(e.target.value)}
+                            className="w-32 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E]"
+                          >
+                            <option value="+91">+91 (India 🇮🇳)</option>
+                            <option value="+1">+1 (USA 🇺🇸)</option>
+                            <option value="+971">+971 (UAE 🇦🇪)</option>
+                            <option value="+966">+966 (Saudi 🇸🇦)</option>
+                            <option value="+44">+44 (UK 🇬🇧)</option>
+                          </select>
+                          <input
+                            type="text"
+                            value={contactForm.whatsapp}
+                            onChange={(e) => setContactForm({ ...contactForm, whatsapp: e.target.value.replace(/\D/g, '') })}
+                            placeholder="e.g. 919447000000"
+                            className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2010,8 +2181,9 @@ export default function AdminPage() {
                 <select
                   value={newUserRole}
                   onChange={(e) => setNewUserRole(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-medium"
                 >
+                  <option value="Admin">Admin (അഡ്മിൻ - Support & Communications)</option>
                   <option value="Melsanthi / Chief Priest">Melsanthi / Chief Priest (മേൽശാന്തി)</option>
                   <option value="Devaswom Office Clerk">Devaswom Office Clerk (ഓഫീസ് ക്ലർക്ക്)</option>
                   <option value="Trustee Board Member">Trustee Board Member (ട്രസ്റ്റി അംഗം)</option>

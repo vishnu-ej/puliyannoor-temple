@@ -42,6 +42,7 @@ export const OfferingModal: React.FC<OfferingModalProps> = ({
   const [familyName, setFamilyName] = useState('');
   const [place, setPlace] = useState('');
   const [offeringDate, setOfferingDate] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
   const [phone, setPhone] = useState('');
   const [notes, setNotes] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -139,7 +140,7 @@ export const OfferingModal: React.FC<OfferingModalProps> = ({
 *Preferred Date:* ${offeringDate}
 --------------------------------------------
 ${devoteeInfo}
-${phone.trim() ? `*Contact Phone:* ${phone.trim()}\n` : ''}${notes.trim() ? `*Special Prayer/Notes:* ${notes.trim()}\n` : ''}--------------------------------------------
+${phone.trim() ? `*Contact Phone:* ${countryCode} ${phone.trim()}\n` : ''}${notes.trim() ? `*Special Prayer/Notes:* ${notes.trim()}\n` : ''}--------------------------------------------
 _Inquiry submitted via official temple web portal_`;
 
     const encoded = encodeURIComponent(message);
@@ -330,18 +331,48 @@ _Inquiry submitted via official temple web portal_`;
             </div>
           </div>
 
-          {/* Phone Number */}
+          {/* Phone Number with Country Code */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
               {t('form_phone')}
             </label>
-            <input
-              type="tel"
-              placeholder="+91 XXXXX XXXXX"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-            />
+            <div className="flex gap-2">
+              <select
+                value={countryCode}
+                onChange={(e) => setCountryCode(e.target.value)}
+                className="w-36 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+              >
+                <option value="+91">+91 (India 🇮🇳)</option>
+                <option value="+1">+1 (USA/Canada 🇺🇸)</option>
+                <option value="+971">+971 (UAE 🇦🇪)</option>
+                <option value="+966">+966 (Saudi 🇸🇦)</option>
+                <option value="+968">+968 (Oman 🇴🇲)</option>
+                <option value="+974">+974 (Qatar 🇶🇦)</option>
+                <option value="+973">+973 (Bahrain 🇧🇭)</option>
+                <option value="+965">+965 (Kuwait 🇰🇼)</option>
+                <option value="+44">+44 (UK 🇬🇧)</option>
+                <option value="+65">+65 (Singapore 🇸🇬)</option>
+                <option value="+60">+60 (Malaysia 🇲🇾)</option>
+                <option value="+61">+61 (Australia 🇦🇺)</option>
+                <option value="+49">+49 (Germany 🇩🇪)</option>
+                <option value="+33">+33 (France 🇫🇷)</option>
+                <option value="+41">+41 (Switzerland 🇨🇭)</option>
+                <option value="+64">+64 (New Zealand 🇳🇿)</option>
+              </select>
+              <input
+                type="tel"
+                placeholder={countryCode === '+91' ? '10-digit mobile number' : 'Contact number'}
+                maxLength={countryCode === '+91' ? 10 : 15}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] font-mono"
+              />
+            </div>
+            {phone && countryCode === '+91' && phone.length !== 10 && (
+              <p className="text-[11px] text-amber-700 mt-1">
+                ⚠️ Indian mobile number must be exactly 10 digits ({phone.length}/10 entered)
+              </p>
+            )}
           </div>
 
           {/* Special Notes */}

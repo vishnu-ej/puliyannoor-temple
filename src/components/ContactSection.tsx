@@ -18,6 +18,7 @@ import {
 export const ContactSection: React.FC = () => {
   const { language, t } = useLanguage();
   const { contactInfo, createDevoteeInquiryChat } = useContent();
+  const [countryCode, setCountryCode] = useState('+91');
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -34,10 +35,17 @@ export const ContactSection: React.FC = () => {
       return;
     }
 
+    if (countryCode === '+91' && formData.phone.trim().length !== 10) {
+      alert(language === 'en' ? 'Please enter a valid 10-digit mobile number' : '10 അക്ക മൊബൈൽ നമ്പർ നൽകുക');
+      return;
+    }
+
+    const fullPhone = `${countryCode} ${formData.phone.trim()}`;
+
     // Also register inside Admin Chat System dynamically
     createDevoteeInquiryChat(
       formData.name.trim(),
-      formData.phone.trim(),
+      fullPhone,
       formData.subject.trim() || 'Portal Web Inquiry',
       formData.message.trim()
     );
@@ -45,7 +53,7 @@ export const ContactSection: React.FC = () => {
     const message = `*Puliyannoor Sree Mahadeva Temple - Devotee Inquiry*
 --------------------------------------------
 *From:* ${formData.name.trim()}
-*Phone:* ${formData.phone.trim()}
+*Phone:* ${fullPhone}
 ${formData.email.trim() ? `*Email:* ${formData.email.trim()}\n` : ''}*Subject:* ${formData.subject.trim() || 'General Inquiry'}
 --------------------------------------------
 *Message Details:*
@@ -211,14 +219,49 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
                     {t('form_phone')} *
                   </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+91 XXXXX XXXXX"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <select
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
+                      className="w-36 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                    >
+                      <option value="+91">+91 (India 🇮🇳)</option>
+                      <option value="+1">+1 (USA/Canada 🇺🇸)</option>
+                      <option value="+971">+971 (UAE 🇦🇪)</option>
+                      <option value="+966">+966 (Saudi 🇸🇦)</option>
+                      <option value="+968">+968 (Oman 🇴🇲)</option>
+                      <option value="+974">+974 (Qatar 🇶🇦)</option>
+                      <option value="+973">+973 (Bahrain 🇧🇭)</option>
+                      <option value="+965">+965 (Kuwait 🇰🇼)</option>
+                      <option value="+44">+44 (UK 🇬🇧)</option>
+                      <option value="+65">+65 (Singapore 🇸🇬)</option>
+                      <option value="+60">+60 (Malaysia 🇲🇾)</option>
+                      <option value="+61">+61 (Australia 🇦🇺)</option>
+                      <option value="+49">+49 (Germany 🇩🇪)</option>
+                      <option value="+33">+33 (France 🇫🇷)</option>
+                      <option value="+41">+41 (Switzerland 🇨🇭)</option>
+                      <option value="+64">+64 (New Zealand 🇳🇿)</option>
+                    </select>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          phone: e.target.value.replace(/\D/g, ''),
+                        })
+                      }
+                      placeholder={countryCode === '+91' ? '10-digit mobile number' : 'Contact number'}
+                      maxLength={countryCode === '+91' ? 10 : 15}
+                      className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] font-mono"
+                      required
+                    />
+                  </div>
+                  {formData.phone && countryCode === '+91' && formData.phone.length !== 10 && (
+                    <p className="text-[11px] text-amber-700 mt-1">
+                      ⚠️ Indian mobile number must be exactly 10 digits ({formData.phone.length}/10 entered)
+                    </p>
+                  )}
                 </div>
               </div>
 
