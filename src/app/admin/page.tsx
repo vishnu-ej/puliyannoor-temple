@@ -71,8 +71,8 @@ export default function AdminPage() {
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [username, setUsername] = useState('PDTemple');
-  const [password, setPassword] = useState('test1209');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
   const [activeTab, setActiveTab] = useState<AdminTab>('chats');
@@ -326,14 +326,11 @@ export default function AdminPage() {
                   <p>Phone: <a href="tel:+914822212345" className="text-[#610C1B] font-semibold underline">+91 4822 212345</a></p>
                 </div>
                 <button
-                  onClick={() => {
-                    setAuthMode('login');
-                    setUsername('PDTemple');
-                    setPassword('test1209');
-                  }}
-                  className="w-full py-2.5 rounded-xl bg-[#C99738] hover:bg-[#E6BE65] text-[#1A0409] font-bold text-xs uppercase"
+                  type="button"
+                  onClick={() => setAuthMode('login')}
+                  className="w-full py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
                 >
-                  Proceed with PDTemple Demo Account
+                  Admin Login
                 </button>
               </div>
             )}
