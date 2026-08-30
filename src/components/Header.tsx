@@ -91,14 +91,13 @@ export const Header: React.FC = () => {
             className="flex items-center gap-2 sm:gap-2.5 group select-none flex-shrink-0"
           >
             <div className="relative flex-shrink-0">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-[#610C1B] to-[#1A0409] p-0.5 shadow-md flex items-center justify-center border-2 border-[#C99738] group-hover:scale-105 transition-transform">
-                <div className="w-full h-full rounded-full bg-[#38050E] flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-sm sm:text-base">
-                  ॐ
-                </div>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden shadow-md flex items-center justify-center border-2 border-[#C99738] group-hover:scale-105 transition-transform bg-[#38050E]">
+                <img
+                  src="/aum-logo.png"
+                  alt="Puliyannoor Sree Mahadeva Temple Emblem"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3 sm:h-3.5 sm:w-3.5 items-center justify-center rounded-full bg-[#C99738] text-[8px] sm:text-[9px] text-[#1A0409] font-bold">
-                ✓
-              </span>
             </div>
 
             <div className="flex flex-col overflow-hidden">
