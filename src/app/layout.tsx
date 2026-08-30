@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { LanguageProvider } from '../context/LanguageContext';
+import { ContentProvider } from '../context/ContentContext';
 import { CartProvider } from '../context/CartContext';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
@@ -19,7 +20,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'Puliyannoor Sree Mahadeva Temple | പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രം',
   description:
-    'Official website of Puliyannoor Sree Mahadeva Temple (Cheruthil Valuthu Puliyannoor) in Mutholy, Pala, Kottayam, Kerala. Check live darshan pooja timings, book vazhipadu offerings, and explore festival schedules.',
+    'Official website of Puliyannoor Sree Mahadeva Temple (Cheruthil Valuthu Puliyannoor) in Mutholy, Pala, Kottayam, Kerala. Contact: puliyannoordevaswom@gmail.com. Check live darshan pooja timings, book vazhipadu offerings, and explore festival schedules.',
   keywords: [
     'Puliyannoor Sree Mahadeva Temple',
     'Puliyannoor Temple Pala',
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Puliyannoor Sree Mahadeva Temple · Cheruthil Valuthu Puliyannoor',
     description:
-      'Ancient Shiva shrine in Mutholy near Pala, Kottayam, Kerala. Administered by the Puliyannoor Ooranma Temple Devaswom.',
+      'Ancient Shiva shrine in Mutholy near Pala, Kottayam, Kerala. Administered by the Puliyannoor Ooranma Temple Devaswom. Email: puliyannoordevaswom@gmail.com',
     type: 'website',
     locale: 'en_IN',
   },
@@ -62,21 +63,23 @@ export default function RootLayout({
     <html lang="en" id="htmlRoot" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col bg-[#FAF5E8] text-[#2B150F] selection:bg-[#C99738]/30 selection:text-[#610C1B]">
         <LanguageProvider>
-          <CartProvider>
-            {/* Fixed Top Header */}
-            <Header />
+          <ContentProvider>
+            <CartProvider>
+              {/* Fixed Top Header */}
+              <Header />
 
-            {/* Page Content Container */}
-            <div className="flex-1 w-full pt-[90px] sm:pt-[100px] md:pt-[104px] flex flex-col">
-              {children}
-            </div>
+              {/* Page Content Container */}
+              <div className="flex-1 w-full pt-[90px] sm:pt-[100px] md:pt-[104px] flex flex-col">
+                {children}
+              </div>
 
-            {/* Floating Cart Drawer & Action Bar */}
-            <CartDrawer />
+              {/* Floating Cart Drawer & Action Bar */}
+              <CartDrawer />
 
-            {/* Persistent Footer */}
-            <Footer />
-          </CartProvider>
+              {/* Persistent Footer */}
+              <Footer />
+            </CartProvider>
+          </ContentProvider>
         </LanguageProvider>
       </body>
     </html>

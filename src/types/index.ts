@@ -1,13 +1,14 @@
 export type Language = 'en' | 'ml';
 
-export type OfferingCategory = 
-  | 'all' 
-  | 'pooja_homam' 
-  | 'abhishekam_dhara' 
-  | 'archana_pushpanjali' 
-  | 'nivedyam_payasam' 
-  | 'vilakku_mala' 
+export type OfferingItemCategory =
+  | 'pooja_homam'
+  | 'abhishekam_dhara'
+  | 'archana_pushpanjali'
+  | 'nivedyam_payasam'
+  | 'vilakku_mala'
   | 'special_sevas';
+
+export type OfferingCategory = 'all' | OfferingItemCategory;
 
 export interface OfferingItem {
   slNo: number;
@@ -16,7 +17,7 @@ export interface OfferingItem {
     en: string;
     ml: string;
   };
-  category: 'pooja_homam' | 'abhishekam_dhara' | 'archana_pushpanjali' | 'nivedyam_payasam' | 'vilakku_mala' | 'special_sevas';
+  category: OfferingItemCategory;
   price: number;
   description: {
     en: string;

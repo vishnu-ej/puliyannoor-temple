@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useLanguage } from '../context/LanguageContext';
-import { OFFERINGS } from '../data/offerings';
+import { useContent } from '../context/ContentContext';
 import { OfferingItem, OfferingCategory } from '../types';
 import { MuralDivider } from './MuralDivider';
 import {
@@ -21,7 +22,9 @@ import {
   Copy,
   Check,
   QrCode,
-  HeartHandshake,
+  Maximize2,
+  X,
+  Download,
 } from 'lucide-react';
 
 interface OfferingsSectionProps {
@@ -32,9 +35,11 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
   onSelectOffering,
 }) => {
   const { language, t } = useLanguage();
+  const { offerings, contactInfo } = useContent();
   const [selectedCategory, setSelectedCategory] = useState<OfferingCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   const categories: { id: OfferingCategory; labelKey: string }[] = [
     { id: 'all', labelKey: 'filter_all' },
@@ -46,7 +51,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
     { id: 'special_sevas', labelKey: 'filter_special_sevas' },
   ];
 
-  const filteredOfferings = OFFERINGS.filter((item) => {
+  const filteredOfferings = offerings.filter((item) => {
     const matchesCategory =
       selectedCategory === 'all' || item.category === selectedCategory;
 
@@ -156,8 +161,8 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
           <div className="text-center text-xs text-[#8C6219] font-medium">
             <span>
               {language === 'en'
-                ? `Showing ${filteredOfferings.length} of ${OFFERINGS.length} offerings`
-                : `${OFFERINGS.length} വഴിപാടുകളിൽ ${filteredOfferings.length} എണ്ണം കാണിക്കുന്നു`}
+                ? `Showing ${filteredOfferings.length} of ${offerings.length} offerings`
+                : `${offerings.length} വഴിപാടുകളിൽ ${filteredOfferings.length} എണ്ണം കാണിക്കുന്നു`}
             </span>
           </div>
         </div>
@@ -249,15 +254,15 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
           </div>
         )}
 
-        {/* Bank Details & Donations Box */}
+        {/* Bank Details & Donations Box with Official Canara Bank QR */}
         <div className="max-w-4xl mx-auto glass-card rounded-3xl p-6 sm:p-8 border-2 border-[#C99738] shadow-xl bg-gradient-to-br from-[#FAF5E8] via-[#F3EBD7] to-[#FAF5E8] relative overflow-hidden">
           <div className="absolute top-0 right-0 w-40 h-40 bg-[#C99738]/10 rounded-full blur-2xl pointer-events-none" />
           
-          <div className="flex flex-col md:flex-row items-stretch justify-between gap-6 md:gap-8 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 relative z-10">
             {/* Left Side: Bank Details */}
-            <div className="flex-1 space-y-4 text-left">
+            <div className="flex-1 space-y-4 text-left w-full">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-[#610C1B] text-[#E6BE65] flex items-center justify-center shadow-md">
+                <div className="w-10 h-10 rounded-xl bg-[#610C1B] text-[#E6BE65] flex items-center justify-center shadow-md flex-shrink-0">
                   <Building className="w-5 h-5" />
                 </div>
                 <div>
@@ -265,7 +270,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
                     {language === 'en' ? 'Temple Donations & Direct Bank Transfer' : 'ക്ഷേത്ര സംഭാവനകൾ & ബാങ്ക് വിവരങ്ങൾ'}
                   </h3>
                   <p className="text-xs text-[#8C6219] font-medium font-cinzel">
-                    Puliyannoor Branch Managing Trustee & Treasurer
+                    {contactInfo.managingTrustee}
                   </p>
                 </div>
               </div>
@@ -273,22 +278,22 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
               <div className="p-4 rounded-2xl bg-white/90 border border-[#E4D5AE] shadow-inner space-y-2.5 text-xs sm:text-sm">
                 <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
                   <span className="text-[#8C6219] font-bold">Bank:</span>
-                  <span className="font-bold text-[#38050E]">CANARA BANK (കനറാ ബാങ്ക്)</span>
+                  <span className="font-bold text-[#38050E]">{contactInfo.bankName}</span>
                 </div>
 
                 <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
                   <span className="text-[#8C6219] font-bold">Account Name:</span>
-                  <span className="font-bold text-[#38050E]">Puliyannoor Devaswom</span>
+                  <span className="font-bold text-[#38050E]">{contactInfo.accountName}</span>
                 </div>
 
                 <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
                   <span className="text-[#8C6219] font-bold">Account Number:</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-sm sm:text-base text-[#610C1B]">
-                      5636101001111
+                      {contactInfo.accountNumber}
                     </span>
                     <button
-                      onClick={() => handleCopy('5636101001111', 'account')}
+                      onClick={() => handleCopy(contactInfo.accountNumber, 'account')}
                       className="p-1 rounded text-[#8C6219] hover:text-[#610C1B] hover:bg-[#FAF5E8] transition-colors cursor-pointer"
                       title="Copy Account Number"
                     >
@@ -301,14 +306,14 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
                   <span className="text-[#8C6219] font-bold">IFSC Code:</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-sm sm:text-base text-[#610C1B]">
-                      CNRB0005636
+                      {contactInfo.ifscCode}
                     </span>
                     <button
-                      onClick={() => handleCopy('CNRB0005636', 'ifsc')}
+                      onClick={() => handleCopy(contactInfo.ifscCode, 'ifsc')}
                       className="p-1 rounded text-[#8C6219] hover:text-[#610C1B] hover:bg-[#FAF5E8] transition-colors cursor-pointer"
                       title="Copy IFSC Code"
                     >
@@ -320,34 +325,122 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
                     </button>
                   </div>
                 </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-[#8C6219] font-bold">UPI ID:</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-semibold text-xs sm:text-sm text-[#1A0409]">
+                      {contactInfo.upiId}
+                    </span>
+                    <button
+                      onClick={() => handleCopy(contactInfo.upiId, 'upi')}
+                      className="p-1 rounded text-[#8C6219] hover:text-[#610C1B] hover:bg-[#FAF5E8] transition-colors cursor-pointer"
+                      title="Copy UPI ID"
+                    >
+                      {copiedField === 'upi' ? (
+                        <Check className="w-3.5 h-3.5 text-[#1F4E34]" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <p className="text-[11px] text-[#5A382A] italic">
                 {language === 'en'
-                  ? '* Devotees transferring funds for major poojas or Annadanam are kindly requested to share the transaction screenshot to the Devaswom WhatsApp.'
-                  : '* ബാങ്ക് വഴി വഴിപാടുകൾക്ക് തുക അയക്കുന്ന ഭക്തർ രസീത് ദേവസ്വം വാട്സാപ്പിൽ അയച്ചു നൽകണമെന്ന് അഭ്യർത്ഥിക്കുന്നു.'}
+                  ? '* Devotees transferring funds for major poojas or Annadanam are kindly requested to share the transaction screenshot to the Devaswom WhatsApp or email puliyannoordevaswom@gmail.com.'
+                  : '* ബാങ്ക് വഴി വഴിപാടുകൾക്ക് തുക അയക്കുന്ന ഭക്തർ രസീത് ദേവസ്വം വാട്സാപ്പിൽ (+91 94470 00000) അല്ലെങ്കിൽ puliyannoordevaswom@gmail.com ൽ അയച്ചു നൽകണമെന്ന് അഭ്യർത്ഥിക്കുന്നു.'}
               </p>
             </div>
 
-            {/* Right Side: QR Code Box Placeholder */}
-            <div className="w-full md:w-56 bg-white/90 rounded-2xl p-4 border-2 border-dashed border-[#C99738] flex flex-col items-center justify-center text-center shadow-inner flex-shrink-0">
-              <div className="w-32 h-32 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] flex flex-col items-center justify-center p-3 relative group">
-                <QrCode className="w-16 h-16 text-[#610C1B] mb-1" />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-[#8C6219]">
-                  Scan & Pay
-                </span>
-                <span className="text-[8px] text-[#5A382A]">UPI / QR Code</span>
+            {/* Right Side: Official Bank QR Code Card */}
+            <div className="w-full md:w-64 bg-white/95 rounded-2xl p-4 border-2 border-[#C99738] flex flex-col items-center justify-center text-center shadow-md flex-shrink-0">
+              <div
+                onClick={() => setIsQrModalOpen(true)}
+                className="relative w-44 h-56 rounded-xl overflow-hidden border border-[#E4D5AE] cursor-pointer group shadow-sm hover:shadow-lg transition-all"
+                title="Click to zoom QR code"
+              >
+                <img
+                  src={contactInfo.qrImageUrl}
+                  alt="Puliyannoor Devaswom Canara Bank BHIM UPI QR Code"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-[#1A0409]/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#1A0409]/80 text-[#FAF5E8] text-xs font-bold backdrop-blur-xs">
+                    <Maximize2 className="w-3.5 h-3.5 text-[#E6BE65]" />
+                    <span>Zoom</span>
+                  </span>
+                </div>
               </div>
-              <span className="text-[11px] font-bold text-[#38050E] mt-3 font-cinzel">
-                Devaswom UPI QR
+
+              <span className="text-xs font-bold text-[#38050E] mt-3 font-cinzel">
+                BHIM UPI QR Code
               </span>
-              <span className="text-[10px] text-[#8C6219]">
-                {language === 'en' ? 'Direct UPI Payment' : 'നേരിട്ടുള്ള യുപിഐ പേയ്മെന്റ്'}
+              <span className="text-[11px] text-[#8C6219] font-medium">
+                {contactInfo.upiId}
               </span>
+              <button
+                onClick={() => setIsQrModalOpen(true)}
+                className="mt-2 text-[11px] font-bold text-[#610C1B] hover:text-[#8B1428] underline underline-offset-2 flex items-center gap-1 cursor-pointer"
+              >
+                <Maximize2 className="w-3 h-3" />
+                <span>View Full QR Card</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* QR Code Fullscreen Modal */}
+      {isQrModalOpen && (
+        <div
+          onClick={() => setIsQrModalOpen(false)}
+          className="fixed inset-0 z-50 bg-[#1A0409]/85 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-5 max-w-sm sm:max-w-md w-full shadow-2xl border-2 border-[#C99738] relative flex flex-col items-center animate-scaleUp"
+          >
+            <button
+              onClick={() => setIsQrModalOpen(false)}
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#FAF5E8] text-[#38050E] hover:bg-[#610C1B] hover:text-white flex items-center justify-center shadow transition-colors cursor-pointer"
+              aria-label="Close QR Modal"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <h4 className="font-cinzel font-bold text-base text-[#38050E] mb-1">
+              Official BHIM UPI QR Code
+            </h4>
+            <p className="text-xs text-[#8C6219] mb-4 text-center font-medium">
+              Puliyannoor Devaswom · Canara Bank
+            </p>
+
+            <div className="w-full max-h-[70vh] rounded-2xl overflow-hidden border border-[#E4D5AE] shadow-inner mb-4 flex items-center justify-center bg-gray-50">
+              <img
+                src={contactInfo.qrImageUrl}
+                alt="Full Puliyannoor Devaswom BHIM UPI QR Code"
+                className="max-h-[60vh] w-auto object-contain"
+              />
+            </div>
+
+            <div className="w-full flex items-center justify-between gap-3 text-xs">
+              <span className="font-mono font-bold text-[#610C1B] truncate">
+                {contactInfo.upiId}
+              </span>
+              <a
+                href={contactInfo.qrImageUrl}
+                download="Puliyannoor-Devaswom-UPI-QR.jpg"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white font-bold transition-all flex-shrink-0"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Save QR</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

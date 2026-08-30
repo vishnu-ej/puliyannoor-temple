@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useContent } from '../context/ContentContext';
 import { MuralDivider } from './MuralDivider';
 import {
   Phone,
@@ -16,6 +17,7 @@ import {
 
 export const ContactSection: React.FC = () => {
   const { language, t } = useLanguage();
+  const { contactInfo, createDevoteeInquiryChat } = useContent();
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -32,6 +34,14 @@ export const ContactSection: React.FC = () => {
       return;
     }
 
+    // Also register inside Admin Chat System dynamically
+    createDevoteeInquiryChat(
+      formData.name.trim(),
+      formData.phone.trim(),
+      formData.subject.trim() || 'Portal Web Inquiry',
+      formData.message.trim()
+    );
+
     const message = `*Puliyannoor Sree Mahadeva Temple - Devotee Inquiry*
 --------------------------------------------
 *From:* ${formData.name.trim()}
@@ -44,7 +54,7 @@ ${formData.message.trim()}
 _Sent via Puliyannoor Temple Official Web Portal_`;
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/919447000000?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/${contactInfo.whatsapp}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 
     setIsSent(true);
@@ -75,61 +85,88 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
           <MuralDivider variant="simple" className="my-2" />
         </div>
 
-        {/* 3 Contact Quick Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
+        {/* 4 Contact Quick Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12 max-w-6xl mx-auto">
           {/* Phone Card */}
-          <div className="glass-card rounded-2xl p-6 border border-[#E4D5AE] text-center shadow-sm card-hover-effect">
-            <div className="w-12 h-12 rounded-2xl bg-[#610C1B] text-[#E6BE65] flex items-center justify-center mx-auto mb-4 shadow-sm">
-              <Phone className="w-6 h-6" />
+          <div className="glass-card rounded-2xl p-5 border border-[#E4D5AE] text-center shadow-sm card-hover-effect flex flex-col justify-between">
+            <div>
+              <div className="w-11 h-11 rounded-2xl bg-[#610C1B] text-[#E6BE65] flex items-center justify-center mx-auto mb-3 shadow-sm">
+                <Phone className="w-5 h-5" />
+              </div>
+              <h3 className="font-cinzel font-bold text-sm text-[#38050E] mb-1">
+                {t('contact_phone_title')}
+              </h3>
+              <p className="text-xs text-[#5A382A] mb-3">
+                {t('contact_phone_desc')}
+              </p>
             </div>
-            <h3 className="font-cinzel font-bold text-base text-[#38050E] mb-1">
-              {t('contact_phone_title')}
-            </h3>
-            <p className="text-xs text-[#5A382A] mb-3">
-              {t('contact_phone_desc')}
-            </p>
             <a
-              href="tel:+914822212345"
-              className="font-cinzel font-bold text-sm text-[#610C1B] hover:text-[#8B1428] underline underline-offset-4"
+              href={`tel:${contactInfo.phone}`}
+              className="font-cinzel font-bold text-xs sm:text-sm text-[#610C1B] hover:text-[#8B1428] underline underline-offset-4"
             >
-              +91 4822 212345
+              {contactInfo.phoneDisplay}
+            </a>
+          </div>
+
+          {/* Email Card */}
+          <div className="glass-card rounded-2xl p-5 border border-[#E4D5AE] text-center shadow-sm card-hover-effect flex flex-col justify-between">
+            <div>
+              <div className="w-11 h-11 rounded-2xl bg-[#C99738] text-[#1A0409] flex items-center justify-center mx-auto mb-3 shadow-sm">
+                <Mail className="w-5 h-5" />
+              </div>
+              <h3 className="font-cinzel font-bold text-sm text-[#38050E] mb-1">
+                Official Email
+              </h3>
+              <p className="text-xs text-[#5A382A] mb-3">
+                Devaswom correspondence
+              </p>
+            </div>
+            <a
+              href={`mailto:${contactInfo.email}`}
+              className="font-semibold text-xs text-[#610C1B] hover:text-[#8B1428] underline underline-offset-4 break-all"
+            >
+              {contactInfo.email}
             </a>
           </div>
 
           {/* WhatsApp Support Card */}
-          <div className="glass-card rounded-2xl p-6 border border-[#E4D5AE] text-center shadow-sm card-hover-effect">
-            <div className="w-12 h-12 rounded-2xl bg-[#25D366] text-white flex items-center justify-center mx-auto mb-4 shadow-sm">
-              <MessageSquare className="w-6 h-6" />
+          <div className="glass-card rounded-2xl p-5 border border-[#E4D5AE] text-center shadow-sm card-hover-effect flex flex-col justify-between">
+            <div>
+              <div className="w-11 h-11 rounded-2xl bg-[#25D366] text-white flex items-center justify-center mx-auto mb-3 shadow-sm">
+                <MessageSquare className="w-5 h-5" />
+              </div>
+              <h3 className="font-cinzel font-bold text-sm text-[#38050E] mb-1">
+                {t('contact_whatsapp_title')}
+              </h3>
+              <p className="text-xs text-[#5A382A] mb-3">
+                {t('contact_whatsapp_desc')}
+              </p>
             </div>
-            <h3 className="font-cinzel font-bold text-base text-[#38050E] mb-1">
-              {t('contact_whatsapp_title')}
-            </h3>
-            <p className="text-xs text-[#5A382A] mb-3">
-              {t('contact_whatsapp_desc')}
-            </p>
             <a
-              href="https://wa.me/919447000000?text=Om%20Namah%20Shivaya%20-%20Pooja%20Inquiry"
+              href={`https://wa.me/${contactInfo.whatsapp}?text=Om%20Namah%20Shivaya%20-%20Pooja%20Inquiry`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#25D366] text-white text-xs font-bold shadow-sm hover:brightness-105 cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-full bg-[#25D366] text-white text-xs font-bold shadow-sm hover:brightness-105 cursor-pointer mx-auto"
             >
               <span>Chat on WhatsApp</span>
             </a>
           </div>
 
           {/* Office Hours Card */}
-          <div className="glass-card rounded-2xl p-6 border border-[#E4D5AE] text-center shadow-sm card-hover-effect">
-            <div className="w-12 h-12 rounded-2xl bg-[#C99738] text-[#1A0409] flex items-center justify-center mx-auto mb-4 shadow-sm">
-              <Clock className="w-6 h-6" />
+          <div className="glass-card rounded-2xl p-5 border border-[#E4D5AE] text-center shadow-sm card-hover-effect flex flex-col justify-between">
+            <div>
+              <div className="w-11 h-11 rounded-2xl bg-[#38050E] text-[#E6BE65] flex items-center justify-center mx-auto mb-3 shadow-sm">
+                <Clock className="w-5 h-5" />
+              </div>
+              <h3 className="font-cinzel font-bold text-sm text-[#38050E] mb-1">
+                {t('contact_hours_title')}
+              </h3>
+              <p className="text-xs text-[#5A382A] mb-1">
+                {contactInfo.officeHoursMorning}
+              </p>
             </div>
-            <h3 className="font-cinzel font-bold text-base text-[#38050E] mb-1">
-              {t('contact_hours_title')}
-            </h3>
-            <p className="text-xs text-[#5A382A] mb-1">
-              {t('contact_hours_desc')}
-            </p>
             <span className="text-[11px] text-[#8C6219] font-semibold">
-              Daily during Darshan hours
+              {contactInfo.officeHoursEvening}
             </span>
           </div>
         </div>

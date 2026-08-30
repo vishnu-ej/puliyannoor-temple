@@ -3,11 +3,13 @@
 import React from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../context/LanguageContext';
+import { useContent } from '../context/ContentContext';
 import { MuralDivider } from './MuralDivider';
-import { MapPin, Phone, ShieldCheck, Heart, Sparkles, Navigation } from 'lucide-react';
+import { MapPin, Phone, ShieldCheck, Heart, Sparkles, Navigation, Mail } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { language, t } = useLanguage();
+  const { contactInfo } = useContent();
   const currentYear = new Date().getFullYear();
 
   const links = [
@@ -116,6 +118,23 @@ export const Footer: React.FC = () => {
               Pala, Kottayam District,<br />
               Kerala 686573, India
             </address>
+
+            <div className="pt-1 flex flex-col gap-1.5 text-xs text-[#FAF5E8]/90">
+              <a
+                href={`mailto:${contactInfo.email}`}
+                className="inline-flex items-center gap-1.5 text-xs text-[#E6BE65] hover:text-white transition-colors"
+              >
+                <Mail className="w-3.5 h-3.5 text-[#C99738]" />
+                <span className="truncate">{contactInfo.email}</span>
+              </a>
+              <a
+                href={`tel:${contactInfo.phone}`}
+                className="inline-flex items-center gap-1.5 text-xs text-[#FAF5E8]/80 hover:text-[#E6BE65] transition-colors"
+              >
+                <Phone className="w-3.5 h-3.5 text-[#C99738]" />
+                <span>{contactInfo.phoneDisplay}</span>
+              </a>
+            </div>
 
             <div className="pt-2">
               <a

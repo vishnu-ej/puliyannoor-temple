@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { FESTIVALS } from '../data/festivals';
+import { useContent } from '../context/ContentContext';
 import { MuralDivider } from './MuralDivider';
 import {
   Calendar,
@@ -18,6 +18,7 @@ import {
 
 export const EventsSection: React.FC = () => {
   const { language, t } = useLanguage();
+  const { festivals } = useContent();
 
   // Next Major Festival Countdown (2027 Annual Temple Festival: Feb 28, 2027)
   const [timeLeft, setTimeLeft] = useState({
@@ -146,7 +147,7 @@ export const EventsSection: React.FC = () => {
 
         {/* Festival Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {FESTIVALS.map((fest) => (
+          {festivals.map((fest) => (
             <div
               key={fest.id}
               className={`rounded-2xl p-6 border transition-all card-hover-effect flex flex-col justify-between ${
