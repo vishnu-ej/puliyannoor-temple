@@ -436,7 +436,7 @@ export default function AdminPage() {
   // 2. AUTHENTICATED ADMIN PORTAL
   // -----------------------------------------------------------------------------------
   return (
-    <div className="min-h-screen bg-[#F3EBD7] text-[#2B150F] flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#F3EBD7] text-[#2B150F] flex flex-col md:flex-row relative items-start">
       {/* Toast Banner */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-50 px-4 py-2.5 rounded-xl bg-[#1F4E34] text-white text-xs font-bold shadow-2xl flex items-center gap-2 animate-slideDown">
@@ -445,8 +445,8 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Sidebar Navigation (Permanently Frozen & Fixed across all sections) */}
-      <aside className="w-full md:w-72 md:fixed md:left-0 md:top-0 md:bottom-0 md:h-screen bg-[#1A0409] text-[#FAF5E8] flex flex-col justify-between border-r border-[#C99738]/30 flex-shrink-0 z-40">
+      {/* Sidebar Navigation (Sticky until footer section begins) */}
+      <aside className="w-full md:w-72 md:sticky md:top-[104px] md:h-[calc(100vh-104px)] bg-[#1A0409] text-[#FAF5E8] flex flex-col justify-between border-r border-[#C99738]/30 flex-shrink-0 z-30 overflow-y-auto">
         <div>
           {/* Header Branding */}
           <div className="p-5 border-b border-[#C99738]/20 flex items-center justify-between">
@@ -570,7 +570,7 @@ export default function AdminPage() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#FAF5E8] min-h-screen md:ml-72">
+      <main className="flex-1 flex flex-col min-w-0 bg-[#FAF5E8] min-h-[calc(100vh-104px)]">
         {/* Top App Bar */}
         <header className="px-6 py-3.5 bg-white border-b border-[#E4D5AE] flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2">
