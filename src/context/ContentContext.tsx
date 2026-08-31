@@ -1,9 +1,17 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { OfferingItem, FestivalEvent } from '../types';
+import {
+  OfferingItem,
+  FestivalEvent,
+  AnnualCalendarData,
+  VisheshaDivasam,
+  PradoshamDate,
+  SamkramamDate,
+} from '../types';
 import { OFFERINGS as DEFAULT_OFFERINGS } from '../data/offerings';
 import { FESTIVALS as DEFAULT_FESTIVALS } from '../data/festivals';
+import { DEFAULT_ANNUAL_CALENDAR } from '../data/annualCalendar';
 
 export interface ChatMessage {
   id: string;
@@ -176,13 +184,27 @@ interface ContentContextType {
   festivals: FestivalEvent[];
   contactInfo: TempleContactInfo;
   chats: ChatConversation[];
+  annualCalendar: AnnualCalendarData;
   addOffering: (offering: Omit<OfferingItem, 'slNo'> & { slNo?: number }) => void;
   updateOffering: (id: string, updatedFields: Partial<OfferingItem>) => void;
   deleteOffering: (id: string) => void;
   addFestival: (festival: FestivalEvent) => void;
   updateFestival: (id: string, updatedFields: Partial<FestivalEvent>) => void;
   deleteFestival: (id: string) => void;
+  deleteMultipleFestivals: (ids: string[]) => void;
   updateContactInfo: (updatedFields: Partial<TempleContactInfo>) => void;
+  updateAnnualCalendar: (updatedFields: Partial<AnnualCalendarData>) => void;
+  addVisheshaDivasam: (item: Omit<VisheshaDivasam, 'id'>) => void;
+  updateVisheshaDivasam: (id: string, updatedFields: Partial<VisheshaDivasam>) => void;
+  deleteVisheshaDivasam: (id: string) => void;
+  addPradoshamDate: (item: Omit<PradoshamDate, 'id'>) => void;
+  updatePradoshamDate: (id: string, updatedFields: Partial<PradoshamDate>) => void;
+  deletePradoshamDate: (id: string) => void;
+  addSamkramamDate: (item: Omit<SamkramamDate, 'id'>) => void;
+  updateSamkramamDate: (id: string, updatedFields: Partial<SamkramamDate>) => void;
+  deleteSamkramamDate: (id: string) => void;
+  updateUlsavamBox: (ulsavamData: Partial<AnnualCalendarData['ulsavamBox']>) => void;
+  resetAnnualCalendar: () => void;
   sendMessage: (conversationId: string, text: string) => void;
   createDevoteeInquiryChat: (devoteeName: string, phone: string, subject: string, messageText: string, star?: string) => void;
   markChatAsRead: (conversationId: string) => void;
@@ -197,6 +219,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [festivals, setFestivals] = useState<FestivalEvent[]>(DEFAULT_FESTIVALS);
   const [contactInfo, setContactInfo] = useState<TempleContactInfo>(DEFAULT_CONTACT_INFO);
   const [chats, setChats] = useState<ChatConversation[]>(DEFAULT_CHATS);
+  const [annualCalendar, setAnnualCalendar] = useState<AnnualCalendarData>(DEFAULT_ANNUAL_CALENDAR);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -212,6 +235,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       const savedChats = localStorage.getItem('puliyannoor_chats');
       if (savedChats) setChats(JSON.parse(savedChats));
+
+      const savedCalendar = localStorage.getItem('puliyannoor_annual_calendar');
+      if (savedCalendar) setAnnualCalendar(JSON.parse(savedCalendar));
     } catch (e) {
       console.warn('Error reading from localStorage:', e);
     }
@@ -245,6 +271,13 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       localStorage.setItem('puliyannoor_chats', JSON.stringify(chats));
     } catch (e) {}
   }, [chats, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    try {
+      localStorage.setItem('puliyannoor_annual_calendar', JSON.stringify(annualCalendar));
+    } catch (e) {}
+  }, [annualCalendar, isInitialized]);
 
   // Offering actions
   const addOffering = (newOff: Omit<OfferingItem, 'slNo'> & { slNo?: number }) => {
@@ -286,9 +319,113 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setFestivals((prev) => prev.filter((fest) => fest.id !== id));
   };
 
+  const deleteMultipleFestivals = (ids: string[]) => {
+    setFestivals((prev) => prev.filter((fest) => !ids.includes(fest.id)));
+  };
+
   // Contact actions
   const updateContactInfo = (updatedFields: Partial<TempleContactInfo>) => {
     setContactInfo((prev) => ({ ...prev, ...updatedFields }));
+  };
+
+  // Annual Calendar actions
+  const updateAnnualCalendar = (updatedFields: Partial<AnnualCalendarData>) => {
+    setAnnualCalendar((prev) => ({ ...prev, ...updatedFields }));
+  };
+
+  const addVisheshaDivasam = (item: Omit<VisheshaDivasam, 'id'>) => {
+    const newItem: VisheshaDivasam = {
+      ...item,
+      id: `vd_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    };
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      visheshaDivasangal: [...prev.visheshaDivasangal, newItem],
+    }));
+  };
+
+  const updateVisheshaDivasam = (id: string, updatedFields: Partial<VisheshaDivasam>) => {
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      visheshaDivasangal: prev.visheshaDivasangal.map((row) =>
+        row.id === id ? { ...row, ...updatedFields } : row
+      ),
+    }));
+  };
+
+  const deleteVisheshaDivasam = (id: string) => {
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      visheshaDivasangal: prev.visheshaDivasangal.filter((row) => row.id !== id),
+    }));
+  };
+
+  const addPradoshamDate = (item: Omit<PradoshamDate, 'id'>) => {
+    const newItem: PradoshamDate = {
+      ...item,
+      id: `pd_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    };
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      pradosham: [...prev.pradosham, newItem],
+    }));
+  };
+
+  const updatePradoshamDate = (id: string, updatedFields: Partial<PradoshamDate>) => {
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      pradosham: prev.pradosham.map((row) =>
+        row.id === id ? { ...row, ...updatedFields } : row
+      ),
+    }));
+  };
+
+  const deletePradoshamDate = (id: string) => {
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      pradosham: prev.pradosham.filter((row) => row.id !== id),
+    }));
+  };
+
+  const addSamkramamDate = (item: Omit<SamkramamDate, 'id'>) => {
+    const newItem: SamkramamDate = {
+      ...item,
+      id: `sk_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    };
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      samkramam: [...prev.samkramam, newItem],
+    }));
+  };
+
+  const updateSamkramamDate = (id: string, updatedFields: Partial<SamkramamDate>) => {
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      samkramam: prev.samkramam.map((row) =>
+        row.id === id ? { ...row, ...updatedFields } : row
+      ),
+    }));
+  };
+
+  const deleteSamkramamDate = (id: string) => {
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      samkramam: prev.samkramam.filter((row) => row.id !== id),
+    }));
+  };
+
+  const updateUlsavamBox = (ulsavamData: Partial<AnnualCalendarData['ulsavamBox']>) => {
+    setAnnualCalendar((prev) => ({
+      ...prev,
+      ulsavamBox: { ...prev.ulsavamBox, ...ulsavamData },
+    }));
+  };
+
+  const resetAnnualCalendar = () => {
+    setAnnualCalendar(DEFAULT_ANNUAL_CALENDAR);
+    try {
+      localStorage.setItem('puliyannoor_annual_calendar', JSON.stringify(DEFAULT_ANNUAL_CALENDAR));
+    } catch (e) {}
   };
 
   // Chat actions
@@ -367,11 +504,13 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setFestivals(DEFAULT_FESTIVALS);
     setContactInfo(DEFAULT_CONTACT_INFO);
     setChats(DEFAULT_CHATS);
+    setAnnualCalendar(DEFAULT_ANNUAL_CALENDAR);
     try {
       localStorage.removeItem('puliyannoor_offerings');
       localStorage.removeItem('puliyannoor_festivals');
       localStorage.removeItem('puliyannoor_contact');
       localStorage.removeItem('puliyannoor_chats');
+      localStorage.removeItem('puliyannoor_annual_calendar');
     } catch (e) {}
   };
 
@@ -382,13 +521,27 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         festivals,
         contactInfo,
         chats,
+        annualCalendar,
         addOffering,
         updateOffering,
         deleteOffering,
         addFestival,
         updateFestival,
         deleteFestival,
+        deleteMultipleFestivals,
         updateContactInfo,
+        updateAnnualCalendar,
+        addVisheshaDivasam,
+        updateVisheshaDivasam,
+        deleteVisheshaDivasam,
+        addPradoshamDate,
+        updatePradoshamDate,
+        deletePradoshamDate,
+        addSamkramamDate,
+        updateSamkramamDate,
+        deleteSamkramamDate,
+        updateUlsavamBox,
+        resetAnnualCalendar,
         sendMessage,
         createDevoteeInquiryChat,
         markChatAsRead,

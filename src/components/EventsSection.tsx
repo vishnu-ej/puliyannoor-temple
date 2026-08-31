@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useContent } from '../context/ContentContext';
 import { MuralDivider } from './MuralDivider';
+import { AnnualCalendarModal } from './AnnualCalendarModal';
 import {
   Calendar,
   Sparkles,
@@ -14,11 +15,13 @@ import {
   Timer,
   CheckCircle2,
   Bell,
+  BookOpen,
 } from 'lucide-react';
 
 export const EventsSection: React.FC = () => {
   const { language, t } = useLanguage();
   const { festivals } = useContent();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   // Next Major Festival Countdown (2027 Annual Temple Festival: Feb 28, 2027)
   const [timeLeft, setTimeLeft] = useState({
@@ -142,6 +145,22 @@ export const EventsSection: React.FC = () => {
                 </span>
               </div>
             </div>
+
+            {/* View Full Malayalam Annual Calendar Button */}
+            <div className="mt-6 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setIsCalendarOpen(true)}
+                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#C99738] via-[#E6BE65] to-[#C99738] text-[#38050E] font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all cursor-pointer border border-[#FAF5E8]/40"
+              >
+                <BookOpen className="w-4 h-4 text-[#38050E]" />
+                <span>
+                  {language === 'en'
+                    ? '📜 View Official Malayalam Calendar 1202 (2026–2027)'
+                    : '📜 1202 -ാമാണ്ടിലെ പ്രധാന വിശേഷ ദിവസങ്ങൾ കാണുക'}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -194,6 +213,13 @@ export const EventsSection: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Annual Malayalam Calendar Modal for Devotees */}
+      <AnnualCalendarModal
+        isOpen={isCalendarOpen}
+        onClose={() => setIsCalendarOpen(false)}
+        isAdmin={false}
+      />
     </section>
   );
 };

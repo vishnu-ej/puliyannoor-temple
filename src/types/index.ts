@@ -124,3 +124,54 @@ export interface Nakshatra {
   nameEn: string;
   nameMl: string;
 }
+
+export interface VisheshaDivasam {
+  id: string;
+  malayalamMonthDate: string; // e.g. "1202 ചിങ്ങം 1" or "10"
+  englishMonthDate: string;   // e.g. "2026 ആഗസ്റ്റ് 17" or "26"
+  dayOfWeek: string;          // e.g. "തിങ്കൾ", "ബുധൻ"
+  vishesham: string;          // e.g. "ആണ്ടുപിറപ്പ്", "തിരുവോണം, നിറപുത്തരി"
+}
+
+export interface PradoshamDate {
+  id: string;
+  malayalamMonthDate: string; // e.g. "1202 ചിങ്ങം 9" or "23"
+  englishMonthDate: string;   // e.g. "2026 ആഗസ്റ്റ് 25" or "സെപ്റ്റംബർ 8"
+  dayOfWeek: string;          // e.g. "ചൊവ്വ", "വ്യാഴം"
+}
+
+export interface SamkramamDate {
+  id: string;
+  malayalamMonth: string;      // e.g. "1202 ചിങ്ങം", "കന്നി"
+  occurringMonthDate: string;  // e.g. "2026 ചിങ്ങം", "കന്നി"
+  dayOfWeek: string;           // e.g. "1 തിങ്കൾ", "1 വ്യാഴം", "31 ശനി"
+}
+
+export interface AnnualCalendarData {
+  malayalamYear: string;        // e.g. "1202 -ാമാണ്ട്"
+  gregorianYear: string;        // e.g. "(2026 – 2027)"
+  title: string;                // e.g. "പ്രധാന വിശേഷ ദിവസങ്ങൾ"
+  templeName: string;           // e.g. "പുളിയന്നൂർ ശ്രീമഹാദേവ ക്ഷേത്രം"
+  templeAddress: string;        // e.g. "പുളിയന്നൂർ പി. ഒ. പാലാ 686 573, കോട്ടയം ജില്ല"
+  templePhones: string;         // e.g. "8891346001, 9605752642"
+  visheshaDivasangal: VisheshaDivasam[];
+  pradosham: PradoshamDate[];
+  samkramam: SamkramamDate[];
+  poojaTimings: {
+    morning: string;
+    evening: string;
+  };
+  bankInfo: {
+    bankName: string;
+    branch: string;
+    accountHolder: string;
+    accountNo: string;
+    ifsc: string;
+  };
+  ulsavamBox: {
+    title: string;              // "തിരുവുത്സവം"
+    gregorianDates: string;     // "2027 ഫെബ്രുവരി 28 ഞായർ മുതൽ മാർച്ച് 7 ഞായർ വരെ"
+    malayalamDates: string;     // "(1202 കുംഭം 16 മുതൽ 23 വരെ)"
+    footerNote: string;         // "* പുളിയന്നൂർ ദേവസ്വം പ്രസിദ്ധീകരണം"
+  };
+}
