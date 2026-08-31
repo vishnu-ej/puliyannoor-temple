@@ -39,6 +39,15 @@ export interface ChatMessage {
   createdAt?: number;
   isEdited?: boolean;
   deliveryStatus?: 'sent' | 'delivered' | 'read';
+  replyTo?: {
+    id: string;
+    sender: 'devotee' | 'admin';
+    senderName?: string;
+    text: string;
+  };
+  deletedFor?: ('admin' | 'devotee')[];
+  isDeletedForEveryone?: boolean;
+  deletedBy?: 'admin' | 'devotee';
 }
 
 export interface ChatConversation {
@@ -228,8 +237,14 @@ interface ContentContextType {
   deleteSamkramamDate: (id: string) => void;
   updateUlsavamBox: (ulsavamData: Partial<AnnualCalendarData['ulsavamBox']>) => void;
   resetAnnualCalendar: () => void;
-  sendMessage: (conversationId: string, text: string) => void;
+  sendMessage: (conversationId: string, text: string, replyTo?: ChatMessage['replyTo']) => void;
   editChatMessage: (conversationId: string, messageId: string, newText: string) => void;
+  deleteChatMessage: (
+    conversationId: string,
+    messageId: string,
+    deleteType: 'for_me' | 'for_everyone',
+    deletedByRole?: 'admin' | 'devotee'
+  ) => void;
   createDevoteeInquiryChat: (devoteeName: string, phone: string, subject: string, messageText: string, star?: string) => void;
   markChatAsRead: (conversationId: string) => void;
   updateChatStatus: (conversationId: string, status: 'active' | 'resolved' | 'pending') => void;
@@ -573,7 +588,11 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   // Chat actions
-  const sendMessage = (conversationId: string, text: string) => {
+  const sendMessage = (
+    conversationId: string,
+    text: string,
+    replyTo?: ChatMessage['replyTo']
+  ) => {
     if (!text.trim()) return;
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -585,6 +604,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       timestamp: timeStr,
       createdAt: Date.now(),
       deliveryStatus: 'sent',
+      replyTo,
     };
 
     setChats((prev) =>
@@ -619,6 +639,53 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
               return msg;
             }),
           };
+        }
+        return chat;
+      })
+    );
+  };
+
+  const deleteChatMessage = (
+    conversationId: string,
+    messageId: string,
+    deleteType: 'for_me' | 'for_everyone',
+    deletedByRole: 'admin' | 'devotee' = 'admin'
+  ) => {
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat.id === conversationId) {
+          if (deleteType === 'for_everyone') {
+            return {
+              ...chat,
+              messages: chat.messages.map((msg) => {
+                if (msg.id === messageId) {
+                  return {
+                    ...msg,
+                    isDeletedForEveryone: true,
+                    deletedBy: deletedByRole,
+                    text: 'This message was deleted',
+                  };
+                }
+                return msg;
+              }),
+            };
+          } else {
+            // Delete for me
+            return {
+              ...chat,
+              messages: chat.messages.map((msg) => {
+                if (msg.id === messageId) {
+                  const existingDeleted = msg.deletedFor || [];
+                  const updatedDeleted = Array.from(new Set([...existingDeleted, deletedByRole]));
+                  return {
+                    ...msg,
+                    deletedFor: updatedDeleted,
+                  };
+                }
+                return msg;
+              }),
+            };
+          }
         }
         return chat;
       })
@@ -772,6 +839,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         resetAnnualCalendar,
         sendMessage,
         editChatMessage,
+        deleteChatMessage,
         createDevoteeInquiryChat,
         markChatAsRead,
         updateChatStatus,
