@@ -58,7 +58,6 @@ const clearAdminSession = () => {
   try {
     sessionStorage.removeItem('puliyannoor_admin_session');
     sessionStorage.removeItem('puliyannoor_admin_user');
-    window.dispatchEvent(new Event('storage'));
   } catch {}
 };
 
@@ -157,9 +156,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           };
           setCurrentUser(devoteeProfile);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(devoteeProfile));
-        } else if (_event === 'SIGNED_OUT') {
-          setCurrentUser(null);
-          localStorage.removeItem(STORAGE_KEY);
         }
       });
 
