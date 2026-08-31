@@ -36,6 +36,7 @@ export interface ChatMessage {
   sender: 'devotee' | 'admin';
   text: string;
   timestamp: string;
+  deliveryStatus?: 'sent' | 'delivered' | 'read';
 }
 
 export interface ChatConversation {
@@ -88,8 +89,8 @@ const DEFAULT_CONTACT_INFO: TempleContactInfo = {
   qrPdfUrl: '/temple-qr.pdf',
   qrPdfName: 'Canara_Bank_BHIM_UPI_QR.pdf',
   managingTrustee: 'Managing Trustee & Treasurer, Puliyannoor Devaswom',
-  officeHoursMorning: '4:00 AM – 10:00 AM',
-  officeHoursEvening: '5:30 PM – 7:00 PM',
+  officeHoursMorning: 'Morning: 7:00 AM – 12:00 PM',
+  officeHoursEvening: 'Evening: 4:30 PM – 7:00 PM',
 };
 
 const DEFAULT_CHATS: ChatConversation[] = [
@@ -229,6 +230,8 @@ interface ContentContextType {
   createDevoteeInquiryChat: (devoteeName: string, phone: string, subject: string, messageText: string, star?: string) => void;
   markChatAsRead: (conversationId: string) => void;
   updateChatStatus: (conversationId: string, status: 'active' | 'resolved' | 'pending') => void;
+  toggleMessageDeliveryStatus: (conversationId: string, messageId: string) => void;
+  setMessageDeliveryStatus: (conversationId: string, messageId: string, status: 'sent' | 'delivered' | 'read') => void;
   resetToDefaults: () => void;
 }
 
@@ -278,6 +281,19 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ) {
           parsed.whatsapp = '918891346001';
           parsed.whatsappDisplay = '+91 88913 46001';
+        }
+        if (
+          !parsed.officeHoursMorning ||
+          parsed.officeHoursMorning.includes('4:00 AM') ||
+          parsed.officeHoursMorning.includes('10:00 AM')
+        ) {
+          parsed.officeHoursMorning = 'Morning: 7:00 AM – 12:00 PM';
+        }
+        if (
+          !parsed.officeHoursEvening ||
+          parsed.officeHoursEvening.includes('5:30 PM')
+        ) {
+          parsed.officeHoursEvening = 'Evening: 4:30 PM – 7:00 PM';
         }
         setContactInfo(parsed);
       } else {
@@ -624,6 +640,48 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
   };
 
+  const toggleMessageDeliveryStatus = (conversationId: string, messageId: string) => {
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat.id === conversationId) {
+          return {
+            ...chat,
+            messages: chat.messages.map((msg) => {
+              if (msg.id === messageId) {
+                const cur = msg.deliveryStatus || 'sent';
+                const nextStatus: 'sent' | 'delivered' | 'read' =
+                  cur === 'sent' ? 'delivered' : cur === 'delivered' ? 'read' : 'sent';
+                return { ...msg, deliveryStatus: nextStatus };
+              }
+              return msg;
+            }),
+          };
+        }
+        return chat;
+      })
+    );
+  };
+
+  const setMessageDeliveryStatus = (
+    conversationId: string,
+    messageId: string,
+    status: 'sent' | 'delivered' | 'read'
+  ) => {
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat.id === conversationId) {
+          return {
+            ...chat,
+            messages: chat.messages.map((msg) =>
+              msg.id === messageId ? { ...msg, deliveryStatus: status } : msg
+            ),
+          };
+        }
+        return chat;
+      })
+    );
+  };
+
   const resetToDefaults = () => {
     setOfferings(DEFAULT_OFFERINGS);
     setFestivals(DEFAULT_FESTIVALS);
@@ -675,6 +733,8 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         createDevoteeInquiryChat,
         markChatAsRead,
         updateChatStatus,
+        toggleMessageDeliveryStatus,
+        setMessageDeliveryStatus,
         resetToDefaults,
       }}
     >

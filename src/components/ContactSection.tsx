@@ -166,16 +166,21 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
               <div className="w-11 h-11 rounded-2xl bg-[#38050E] text-[#E6BE65] flex items-center justify-center mx-auto mb-3 shadow-sm">
                 <Clock className="w-5 h-5" />
               </div>
-              <h3 className="font-cinzel font-bold text-sm text-[#38050E] mb-1">
+              <h3 className="font-cinzel font-bold text-sm text-[#38050E] mb-3">
                 {t('contact_hours_title')}
               </h3>
-              <p className="text-xs text-[#5A382A] mb-1">
-                {contactInfo.officeHoursMorning}
-              </p>
+              <div className="space-y-1 text-xs">
+                <p className="text-[#5A382A] font-medium leading-tight">
+                  {contactInfo.officeHoursMorning}
+                </p>
+                <p className="text-[#8C6219] font-semibold leading-tight">
+                  {contactInfo.officeHoursEvening}
+                </p>
+              </div>
             </div>
-            <span className="text-[11px] text-[#8C6219] font-semibold">
-              {contactInfo.officeHoursEvening}
-            </span>
+            <div className="pt-2 text-[10px] text-[#8C6219]/80 font-medium">
+              Daily Temple Office
+            </div>
           </div>
         </div>
 
@@ -223,7 +228,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
                     <select
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="w-24 sm:w-28 flex-shrink-0 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                      className="w-[76px] sm:w-[82px] flex-shrink-0 px-1.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-[11px] sm:text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
                     >
                       <option value="+91">+91 (IN)</option>
                       <option value="+1">+1 (US)</option>

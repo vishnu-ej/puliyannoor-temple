@@ -73,6 +73,8 @@ export default function AdminPage() {
     sendMessage,
     markChatAsRead,
     updateChatStatus,
+    toggleMessageDeliveryStatus,
+    setMessageDeliveryStatus,
     resetToDefaults,
   } = useContent();
 
@@ -86,11 +88,22 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('chats');
   const [activeRole, setActiveRole] = useState<'super_admin' | 'staff_admin'>('super_admin');
 
-  // Chat State
-  const [selectedChatId, setSelectedChatId] = useState<string>(chats[0]?.id || '');
+  // Chat State (Closed by default until clicked; Esc key closes active chat)
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [chatFilter, setChatFilter] = useState<'all' | 'active' | 'resolved' | 'pending'>('all');
   const [chatSearch, setChatSearch] = useState('');
+
+  // Global Escape key listener to close active chat
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedChatId(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Offerings State
   const [offeringSearch, setOfferingSearch] = useState('');
@@ -225,7 +238,7 @@ export default function AdminPage() {
     showToast('Reply sent to devotee');
   };
 
-  const selectedChat = chats.find((c) => c.id === selectedChatId) || chats[0];
+  const selectedChat = selectedChatId ? chats.find((c) => c.id === selectedChatId) || null : null;
 
   const filteredChats = chats.filter((c) => {
     const matchesFilter = chatFilter === 'all' || c.status === chatFilter;
@@ -697,7 +710,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Right Column: Google Chat Style Conversation Thread */}
+              {/* Right Column: Google Chat / WhatsApp Style Conversation Thread */}
               {selectedChat ? (
                 <div className="flex-1 flex flex-col bg-white">
                   {/* Chat Top Bar */}
@@ -724,26 +737,39 @@ export default function AdminPage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-bold text-[#8C6219] uppercase tracking-wider hidden sm:inline">
-                        Support Status:
-                      </span>
-                      <select
-                        value={selectedChat.status}
-                        onChange={(e) => {
-                          updateChatStatus(
-                            selectedChat.id,
-                            e.target.value as 'active' | 'resolved' | 'pending'
-                          );
-                          showToast(`Support request status updated to ${e.target.value.toUpperCase()}`);
-                        }}
-                        className="text-xs font-bold px-2.5 py-1 rounded-lg border border-[#E4D5AE] bg-white text-[#38050E] cursor-pointer shadow-2xs"
-                        title="Support Request Status (Managed by Authorized Temple Admins)"
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-bold text-[#8C6219] uppercase tracking-wider hidden sm:inline">
+                          Status:
+                        </span>
+                        <select
+                          value={selectedChat.status}
+                          onChange={(e) => {
+                            updateChatStatus(
+                              selectedChat.id,
+                              e.target.value as 'active' | 'resolved' | 'pending'
+                            );
+                            showToast(`Support request status updated to ${e.target.value.toUpperCase()}`);
+                          }}
+                          className="text-xs font-bold px-2.5 py-1 rounded-lg border border-[#E4D5AE] bg-white text-[#38050E] cursor-pointer shadow-2xs"
+                          title="Support Request Status"
+                        >
+                          <option value="active">🟢 Active</option>
+                          <option value="pending">🟡 Pending</option>
+                          <option value="resolved">⚪ Resolved</option>
+                        </select>
+                      </div>
+
+                      {/* Close Chat Button (Esc) */}
+                      <button
+                        type="button"
+                        onClick={() => setSelectedChatId(null)}
+                        className="px-2.5 py-1 rounded-lg bg-white hover:bg-[#FAF5E8] text-[#8C6219] hover:text-[#610C1B] border border-[#E4D5AE] text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer shadow-2xs"
+                        title="Close Chat Thread (Press Esc)"
                       >
-                        <option value="active">🟢 Active</option>
-                        <option value="pending">🟡 Pending</option>
-                        <option value="resolved">⚪ Resolved</option>
-                      </select>
+                        <X className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Close (Esc)</span>
+                      </button>
                     </div>
                   </div>
 
@@ -751,6 +777,8 @@ export default function AdminPage() {
                   <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#FAF5E8]/20">
                     {selectedChat.messages.map((msg) => {
                       const isAdmin = msg.sender === 'admin';
+                      const status = msg.deliveryStatus || (isAdmin ? 'delivered' : 'read');
+
                       return (
                         <div
                           key={msg.id}
@@ -767,7 +795,59 @@ export default function AdminPage() {
                               <span className="font-bold">
                                 {isAdmin ? 'Devaswom Office' : selectedChat.devoteeName}
                               </span>
-                              <span>{msg.timestamp}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span>{msg.timestamp}</span>
+
+                                {/* WhatsApp-style Delivery Status Tick Badge */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    toggleMessageDeliveryStatus(selectedChat.id, msg.id);
+                                    const nextSt =
+                                      status === 'sent'
+                                        ? 'Delivered (✓✓)'
+                                        : status === 'delivered'
+                                        ? 'Read (Dark Brown ✓✓)'
+                                        : 'Sent (✓)';
+                                    showToast(`Message delivery status: ${nextSt}`);
+                                  }}
+                                  className={`inline-flex items-center px-1 py-0.2 rounded transition-transform cursor-pointer select-none ${
+                                    isAdmin
+                                      ? 'hover:bg-white/20'
+                                      : 'hover:bg-[#FAF5E8]'
+                                  }`}
+                                  title="Click to toggle delivery status: Sent (✓) → Delivered (✓✓) → Read (Dark Brown ✓✓)"
+                                >
+                                  {status === 'read' ? (
+                                    <span
+                                      className={`font-extrabold text-[12px] leading-none tracking-tighter ${
+                                        isAdmin ? 'text-[#E6BE65]' : 'text-[#610C1B]'
+                                      }`}
+                                      title="Read / Seen (Dark Brown Checkmarks)"
+                                    >
+                                      ✓✓
+                                    </span>
+                                  ) : status === 'delivered' ? (
+                                    <span
+                                      className={`font-semibold text-[11px] leading-none tracking-tighter ${
+                                        isAdmin ? 'text-white/70' : 'text-[#8C6219]/80'
+                                      }`}
+                                      title="Delivered (Double Checkmarks)"
+                                    >
+                                      ✓✓
+                                    </span>
+                                  ) : (
+                                    <span
+                                      className={`font-semibold text-[11px] leading-none ${
+                                        isAdmin ? 'text-white/70' : 'text-[#8C6219]/80'
+                                      }`}
+                                      title="Sent (Single Checkmark)"
+                                    >
+                                      ✓
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
                             </div>
                             <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
                           </div>
@@ -810,8 +890,22 @@ export default function AdminPage() {
                   </form>
                 </div>
               ) : (
-                <div className="flex-1 flex items-center justify-center text-xs text-[#8C6219]">
-                  Select an inquiry thread from the left list.
+                /* Blank Space / Empty State when No Chat is Selected or after pressing Esc */
+                <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#FAF5E8]/30 text-center space-y-4 animate-fadeIn">
+                  <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-[#610C1B]/15 via-[#C99738]/20 to-[#610C1B]/10 border border-[#C99738]/40 flex items-center justify-center text-[#610C1B] shadow-sm">
+                    <MessageSquare className="w-8 h-8 text-[#610C1B]" />
+                  </div>
+                  <div className="max-w-sm space-y-2">
+                    <h3 className="font-cinzel font-bold text-base text-[#38050E]">
+                      Devotee Inquiries & Live Chat Desk
+                    </h3>
+                    <p className="text-xs text-[#5A382A] leading-relaxed">
+                      Select any devotee inquiry from the left inbox to view the conversation thread, manage WhatsApp status, or send replies.
+                    </p>
+                    <div className="pt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-[#E4D5AE] text-[11px] text-[#8C6219] font-medium shadow-2xs">
+                      <span>💡 Press <kbd className="font-mono font-bold bg-[#FAF5E8] px-1.5 py-0.5 rounded border border-[#E4D5AE] text-[#38050E]">Esc</kbd> anytime to close active chat</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -2318,6 +2412,28 @@ export default function AdminPage() {
                     </div>
                   </div>
 
+                  {/* Office Hours & Timings Card */}
+                  <div className="p-5 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#E4D5AE]/60 pb-2">
+                      <span className="font-cinzel font-bold text-xs text-[#610C1B] uppercase tracking-wider flex items-center gap-1.5">
+                        <Clock className="w-4 h-4 text-[#C99738]" />
+                        <span>Devaswom Office Timings & Working Hours</span>
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">Morning Office Timings:</span>
+                        <span className="font-semibold text-sm text-[#38050E]">{contactInfo.officeHoursMorning}</span>
+                      </div>
+
+                      <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
+                        <span className="text-[#8C6219] font-bold block mb-1">Evening Office Timings:</span>
+                        <span className="font-semibold text-sm text-[#38050E]">{contactInfo.officeHoursEvening}</span>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Bank Account Details Card */}
                   <div className="p-5 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
                     <div className="flex items-center justify-between border-b border-[#E4D5AE]/60 pb-2">
@@ -2438,19 +2554,19 @@ export default function AdminPage() {
                           <select
                             value={adminPhoneCountryCode}
                             onChange={(e) => setAdminPhoneCountryCode(e.target.value)}
-                            className="w-32 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E]"
+                            className="w-24 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E]"
                           >
-                            <option value="+91">+91 (India 🇮🇳)</option>
-                            <option value="+1">+1 (USA 🇺🇸)</option>
-                            <option value="+971">+971 (UAE 🇦🇪)</option>
-                            <option value="+966">+966 (Saudi 🇸🇦)</option>
-                            <option value="+44">+44 (UK 🇬🇧)</option>
+                            <option value="+91">+91 (IN)</option>
+                            <option value="+1">+1 (US)</option>
+                            <option value="+971">+971 (UAE)</option>
+                            <option value="+966">+966 (SA)</option>
+                            <option value="+44">+44 (UK)</option>
                           </select>
                           <input
                             type="text"
                             value={contactForm.phoneDisplay}
                             onChange={(e) => setContactForm({ ...contactForm, phoneDisplay: e.target.value })}
-                            placeholder="e.g. +91 4822 212345"
+                            placeholder="e.g. +91 88913 46001"
                             className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
                           />
                         </div>
@@ -2462,22 +2578,53 @@ export default function AdminPage() {
                           <select
                             value={adminWhatsAppCountryCode}
                             onChange={(e) => setAdminWhatsAppCountryCode(e.target.value)}
-                            className="w-32 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E]"
+                            className="w-24 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E]"
                           >
-                            <option value="+91">+91 (India 🇮🇳)</option>
-                            <option value="+1">+1 (USA 🇺🇸)</option>
-                            <option value="+971">+971 (UAE 🇦🇪)</option>
-                            <option value="+966">+966 (Saudi 🇸🇦)</option>
-                            <option value="+44">+44 (UK 🇬🇧)</option>
+                            <option value="+91">+91 (IN)</option>
+                            <option value="+1">+1 (US)</option>
+                            <option value="+971">+971 (UAE)</option>
+                            <option value="+966">+966 (SA)</option>
+                            <option value="+44">+44 (UK)</option>
                           </select>
                           <input
                             type="text"
                             value={contactForm.whatsapp}
                             onChange={(e) => setContactForm({ ...contactForm, whatsapp: e.target.value.replace(/\D/g, '') })}
-                            placeholder="e.g. 919447000000"
+                            placeholder="e.g. 918891346001"
                             className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
                           />
                         </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Office Hours & Timings Section */}
+                  <div className="p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-3">
+                    <span className="font-cinzel font-bold text-xs text-[#610C1B] block uppercase tracking-wider">
+                      Office Hours & Working Timings
+                    </span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">Morning Office Hours</label>
+                        <input
+                          type="text"
+                          value={contactForm.officeHoursMorning}
+                          onChange={(e) => setContactForm({ ...contactForm, officeHoursMorning: e.target.value })}
+                          placeholder="e.g. Morning: 7:00 AM – 12:00 PM"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">Evening Office Hours</label>
+                        <input
+                          type="text"
+                          value={contactForm.officeHoursEvening}
+                          onChange={(e) => setContactForm({ ...contactForm, officeHoursEvening: e.target.value })}
+                          placeholder="e.g. Evening: 4:30 PM – 7:00 PM"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                        />
                       </div>
                     </div>
                   </div>
