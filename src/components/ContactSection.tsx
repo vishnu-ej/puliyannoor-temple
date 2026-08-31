@@ -215,32 +215,32 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
                   />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
                     {t('form_phone')} *
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 min-w-0">
                     <select
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="w-36 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                      className="w-24 sm:w-28 flex-shrink-0 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
                     >
-                      <option value="+91">+91 (India 🇮🇳)</option>
-                      <option value="+1">+1 (USA/Canada 🇺🇸)</option>
-                      <option value="+971">+971 (UAE 🇦🇪)</option>
-                      <option value="+966">+966 (Saudi 🇸🇦)</option>
-                      <option value="+968">+968 (Oman 🇴🇲)</option>
-                      <option value="+974">+974 (Qatar 🇶🇦)</option>
-                      <option value="+973">+973 (Bahrain 🇧🇭)</option>
-                      <option value="+965">+965 (Kuwait 🇰🇼)</option>
-                      <option value="+44">+44 (UK 🇬🇧)</option>
-                      <option value="+65">+65 (Singapore 🇸🇬)</option>
-                      <option value="+60">+60 (Malaysia 🇲🇾)</option>
-                      <option value="+61">+61 (Australia 🇦🇺)</option>
-                      <option value="+49">+49 (Germany 🇩🇪)</option>
-                      <option value="+33">+33 (France 🇫🇷)</option>
-                      <option value="+41">+41 (Switzerland 🇨🇭)</option>
-                      <option value="+64">+64 (New Zealand 🇳🇿)</option>
+                      <option value="+91">+91 (IN)</option>
+                      <option value="+1">+1 (US)</option>
+                      <option value="+971">+971 (UAE)</option>
+                      <option value="+966">+966 (SA)</option>
+                      <option value="+968">+968 (OM)</option>
+                      <option value="+974">+974 (QA)</option>
+                      <option value="+973">+973 (BH)</option>
+                      <option value="+965">+965 (KW)</option>
+                      <option value="+44">+44 (UK)</option>
+                      <option value="+65">+65 (SG)</option>
+                      <option value="+60">+60 (MY)</option>
+                      <option value="+61">+61 (AU)</option>
+                      <option value="+49">+49 (DE)</option>
+                      <option value="+33">+33 (FR)</option>
+                      <option value="+41">+41 (CH)</option>
+                      <option value="+64">+64 (NZ)</option>
                     </select>
                     <input
                       type="tel"
@@ -251,9 +251,9 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
                           phone: e.target.value.replace(/\D/g, ''),
                         })
                       }
-                      placeholder={countryCode === '+91' ? '10-digit mobile number' : 'Contact number'}
+                      placeholder={countryCode === '+91' ? '10-digit number' : 'Contact number'}
                       maxLength={countryCode === '+91' ? 10 : 15}
-                      className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] font-mono"
+                      className="min-w-0 flex-1 px-3 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] font-mono"
                       required
                     />
                   </div>
