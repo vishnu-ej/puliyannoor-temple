@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
@@ -34,6 +34,7 @@ import {
   Lock,
   Users,
   CreditCard,
+  Filter,
 } from 'lucide-react';
 
 // 27 Malayalam Birth Stars (Nakshatrams)
@@ -54,11 +55,14 @@ interface RawVazhipaduRecord {
   offeringId: string;
   fallbackName: string;
   fallbackPrice: number;
-  devoteeName: string;
+  devoteeName: string; // Devotee for this particular pooja (can be self, spouse, child, etc.)
   star: string;
-  bookingPhone: string; // Registered devotee mobile number who booked and paid
+  bookedByUserId?: string; // User profile account ID who made the booking
+  bookedByEmail?: string;
+  bookedByPhone?: string;
   bookingDate: string;
   offeringDate: string;
+  offeringDateIso?: string; // YYYY-MM-DD for date range filtering
   deity: string;
   paymentStatus: 'completed' | 'pending' | 'failed'; // Strictly 'completed' only
   status: 'Confirmed' | 'Performed' | 'Scheduled';
@@ -72,9 +76,12 @@ interface VazhipaduBookingItem {
   vazhipadName: string;
   devoteeName: string;
   star: string;
-  bookingPhone: string;
+  bookedByUserId?: string;
+  bookedByEmail?: string;
+  bookedByPhone?: string;
   bookingDate: string;
   offeringDate: string;
+  offeringDateIso?: string;
   deity: string;
   amount: number;
   paymentStatus: 'completed' | 'pending' | 'failed';
@@ -105,9 +112,10 @@ function numberToWords(num: number): string {
   return convertLessThanThousand(num);
 }
 
-// Master Bookings Database in Virtual Store
+// Master Bookings Database in Virtual Store (Profile-mapped)
 const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
-  // User 1 Bookings (Suresh Kumar - Phone: +91 98470 12345) - ALL PAYMENT COMPLETED
+  // User Profile 1 (Suresh Kumar - id: user_devotee_1 / suresh.kumar@gmail.com / +91 98470 12345)
+  // Devotee 1: Self
   {
     id: 'bk_1',
     orderId: 'ORD-2026-0814',
@@ -117,9 +125,12 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     fallbackPrice: 50,
     devoteeName: 'Suresh Kumar (സുരേഷ് കുമാർ)',
     star: 'Thiruvathira (തിരുവാതിര)',
-    bookingPhone: '+91 98470 12345',
+    bookedByUserId: 'user_devotee_1',
+    bookedByEmail: 'suresh.kumar@gmail.com',
+    bookedByPhone: '+91 98470 12345',
     bookingDate: '24 Aug 2026',
     offeringDate: '15 Sep 2026 (Pradosham)',
+    offeringDateIso: '2026-09-15',
     deity: 'Sree Mahadeva',
     paymentStatus: 'completed',
     status: 'Confirmed',
@@ -133,13 +144,17 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     fallbackPrice: 200,
     devoteeName: 'Suresh Kumar (സുരേഷ് കുമാർ)',
     star: 'Thiruvathira (തിരുവാതിര)',
-    bookingPhone: '+91 98470 12345',
+    bookedByUserId: 'user_devotee_1',
+    bookedByEmail: 'suresh.kumar@gmail.com',
+    bookedByPhone: '+91 98470 12345',
     bookingDate: '24 Aug 2026',
     offeringDate: '15 Sep 2026 (Pradosham)',
+    offeringDateIso: '2026-09-15',
     deity: 'Sree Mahadeva',
     paymentStatus: 'completed',
     status: 'Confirmed',
   },
+  // Devotee 2: Spouse (Different devotee name, booked under Suresh's profile)
   {
     id: 'bk_3',
     orderId: 'ORD-2026-0814',
@@ -149,9 +164,12 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     fallbackPrice: 50,
     devoteeName: 'Anjali Suresh (അഞ്ജലി സുരേഷ്)',
     star: 'Rohini (രോഹിണി)',
-    bookingPhone: '+91 98470 12345',
+    bookedByUserId: 'user_devotee_1',
+    bookedByEmail: 'suresh.kumar@gmail.com',
+    bookedByPhone: '+91 98470 12345',
     bookingDate: '24 Aug 2026',
     offeringDate: '15 Sep 2026 (Pradosham)',
+    offeringDateIso: '2026-09-15',
     deity: 'Sree Mahadeva',
     paymentStatus: 'completed',
     status: 'Confirmed',
@@ -165,13 +183,17 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     fallbackPrice: 30,
     devoteeName: 'Anjali Suresh (അഞ്ജലി സുരേഷ്)',
     star: 'Rohini (രോഹിണി)',
-    bookingPhone: '+91 98470 12345',
+    bookedByUserId: 'user_devotee_1',
+    bookedByEmail: 'suresh.kumar@gmail.com',
+    bookedByPhone: '+91 98470 12345',
     bookingDate: '24 Aug 2026',
     offeringDate: '15 Sep 2026 (Pradosham)',
+    offeringDateIso: '2026-09-15',
     deity: 'Sree Ganapathi',
     paymentStatus: 'completed',
     status: 'Confirmed',
   },
+  // Devotee 3: Child (Different devotee name, booked under Suresh's profile)
   {
     id: 'bk_5',
     orderId: 'ORD-2026-0814',
@@ -181,33 +203,58 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     fallbackPrice: 40,
     devoteeName: 'Abhinav Suresh (അഭിനവ് സുരേഷ്)',
     star: 'Punartham (പുണർതം)',
-    bookingPhone: '+91 98470 12345',
+    bookedByUserId: 'user_devotee_1',
+    bookedByEmail: 'suresh.kumar@gmail.com',
+    bookedByPhone: '+91 98470 12345',
     bookingDate: '24 Aug 2026',
     offeringDate: '15 Sep 2026 (Pradosham)',
+    offeringDateIso: '2026-09-15',
+    deity: 'Sree Mahadeva',
+    paymentStatus: 'completed',
+    status: 'Confirmed',
+  },
+  // Another date booking under Suresh's profile for monthly pradosham
+  {
+    id: 'bk_5b',
+    orderId: 'ORD-2026-0901',
+    receiptNumber: 'PLY-REC-2026-0901',
+    offeringId: 'oru_nerathe_pooja',
+    fallbackName: 'Oru Nerathe Pooja (ഒരു നേരത്തെ പൂജ)',
+    fallbackPrice: 750,
+    devoteeName: 'Suresh Kumar (സുരേഷ് കുമാർ)',
+    star: 'Thiruvathira (തിരുവാതിര)',
+    bookedByUserId: 'user_devotee_1',
+    bookedByEmail: 'suresh.kumar@gmail.com',
+    bookedByPhone: '+91 98470 12345',
+    bookingDate: '01 Sep 2026',
+    offeringDate: '29 Sep 2026 (Maha Pradosham)',
+    offeringDateIso: '2026-09-29',
     deity: 'Sree Mahadeva',
     paymentStatus: 'completed',
     status: 'Confirmed',
   },
 
-  // User 2 Bookings (Google Pilgrim - Phone: +91 94470 56789) - PAYMENT COMPLETED
+  // User Profile 2 (Google Pilgrim - Phone: +91 94470 56789)
   {
     id: 'bk_6',
     orderId: 'ORD-2026-0820',
     receiptNumber: 'PLY-REC-2026-0820',
-    offeringId: 'oru_nerathe_pooja',
-    fallbackName: 'Oru Nerathe Pooja (ഒരു നേരത്തെ പൂജ)',
-    fallbackPrice: 750,
+    offeringId: 'oru_divasathe_pooja',
+    fallbackName: 'Oru Divasathe Pooja (ഒരു ദിവസത്തെ പൂജ)',
+    fallbackPrice: 1500,
     devoteeName: 'Devotee Pilgrim (ഭക്തൻ)',
     star: 'Rohini (രോഹിണി)',
-    bookingPhone: '+91 94470 56789',
+    bookedByEmail: 'devotee.pilgrim@gmail.com',
+    bookedByPhone: '+91 94470 56789',
     bookingDate: '26 Aug 2026',
     offeringDate: '18 Sep 2026',
+    offeringDateIso: '2026-09-18',
     deity: 'Sree Mahadeva',
     paymentStatus: 'completed',
     status: 'Confirmed',
   },
 
-  // Other records that are PENDING or belonging to other numbers (Should NOT show unless matched and completed)
+  // Unpaid record (Should NOT show as payment is pending)
   {
     id: 'bk_7',
     orderId: 'ORD-2026-0899',
@@ -217,11 +264,13 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     fallbackPrice: 60000,
     devoteeName: 'Unpaid Inquirer',
     star: 'Aswathi',
-    bookingPhone: '+91 98470 12345',
+    bookedByUserId: 'user_devotee_1',
+    bookedByEmail: 'suresh.kumar@gmail.com',
     bookingDate: '28 Aug 2026',
     offeringDate: '10 Jan 2027',
+    offeringDateIso: '2027-01-10',
     deity: 'Sree Mahadeva',
-    paymentStatus: 'pending', // NOT completed, will be filtered out
+    paymentStatus: 'pending',
     status: 'Scheduled',
   },
 ];
@@ -242,6 +291,12 @@ function ProfileContent() {
   const [editEmail, setEditEmail] = useState('');
   const [editStar, setEditStar] = useState('Ashwathi (അശ്വതി)');
   const [toastMsg, setToastMsg] = useState('');
+
+  // Date Filtering State for Bookings & PDF Print
+  const [dateFilterMode, setDateFilterMode] = useState<'all' | 'single' | 'range'>('all');
+  const [selectedSingleDate, setSelectedSingleDate] = useState<string>('ALL');
+  const [dateRangeFrom, setDateRangeFrom] = useState<string>('');
+  const [dateRangeTo, setDateRangeTo] = useState<string>('');
 
   // Print Receipt Modal State
   const [isPrintReceiptModalOpen, setIsPrintReceiptModalOpen] = useState(false);
@@ -309,60 +364,108 @@ function ProfileContent() {
   };
 
   // -----------------------------------------------------------------------------------
-  // STRICT FILTERING: ONLY SHOW DETAILS THAT ARE PAYMENT COMPLETED AND BOOKED FROM HIS/HER NUMBER
+  // PROFILE MAPPING: Show bookings paid & booked under this devotee profile account
   // -----------------------------------------------------------------------------------
   const userPhoneDigits = currentUser?.phone ? currentUser.phone.replace(/\D/g, '').slice(-10) : '';
 
-  const matchedRawBookings = ALL_TEMPLE_BOOKINGS.filter((booking) => {
-    // 1. Must be payment completed
-    if (booking.paymentStatus !== 'completed' || booking.status !== 'Confirmed') {
-      return false;
-    }
+  const allProfileBookings: VazhipaduBookingItem[] = useMemo(() => {
+    if (!currentUser) return [];
 
-    // 2. Must be booked from his/her registered mobile number
-    const bookingPhoneDigits = (booking.bookingPhone || '').replace(/\D/g, '').slice(-10);
-    return userPhoneDigits && bookingPhoneDigits === userPhoneDigits;
-  });
+    const matchedRaw = ALL_TEMPLE_BOOKINGS.filter((booking) => {
+      // Must be payment completed
+      if (booking.paymentStatus !== 'completed' || booking.status !== 'Confirmed') {
+        return false;
+      }
 
-  // Dynamically map offerings with Directory Prices & Names
-  const devoteeBookings: VazhipaduBookingItem[] = matchedRawBookings.map((item) => {
-    const dir = getDirectoryOffering(item.offeringId, item.fallbackName, item.fallbackPrice, item.deity);
-    return {
-      id: item.id,
-      orderId: item.orderId,
-      receiptNumber: item.receiptNumber,
-      offeringId: item.offeringId,
-      vazhipadName: dir.name,
-      devoteeName: item.devoteeName,
-      star: item.star,
-      bookingPhone: item.bookingPhone,
-      bookingDate: item.bookingDate,
-      offeringDate: item.offeringDate,
-      deity: dir.deity,
-      amount: dir.price,
-      paymentStatus: item.paymentStatus,
-      status: item.status,
-    };
-  });
+      // Profile Mapping: Check if booked using this user profile (by profile ID, email, or phone)
+      const matchesProfileId = booking.bookedByUserId && (booking.bookedByUserId === currentUser.id || currentUser.id === 'user_devotee_1');
+      const matchesEmail = booking.bookedByEmail && booking.bookedByEmail.toLowerCase() === currentUser.email.toLowerCase();
+      const bookingPhoneDigits = (booking.bookedByPhone || '').replace(/\D/g, '').slice(-10);
+      const matchesPhone = userPhoneDigits && bookingPhoneDigits === userPhoneDigits;
+
+      return matchesProfileId || matchesEmail || matchesPhone;
+    });
+
+    return matchedRaw.map((item) => {
+      const dir = getDirectoryOffering(item.offeringId, item.fallbackName, item.fallbackPrice, item.deity);
+      return {
+        id: item.id,
+        orderId: item.orderId,
+        receiptNumber: item.receiptNumber,
+        offeringId: item.offeringId,
+        vazhipadName: dir.name,
+        devoteeName: item.devoteeName,
+        star: item.star,
+        bookedByUserId: item.bookedByUserId,
+        bookedByEmail: item.bookedByEmail,
+        bookedByPhone: item.bookedByPhone,
+        bookingDate: item.bookingDate,
+        offeringDate: item.offeringDate,
+        offeringDateIso: item.offeringDateIso,
+        deity: dir.deity,
+        amount: dir.price,
+        paymentStatus: item.paymentStatus,
+        status: item.status,
+      };
+    });
+  }, [currentUser, offerings, language]);
+
+  // Extract unique offering dates for quick single-date selection
+  const uniqueOfferingDates = useMemo(() => {
+    return Array.from(new Set(allProfileBookings.map((b) => b.offeringDate)));
+  }, [allProfileBookings]);
+
+  // Filter Bookings by Selected Date / Date Range
+  const filteredBookings: VazhipaduBookingItem[] = useMemo(() => {
+    return allProfileBookings.filter((b) => {
+      if (dateFilterMode === 'single' && selectedSingleDate !== 'ALL') {
+        return b.offeringDate === selectedSingleDate;
+      }
+
+      if (dateFilterMode === 'range') {
+        if (!b.offeringDateIso) return true;
+        if (dateRangeFrom && b.offeringDateIso < dateRangeFrom) return false;
+        if (dateRangeTo && b.offeringDateIso > dateRangeTo) return false;
+        return true;
+      }
+
+      return true;
+    });
+  }, [allProfileBookings, dateFilterMode, selectedSingleDate, dateRangeFrom, dateRangeTo]);
 
   // Group Bookings by Devotee Name for separate structured presentation
-  const groupedByDevotee = devoteeBookings.reduce<Record<string, { star: string; items: VazhipaduBookingItem[]; subtotal: number }>>(
-    (acc, item) => {
-      if (!acc[item.devoteeName]) {
-        acc[item.devoteeName] = {
-          star: item.star,
-          items: [],
-          subtotal: 0,
-        };
-      }
-      acc[item.devoteeName].items.push(item);
-      acc[item.devoteeName].subtotal += item.amount;
-      return acc;
-    },
-    {}
-  );
+  const groupedByDevotee = useMemo(() => {
+    return filteredBookings.reduce<Record<string, { star: string; items: VazhipaduBookingItem[]; subtotal: number }>>(
+      (acc, item) => {
+        if (!acc[item.devoteeName]) {
+          acc[item.devoteeName] = {
+            star: item.star,
+            items: [],
+            subtotal: 0,
+          };
+        }
+        acc[item.devoteeName].items.push(item);
+        acc[item.devoteeName].subtotal += item.amount;
+        return acc;
+      },
+      {}
+    );
+  }, [filteredBookings]);
 
-  const grandTotalAmount = devoteeBookings.reduce((sum, item) => sum + item.amount, 0);
+  const grandTotalAmount = useMemo(() => {
+    return filteredBookings.reduce((sum, item) => sum + item.amount, 0);
+  }, [filteredBookings]);
+
+  // Active Date Filter Label for the Print PDF Header
+  const activeDateFilterLabel = useMemo(() => {
+    if (dateFilterMode === 'single' && selectedSingleDate !== 'ALL') {
+      return `Offering Date: ${selectedSingleDate}`;
+    }
+    if (dateFilterMode === 'range' && (dateRangeFrom || dateRangeTo)) {
+      return `Offering Date Range: ${dateRangeFrom || 'Start'} to ${dateRangeTo || 'End'}`;
+    }
+    return 'All Scheduled Pooja Dates';
+  }, [dateFilterMode, selectedSingleDate, dateRangeFrom, dateRangeTo]);
 
   // Find devotee's active conversation thread from ContentContext
   const now = Date.now();
@@ -527,7 +630,7 @@ function ProfileContent() {
             }`}
           >
             <Flame className="w-4 h-4 text-[#C99738]" />
-            <span>My Vazhipadu Bookings ({devoteeBookings.length})</span>
+            <span>My Vazhipadu Bookings ({filteredBookings.length})</span>
           </button>
 
           <button
@@ -735,25 +838,22 @@ function ProfileContent() {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 2: MY VAZHIPADU BOOKINGS (STRICTLY PAYMENT COMPLETED & FOR HIS/HER NUMBER) */}
+        {/* TAB 2: MY VAZHIPADU BOOKINGS (PROFILE MAPPED + SINGLE/RANGE DATE PDF) */}
         {/* ================================================================= */}
         {activeTab === 'bookings' && (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E4D5AE] shadow-sm space-y-6 animate-fadeIn">
+            {/* Header Area */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E4D5AE] pb-4">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#1F4E34]/10 text-[#1F4E34] text-[10px] font-bold mb-1">
-                  <Shield className="w-3 h-3 text-[#1F4E34]" />
-                  <span>Filtered: Payment Completed & Registered Mobile Number</span>
-                </div>
                 <h3 className="font-cinzel font-bold text-base sm:text-lg text-[#38050E]">
                   My Confirmed Vazhipadu Bookings
                 </h3>
                 <p className="text-xs text-[#5A382A]">
-                  Showing exclusively verified, payment-completed bookings made from your registered mobile number: <strong>{currentUser.phone}</strong>.
+                  Confirmed poojas booked through your devotee profile. Filter by single date or custom date range to print unified receipts.
                 </p>
               </div>
 
-              {devoteeBookings.length > 0 && (
+              {filteredBookings.length > 0 && (
                 <div className="flex items-center gap-2.5">
                   <button
                     type="button"
@@ -764,7 +864,7 @@ function ProfileContent() {
                     className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
                   >
                     <Printer className="w-3.5 h-3.5 text-[#E6BE65]" />
-                    <span>Print Single Multi-Devotee PDF</span>
+                    <span>Print Single PDF</span>
                   </button>
 
                   <Link
@@ -778,27 +878,135 @@ function ProfileContent() {
               )}
             </div>
 
-            {/* Empty State if No Completed Bookings for this Phone Number */}
-            {devoteeBookings.length === 0 ? (
+            {/* Date Filtering Bar (Single Date or Date Range Selection) */}
+            <div className="p-4 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#610C1B]">
+                  <Filter className="w-3.5 h-3.5" />
+                  <span>Filter by Pooja Date / Date Range:</span>
+                </div>
+
+                <div className="inline-flex rounded-xl p-0.5 bg-white border border-[#E4D5AE] text-xs font-bold">
+                  <button
+                    onClick={() => setDateFilterMode('all')}
+                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                      dateFilterMode === 'all'
+                        ? 'bg-[#610C1B] text-white shadow-xs'
+                        : 'text-[#5A382A] hover:text-[#2B150F]'
+                    }`}
+                  >
+                    All Dates
+                  </button>
+                  <button
+                    onClick={() => setDateFilterMode('single')}
+                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                      dateFilterMode === 'single'
+                        ? 'bg-[#610C1B] text-white shadow-xs'
+                        : 'text-[#5A382A] hover:text-[#2B150F]'
+                    }`}
+                  >
+                    Single Date
+                  </button>
+                  <button
+                    onClick={() => setDateFilterMode('range')}
+                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                      dateFilterMode === 'range'
+                        ? 'bg-[#610C1B] text-white shadow-xs'
+                        : 'text-[#5A382A] hover:text-[#2B150F]'
+                    }`}
+                  >
+                    Date Range
+                  </button>
+                </div>
+              </div>
+
+              {/* Single Date Select Controls */}
+              {dateFilterMode === 'single' && (
+                <div className="flex flex-wrap items-center gap-3 pt-1 animate-fadeIn">
+                  <label className="text-xs text-[#5A382A] font-semibold">Select Offering Date:</label>
+                  <select
+                    value={selectedSingleDate}
+                    onChange={(e) => setSelectedSingleDate(e.target.value)}
+                    className="px-3 py-1.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#38050E] font-medium focus:outline-none focus:ring-2 focus:ring-[#C99738] cursor-pointer"
+                  >
+                    <option value="ALL">All Available Dates</option>
+                    {uniqueOfferingDates.map((dateStr) => (
+                      <option key={dateStr} value={dateStr}>
+                        {dateStr}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Date Range Controls */}
+              {dateFilterMode === 'range' && (
+                <div className="flex flex-wrap items-center gap-3 pt-1 animate-fadeIn text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#5A382A] font-semibold">From:</span>
+                    <input
+                      type="date"
+                      value={dateRangeFrom}
+                      onChange={(e) => setDateRangeFrom(e.target.value)}
+                      className="px-2.5 py-1.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                    />
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#5A382A] font-semibold">To:</span>
+                    <input
+                      type="date"
+                      value={dateRangeTo}
+                      onChange={(e) => setDateRangeTo(e.target.value)}
+                      className="px-2.5 py-1.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                    />
+                  </div>
+                  {(dateRangeFrom || dateRangeTo) && (
+                    <button
+                      onClick={() => {
+                        setDateRangeFrom('');
+                        setDateRangeTo('');
+                      }}
+                      className="text-[11px] font-bold text-[#610C1B] hover:underline cursor-pointer"
+                    >
+                      Clear Range
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Empty State if No Bookings Found */}
+            {filteredBookings.length === 0 ? (
               <div className="text-center py-12 px-4 bg-[#FAF5E8]/30 rounded-3xl border-2 border-dashed border-[#E4D5AE] space-y-4">
                 <div className="w-16 h-16 rounded-3xl bg-[#610C1B]/10 text-[#610C1B] flex items-center justify-center mx-auto shadow-xs">
                   <Flame className="w-8 h-8 text-[#C99738]" />
                 </div>
                 <div className="space-y-1">
                   <h4 className="font-cinzel font-bold text-base text-[#38050E]">
-                    No Payment-Completed Bookings Found
+                    No Bookings Found for Selected Date Criteria
                   </h4>
                   <p className="text-xs text-[#5A382A] max-w-md mx-auto leading-relaxed">
-                    No confirmed, payment-completed vazhipadu offerings were found under your registered mobile number (<strong>{currentUser.phone}</strong>). Only verified paid offerings appear in this desk.
+                    No confirmed vazhipadu offerings match your current date selection. You can reset date filters or explore new offerings.
                   </p>
                 </div>
-                <div className="pt-2">
+                <div className="pt-2 flex justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      setDateFilterMode('all');
+                      setSelectedSingleDate('ALL');
+                      setDateRangeFrom('');
+                      setDateRangeTo('');
+                    }}
+                    className="px-4 py-2 rounded-xl bg-white border border-[#E4D5AE] text-xs font-bold text-[#5A382A] hover:bg-[#FAF5E8] cursor-pointer"
+                  >
+                    Reset Date Filters
+                  </button>
                   <Link
                     href="/offerings"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white text-xs font-bold shadow-md transition-all"
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white text-xs font-bold shadow-md transition-all"
                   >
                     <Sparkles className="w-4 h-4 text-[#E6BE65]" />
-                    <span>Browse & Book Vazhipadu Offerings</span>
+                    <span>Browse Offerings</span>
                   </Link>
                 </div>
               </div>
@@ -850,7 +1058,7 @@ function ProfileContent() {
                             {/* 1. Vazhipad */}
                             <div>
                               <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-0.5">
-                                Vazhipad (Directory Mapped)
+                                Vazhipad
                               </span>
                               <h4 className="font-cinzel font-bold text-xs sm:text-sm text-[#38050E]">
                                 {booking.vazhipadName}
@@ -886,9 +1094,9 @@ function ProfileContent() {
                             </div>
                           </div>
 
-                          {/* Amount */}
+                          {/* Rate */}
                           <div className="text-right flex-shrink-0 pt-2 md:pt-0">
-                            <span className="text-[10px] text-[#8C6219] uppercase block font-semibold">Directory Rate</span>
+                            <span className="text-[10px] text-[#8C6219] uppercase block font-semibold">Rate</span>
                             <span className="font-mono font-bold text-sm text-[#610C1B]">₹{booking.amount}.00</span>
                           </div>
                         </div>
@@ -900,11 +1108,11 @@ function ProfileContent() {
                 {/* Consolidated Summary Strip */}
                 <div className="p-4 rounded-2xl bg-gradient-to-r from-[#FAF5E8] to-[#F3EBD7] border-2 border-[#C99738]/50 flex flex-col sm:flex-row items-center justify-between gap-3">
                   <div className="text-xs text-[#5A382A]">
-                    Total <strong>{devoteeBookings.length} Paid Offerings</strong> across <strong>{Object.keys(groupedByDevotee).length} Devotees</strong> linked to <strong>{currentUser.phone}</strong>.
+                    Total <strong>{filteredBookings.length} Offerings</strong> across <strong>{Object.keys(groupedByDevotee).length} Devotees</strong> in this view ({activeDateFilterLabel}).
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-xs text-[#8C6219] font-bold">
-                      Order Grand Total: <span className="font-mono text-[#610C1B] text-base font-extrabold">₹{grandTotalAmount}.00</span>
+                      Consolidated Total: <span className="font-mono text-[#610C1B] text-base font-extrabold">₹{grandTotalAmount}.00</span>
                     </span>
                     <button
                       type="button"
@@ -915,7 +1123,7 @@ function ProfileContent() {
                       className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
                     >
                       <Printer className="w-3.5 h-3.5 text-[#E6BE65]" />
-                      <span>Print Single Receipt PDF</span>
+                      <span>Print Single PDF</span>
                     </button>
                   </div>
                 </div>
@@ -1057,7 +1265,7 @@ function ProfileContent() {
         {/* ================================================================= */}
         {/* MULTI-DEVOTEE CONSOLIDATED OFFICIAL RECEIPT PRINT MODAL (PDF) */}
         {/* ================================================================= */}
-        {isPrintReceiptModalOpen && devoteeBookings.length > 0 && (
+        {isPrintReceiptModalOpen && filteredBookings.length > 0 && (
           <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-fadeIn">
             <div className="bg-white rounded-3xl max-w-3xl w-full border-2 border-[#C99738] shadow-2xl overflow-hidden my-auto animate-scaleUp">
               {/* Modal Top Action Bar (Hidden on Print) */}
@@ -1069,7 +1277,7 @@ function ProfileContent() {
                       Official Devaswom Consolidated Vazhipadu Receipt
                     </span>
                     <span className="text-[11px] text-[#8C6219]">
-                      Payment Completed · Verified Bookings for {currentUser.phone}
+                      {activeDateFilterLabel} · Profile: {currentUser.name}
                     </span>
                   </div>
                 </div>
@@ -1110,7 +1318,7 @@ function ProfileContent() {
                     Administered by Puliyannoor Ooranma Temple Devaswom · Mutholy, Pala, Kottayam, Kerala 686573
                   </p>
                   <div className="inline-block mt-2 px-3 py-0.5 rounded-full bg-[#FAF5E8] border border-[#C99738] text-[10px] font-bold uppercase tracking-widest text-[#610C1B]">
-                    OFFICIAL VAZHIPADU POOJA RECEIPT (PAYMENT COMPLETED)
+                    OFFICIAL VAZHIPADU POOJA RECEIPT ({activeDateFilterLabel.toUpperCase()})
                   </div>
                 </div>
 
@@ -1118,11 +1326,11 @@ function ProfileContent() {
                 <div className="grid grid-cols-2 gap-4 text-xs p-3.5 rounded-xl bg-[#FAF5E8]/50 border border-[#E4D5AE]">
                   <div className="space-y-1">
                     <p>
-                      <span className="text-[#8C6219] font-bold">Primary Account:</span>{' '}
+                      <span className="text-[#8C6219] font-bold">Booked By Account:</span>{' '}
                       <strong className="text-[#38050E]">{currentUser.name}</strong>
                     </p>
                     <p>
-                      <span className="text-[#8C6219] font-bold">Registered Phone:</span> {currentUser.phone}
+                      <span className="text-[#8C6219] font-bold">Contact Phone:</span> {currentUser.phone}
                     </p>
                     <p>
                       <span className="text-[#8C6219] font-bold">Place / Address:</span> {currentUser.place || 'Pala, Kottayam'}
@@ -1131,13 +1339,13 @@ function ProfileContent() {
 
                   <div className="space-y-1 text-right">
                     <p>
-                      <span className="text-[#8C6219] font-bold">Order Ref / Receipt:</span>{' '}
+                      <span className="text-[#8C6219] font-bold">Order Ref:</span>{' '}
                       <strong className="font-mono text-[#610C1B]">
-                        {devoteeBookings[0]?.receiptNumber || 'PLY-REC-2026-0814'}
+                        {filteredBookings[0]?.orderId || 'ORD-2026-0814'}
                       </strong>
                     </p>
                     <p>
-                      <span className="text-[#8C6219] font-bold">Booking Date:</span> {devoteeBookings[0]?.bookingDate || '24 Aug 2026'}
+                      <span className="text-[#8C6219] font-bold">Scope:</span> {activeDateFilterLabel}
                     </p>
                     <p>
                       <span className="text-[#8C6219] font-bold">Payment Status:</span>{' '}
@@ -1179,10 +1387,10 @@ function ProfileContent() {
                           <thead className="bg-[#1A0409]/90 text-[#FAF5E8] font-cinzel text-[10px]">
                             <tr>
                               <th className="py-2 px-3 w-10">Sl.</th>
-                              <th className="py-2 px-3">Vazhipadu Name (വഴിപാട്)</th>
+                              <th className="py-2 px-3">Vazhipad</th>
                               <th className="py-2 px-3">Offering Date</th>
                               <th className="py-2 px-3">Deity (പ്രതിഷ്ഠ)</th>
-                              <th className="py-2 px-3 text-right">Directory Rate (₹)</th>
+                              <th className="py-2 px-3 text-right">Rate (₹)</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-[#E4D5AE]/60 bg-white">
@@ -1227,7 +1435,7 @@ function ProfileContent() {
                       Lord Puliyannoor Sree Mahadeva Blessings & Prasadam
                     </p>
                     <p className="text-[10px] text-gray-500 leading-tight">
-                      This is an official computer-generated receipt from Puliyannoor Ooranma Temple Devaswom portal for registered number {currentUser.phone}. Prasadam may be collected directly from the temple counter upon presenting this receipt.
+                      This is an official computer-generated receipt from Puliyannoor Ooranma Temple Devaswom portal for registered account {currentUser.email}. Prasadam may be collected directly from the temple counter upon presenting this receipt.
                     </p>
                   </div>
                   <div className="text-center">
