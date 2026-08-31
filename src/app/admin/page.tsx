@@ -445,8 +445,8 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Sidebar Navigation */}
-      <aside className="w-full md:w-72 bg-[#1A0409] text-[#FAF5E8] flex flex-col justify-between border-r border-[#C99738]/30 flex-shrink-0">
+      {/* Sidebar Navigation (Frozen & Fixed on Desktop) */}
+      <aside className="w-full md:w-72 md:h-screen md:sticky md:top-0 bg-[#1A0409] text-[#FAF5E8] flex flex-col justify-between border-r border-[#C99738]/30 flex-shrink-0 z-40 overflow-y-auto">
         <div>
           {/* Header Branding */}
           <div className="p-5 border-b border-[#C99738]/20 flex items-center justify-between">
@@ -810,7 +810,69 @@ export default function AdminPage() {
                         );
                       }
 
-                      // Sent Admin Message
+                      // If Admin is currently editing this message, render full-length editor card
+                      if (isEditingThis) {
+                        return (
+                          <div
+                            key={msg.id}
+                            className="w-full p-4 rounded-2xl bg-white border-2 border-[#C99738] shadow-md space-y-3 animate-scaleUp my-2"
+                          >
+                            <div className="flex items-center justify-between border-b border-[#E4D5AE]/60 pb-2">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#610C1B]" />
+                                <span className="font-bold text-xs text-[#610C1B]">
+                                  Editing Devaswom Sent Message
+                                </span>
+                                <span className="text-[10px] text-[#8C6219] bg-[#FAF5E8] px-2 py-0.5 rounded-full font-medium border border-[#E4D5AE]">
+                                  Sent at {msg.timestamp} · {15 - elapsedMinutes}m remaining to edit
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setEditingMsgId(null)}
+                                className="text-[#8C6219] hover:text-[#610C1B] p-1 rounded-lg hover:bg-[#FAF5E8] transition-colors cursor-pointer"
+                                title="Cancel editing (Esc)"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-2.5">
+                              <textarea
+                                value={editMsgText}
+                                onChange={(e) => setEditMsgText(e.target.value)}
+                                rows={3}
+                                placeholder="Edit official Devaswom message..."
+                                className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-[#FAF5E8]/30 text-xs text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] font-normal leading-relaxed resize-y"
+                                autoFocus
+                              />
+                              <div className="flex sm:flex-col justify-end gap-2 flex-shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    editChatMessage(selectedChat.id, msg.id, editMsgText);
+                                    setEditingMsgId(null);
+                                    showToast('Message updated successfully (edited)');
+                                  }}
+                                  className="px-5 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                                >
+                                  <Save className="w-3.5 h-3.5 text-[#E6BE65]" />
+                                  <span>Save Edit</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingMsgId(null)}
+                                  className="px-4 py-2 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#5A382A] font-semibold text-xs border border-[#E4D5AE] flex items-center justify-center cursor-pointer transition-colors"
+                                >
+                                  <span>Cancel</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      // Sent Admin Message (Normal Bubble View)
                       return (
                         <div key={msg.id} className="flex justify-end relative group">
                           <div className="relative max-w-md rounded-2xl p-3 text-xs leading-relaxed shadow-xs bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-white rounded-br-none">
@@ -896,40 +958,8 @@ export default function AdminPage() {
                               </div>
                             </div>
 
-                            {/* Message Body or Inline Editor */}
-                            {isEditingThis ? (
-                              <div className="space-y-2 pt-1">
-                                <textarea
-                                  value={editMsgText}
-                                  onChange={(e) => setEditMsgText(e.target.value)}
-                                  rows={2}
-                                  className="w-full px-2.5 py-1.5 rounded-lg bg-white text-[#2B150F] text-xs focus:outline-none focus:ring-2 focus:ring-[#E6BE65] resize-none"
-                                  autoFocus
-                                />
-                                <div className="flex items-center justify-end gap-1.5">
-                                  <button
-                                    type="button"
-                                    onClick={() => setEditingMsgId(null)}
-                                    className="px-2 py-0.5 rounded-md bg-white/20 hover:bg-white/30 text-white text-[11px] font-medium cursor-pointer"
-                                  >
-                                    Cancel
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      editChatMessage(selectedChat.id, msg.id, editMsgText);
-                                      setEditingMsgId(null);
-                                      showToast('Message updated (edited)');
-                                    }}
-                                    className="px-2.5 py-0.5 rounded-md bg-[#E6BE65] text-[#1A0409] font-bold text-[11px] hover:brightness-105 cursor-pointer"
-                                  >
-                                    Save
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
-                            )}
+                            {/* Message Body */}
+                            <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
 
                             {/* Right Lower Corner: Timestamp & Delivery Ticks */}
                             <div className="flex items-center justify-end gap-1.5 mt-1.5 text-[10px] text-white/75">
