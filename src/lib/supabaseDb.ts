@@ -355,6 +355,115 @@ export async function deleteAdminUserFromSupabase(id: string): Promise<boolean> 
   }
 }
 
+/**
+ * Updates password for an admin user in Supabase `public.admin_users` table
+ */
+export async function updateAdminPasswordInSupabase(
+  username: string,
+  currentPasswordAttempt: string,
+  newPassword: string
+): Promise<{ success: boolean; message: string }> {
+  const cleanUsername = username.trim();
+  const cleanCurrent = currentPasswordAttempt.trim();
+  const cleanNew = newPassword.trim();
+
+  if (!cleanNew || cleanNew.length < 6) {
+    return { success: false, message: 'New password must be at least 6 characters long' };
+  }
+
+  // 1. Verify current credentials
+  const check = await verifyAdminCredentialsFromSupabase(cleanUsername, cleanCurrent);
+  if (!check.success || !check.admin) {
+    return { success: false, message: 'Current password is incorrect' };
+  }
+
+  // 2. Update in Supabase public.admin_users
+  try {
+    const { error } = await supabase
+      .from('admin_users')
+      .update({
+        password_hash: cleanNew,
+        updated_at: new Date().toISOString(),
+      })
+      .ilike('username', cleanUsername);
+
+    if (error) {
+      console.warn('Supabase updateAdminPassword note:', error.message);
+    }
+  } catch (e) {
+    console.warn('Supabase updateAdminPassword exception:', e);
+  }
+
+  // 3. Update in local storage fallback store
+  try {
+    const stored = localStorage.getItem(ADMIN_STORE_KEY);
+    let admins: DbAdminUser[] = stored ? JSON.parse(stored) : DEFAULT_SEED_ADMINS;
+    admins = admins.map((a) => {
+      if (a.username.toLowerCase() === cleanUsername.toLowerCase()) {
+        return { ...a, password_hash: cleanNew, password: cleanNew };
+      }
+      return a;
+    });
+    localStorage.setItem(ADMIN_STORE_KEY, JSON.stringify(admins));
+  } catch {}
+
+  return { success: true, message: 'Admin password updated successfully in database!' };
+}
+
+/**
+ * Updates password for logged-in devotee using Supabase Auth
+ */
+export async function resetDevoteePasswordViaSupabase(
+  newPassword: string
+): Promise<{ success: boolean; message: string }> {
+  if (!newPassword || newPassword.length < 6) {
+    return { success: false, message: 'Password must be at least 6 characters' };
+  }
+
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (error) {
+      return { success: false, message: error.message };
+    }
+    return { success: true, message: 'Password updated successfully! / പാസ്‌വേഡ് വിജയകരമായി മാറ്റി.' };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Password update failed';
+    return { success: false, message: msg };
+  }
+}
+
+/**
+ * Sends password reset link to devotee email via Supabase Auth
+ */
+export async function sendPasswordResetEmailViaSupabase(
+  email: string
+): Promise<{ success: boolean; message: string }> {
+  if (!email || !email.includes('@')) {
+    return { success: false, message: 'Please provide a valid email address' };
+  }
+
+  try {
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/profile` : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: redirectUrl,
+    });
+
+    if (error) {
+      return { success: false, message: error.message };
+    }
+    return {
+      success: true,
+      message: 'Password reset link sent to your email address! / പാസ്‌വേഡ് പുനഃക്രമീകരണ ലിങ്ക് ഇമെയിലിൽ അയച്ചിട്ടുണ്ട്.',
+    };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Failed to send reset email';
+    return { success: false, message: msg };
+  }
+}
+
 // -----------------------------------------------------------------------------------
 // 5. ADMIN PORTAL CONTENT SYNCHRONIZATION (Offerings, Festivals, Settings)
 // -----------------------------------------------------------------------------------

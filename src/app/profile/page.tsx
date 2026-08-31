@@ -11,6 +11,8 @@ import {
   getBookingsFromSupabase,
   getChatMessagesFromSupabase,
   sendChatMessageToSupabase,
+  resetDevoteePasswordViaSupabase,
+  sendPasswordResetEmailViaSupabase,
   DbBooking,
   DbChatMessage,
 } from '../../lib/supabaseDb';
@@ -39,6 +41,9 @@ import {
   X,
   FileText,
   Lock,
+  Key,
+  Eye,
+  EyeOff,
   Users,
   CreditCard,
   Filter,
@@ -279,6 +284,60 @@ function ProfileContent() {
 
   // Chat State
   const [chatMessageText, setChatMessageText] = useState('');
+
+  // Devotee Password Reset State
+  const [newPasswordInput, setNewPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
+  const [passwordStatusMsg, setPasswordStatusMsg] = useState<{ text: string; isError: boolean } | null>(null);
+
+  const handleUpdateDevoteePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordStatusMsg(null);
+
+    if (newPasswordInput !== confirmPasswordInput) {
+      setPasswordStatusMsg({ text: 'New password and confirm password do not match / നൽകിയ പാസ്‌വേഡുകൾ പൊരുത്തപ്പെടുന്നില്ല', isError: true });
+      return;
+    }
+
+    if (newPasswordInput.length < 6) {
+      setPasswordStatusMsg({ text: 'Password must be at least 6 characters / പാസ്‌വേഡിന് കുറഞ്ഞത് 6 അക്ഷരങ്ങൾ വേണം', isError: true });
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+    const result = await resetDevoteePasswordViaSupabase(newPasswordInput);
+    setIsUpdatingPassword(false);
+
+    if (result.success) {
+      setPasswordStatusMsg({ text: result.message, isError: false });
+      setNewPasswordInput('');
+      setConfirmPasswordInput('');
+      showToast('Password updated successfully! / പാസ്‌വേഡ് മാറ്റി.');
+    } else {
+      setPasswordStatusMsg({ text: result.message, isError: true });
+    }
+  };
+
+  const handleSendResetEmail = async () => {
+    if (!currentUser?.email) {
+      showToast('No email address associated with account');
+      return;
+    }
+    setPasswordStatusMsg(null);
+    setIsSendingResetEmail(true);
+    const result = await sendPasswordResetEmailViaSupabase(currentUser.email);
+    setIsSendingResetEmail(false);
+
+    if (result.success) {
+      setPasswordStatusMsg({ text: result.message, isError: false });
+      showToast('Reset email sent! Check your inbox.');
+    } else {
+      setPasswordStatusMsg({ text: result.message, isError: true });
+    }
+  };
 
   // Profile completeness check
   const isProfileIncomplete = useMemo(() => {
@@ -1053,6 +1112,146 @@ function ProfileContent() {
                 </div>
               </div>
             )}
+
+            {/* Account Security & Password Reset Section */}
+            <div className="pt-6 border-t border-[#E4D5AE] space-y-5">
+              <div className="flex items-center justify-between border-b border-[#E4D5AE] pb-3">
+                <div className="flex items-center gap-2.5">
+                  <Key className="w-5 h-5 text-[#610C1B]" />
+                  <div>
+                    <h4 className="font-cinzel font-bold text-sm text-[#38050E] uppercase tracking-wider">
+                      Account Security & Password Reset (പാസ്‌വേഡ് മാറ്റുക / സുരക്ഷ)
+                    </h4>
+                    <p className="text-xs text-[#5A382A]">
+                      For devotees registered via email and password. Reset or update your login credentials securely.
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] bg-[#FAF5E8] text-[#8C6219] font-mono px-2.5 py-1 rounded-full border border-[#E4D5AE] hidden sm:inline-block">
+                  Supabase Auth Protected
+                </span>
+              </div>
+
+              {passwordStatusMsg && (
+                <div
+                  className={`p-3.5 rounded-2xl border text-xs font-semibold flex items-center gap-2 ${
+                    passwordStatusMsg.isError
+                      ? 'bg-rose-50 border-rose-200 text-rose-700'
+                      : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                  }`}
+                >
+                  <Info className="w-4 h-4 flex-shrink-0" />
+                  <span>{passwordStatusMsg.text}</span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* Direct Password Update Form */}
+                <div className="lg:col-span-7 space-y-3">
+                  <h5 className="font-cinzel font-bold text-xs uppercase tracking-wider text-[#8C6219]">
+                    Set New Password Directly
+                  </h5>
+
+                  <form onSubmit={handleUpdateDevoteePassword} className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel">
+                          New Password *
+                        </label>
+                        <div className="relative">
+                          <Lock className="w-4 h-4 text-[#8C6219] absolute left-3.5 top-3" />
+                          <input
+                            type={showPasswordFields ? 'text' : 'password'}
+                            required
+                            minLength={6}
+                            placeholder="Min 6 characters"
+                            value={newPasswordInput}
+                            onChange={(e) => setNewPasswordInput(e.target.value)}
+                            className="w-full pl-10 pr-3.5 py-2 rounded-xl border border-[#C99738] bg-white text-xs text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel">
+                          Confirm Password *
+                        </label>
+                        <div className="relative">
+                          <Lock className="w-4 h-4 text-[#8C6219] absolute left-3.5 top-3" />
+                          <input
+                            type={showPasswordFields ? 'text' : 'password'}
+                            required
+                            minLength={6}
+                            placeholder="Re-enter password"
+                            value={confirmPasswordInput}
+                            onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                            className="w-full pl-10 pr-3.5 py-2 rounded-xl border border-[#C99738] bg-white text-xs text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswordFields(!showPasswordFields)}
+                        className="text-xs text-[#8C6219] hover:text-[#610C1B] flex items-center gap-1.5 cursor-pointer font-medium"
+                      >
+                        {showPasswordFields ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        <span>{showPasswordFields ? 'Hide password' : 'Show password'}</span>
+                      </button>
+
+                      <button
+                        type="submit"
+                        disabled={isUpdatingPassword}
+                        className="py-2 px-4 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] disabled:opacity-75 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                      >
+                        {isUpdatingPassword ? (
+                          <>
+                            <Clock className="w-3.5 h-3.5 animate-spin text-[#E6BE65]" />
+                            <span>Updating...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Key className="w-3.5 h-3.5 text-[#E6BE65]" />
+                            <span>Update Password</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Email Reset Link Option */}
+                <div className="lg:col-span-5 p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-2.5">
+                  <div className="flex items-center gap-2 text-[#38050E] font-bold text-xs font-cinzel">
+                    <Mail className="w-4 h-4 text-[#610C1B]" />
+                    <span>Email Password Reset Link</span>
+                  </div>
+                  <p className="text-xs text-[#5A382A] leading-relaxed">
+                    Prefer to reset via a secure one-time link sent to <strong>{currentUser.email}</strong>?
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleSendResetEmail}
+                    disabled={isSendingResetEmail}
+                    className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] font-bold text-xs border border-[#C99738] shadow-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    {isSendingResetEmail ? (
+                      <>
+                        <Clock className="w-3.5 h-3.5 animate-spin text-[#610C1B]" />
+                        <span>Sending Link...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5 text-[#610C1B]" />
+                        <span>Send Reset Link to Email</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

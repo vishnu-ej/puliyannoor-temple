@@ -11,6 +11,7 @@ import {
   getAdminUsersFromSupabase,
   syncAdminUserToSupabase,
   deleteAdminUserFromSupabase,
+  updateAdminPasswordInSupabase,
   DbAdminUser,
 } from '../../lib/supabaseDb';
 import {
@@ -218,12 +219,53 @@ export default function AdminPage() {
   const [currentAdminUser, setCurrentAdminUser] = useState<DbAdminUser | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
+  // Admin Password Change / Reset State
+  const [currentAdminPassword, setCurrentAdminPassword] = useState('');
+  const [newAdminPasswordInput, setNewAdminPasswordInput] = useState('');
+  const [confirmAdminPasswordInput, setConfirmAdminPasswordInput] = useState('');
+  const [showAdminPassFields, setShowAdminPassFields] = useState(false);
+  const [isUpdatingAdminPass, setIsUpdatingAdminPass] = useState(false);
+  const [adminPassStatusMsg, setAdminPassStatusMsg] = useState<{ text: string; isError: boolean } | null>(null);
+
   // Success notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleUpdateAdminPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAdminPassStatusMsg(null);
+
+    if (newAdminPasswordInput !== confirmAdminPasswordInput) {
+      setAdminPassStatusMsg({ text: 'New password and confirmation do not match', isError: true });
+      return;
+    }
+
+    if (newAdminPasswordInput.length < 6) {
+      setAdminPassStatusMsg({ text: 'New password must be at least 6 characters', isError: true });
+      return;
+    }
+
+    setIsUpdatingAdminPass(true);
+    const result = await updateAdminPasswordInSupabase(
+      currentAdminUser?.username || 'PDTemple',
+      currentAdminPassword,
+      newAdminPasswordInput
+    );
+    setIsUpdatingAdminPass(false);
+
+    if (result.success) {
+      setAdminPassStatusMsg({ text: result.message, isError: false });
+      setCurrentAdminPassword('');
+      setNewAdminPasswordInput('');
+      setConfirmAdminPasswordInput('');
+      showToast('Admin password updated successfully in database!');
+    } else {
+      setAdminPassStatusMsg({ text: result.message, isError: true });
+    }
   };
 
   useEffect(() => {
@@ -3255,6 +3297,123 @@ export default function AdminPage() {
                     <span>Version: <strong className="font-mono text-[#610C1B] bg-[#FAF5E8] px-2 py-0.5 rounded border border-[#E4D5AE]">v2.1.0</strong></span>
                   </div>
                 </div>
+              </div>
+
+              {/* Admin Password Change / Reset Section */}
+              <div className="bg-white p-6 rounded-3xl border border-[#E4D5AE] shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-[#E4D5AE] pb-3">
+                  <div className="flex items-center gap-2">
+                    <Key className="w-4 h-4 text-[#610C1B]" />
+                    <h4 className="font-cinzel font-bold text-sm text-[#38050E] uppercase tracking-wider">
+                      Reset & Change Admin Password (പാസ്‌വേഡ് മാറ്റുക)
+                    </h4>
+                  </div>
+                  <span className="text-[10px] bg-[#FAF5E8] text-[#8C6219] font-mono px-2 py-0.5 rounded border border-[#E4D5AE]">
+                    Database Synced
+                  </span>
+                </div>
+
+                <p className="text-xs text-[#5A382A] leading-relaxed">
+                  Update the login password for administrator account <strong>{currentAdminUser?.username || 'PDTemple'}</strong> in the Supabase database.
+                </p>
+
+                {adminPassStatusMsg && (
+                  <div
+                    className={`p-3 rounded-xl border text-xs font-semibold ${
+                      adminPassStatusMsg.isError
+                        ? 'bg-rose-50 border-rose-200 text-rose-700'
+                        : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                    }`}
+                  >
+                    {adminPassStatusMsg.text}
+                  </div>
+                )}
+
+                <form onSubmit={handleUpdateAdminPassword} className="space-y-3 pt-1">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
+                      Current Password *
+                    </label>
+                    <div className="relative">
+                      <Lock className="w-4 h-4 text-[#8C6219] absolute left-3.5 top-3" />
+                      <input
+                        type={showAdminPassFields ? 'text' : 'password'}
+                        required
+                        placeholder="Enter current password"
+                        value={currentAdminPassword}
+                        onChange={(e) => setCurrentAdminPassword(e.target.value)}
+                        className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
+                        New Password *
+                      </label>
+                      <div className="relative">
+                        <Key className="w-4 h-4 text-[#8C6219] absolute left-3.5 top-3" />
+                        <input
+                          type={showAdminPassFields ? 'text' : 'password'}
+                          required
+                          minLength={6}
+                          placeholder="Min 6 characters"
+                          value={newAdminPasswordInput}
+                          onChange={(e) => setNewAdminPasswordInput(e.target.value)}
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
+                        Confirm New Password *
+                      </label>
+                      <div className="relative">
+                        <Key className="w-4 h-4 text-[#8C6219] absolute left-3.5 top-3" />
+                        <input
+                          type={showAdminPassFields ? 'text' : 'password'}
+                          required
+                          minLength={6}
+                          placeholder="Re-enter new password"
+                          value={confirmAdminPasswordInput}
+                          onChange={(e) => setConfirmAdminPasswordInput(e.target.value)}
+                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowAdminPassFields(!showAdminPassFields)}
+                      className="text-xs text-[#8C6219] hover:text-[#610C1B] flex items-center gap-1.5 cursor-pointer font-medium"
+                    >
+                      {showAdminPassFields ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      <span>{showAdminPassFields ? 'Hide passwords' : 'Show passwords'}</span>
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={isUpdatingAdminPass}
+                      className="py-2.5 px-5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] disabled:opacity-75 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                    >
+                      {isUpdatingAdminPass ? (
+                        <>
+                          <Clock className="w-3.5 h-3.5 animate-spin text-[#E6BE65]" />
+                          <span>Updating Database...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-3.5 h-3.5 text-[#E6BE65]" />
+                          <span>Update Admin Password</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
               </div>
 
               {/* Manage Users Section (Live Database Rows) */}
