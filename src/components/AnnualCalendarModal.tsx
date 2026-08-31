@@ -529,6 +529,15 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
 
                   {/* List of Vishesha Divasangal with Inline Edit & Delete */}
                   <div className="bg-white rounded-2xl border border-[#E4D5AE] shadow-xs overflow-hidden">
+                    <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#FAF5E8] border-b border-[#E4D5AE] font-bold text-[11px] text-[#8C6219]">
+                      <span className="w-6 text-center font-mono">#</span>
+                      <span className="w-32">മലയാളം (Mal Date)</span>
+                      <span className="w-36">ഇംഗ്ലീഷ് (Eng Date)</span>
+                      <span className="w-24 text-center">ദിവസം (Day)</span>
+                      <span className="flex-1">വിശേഷം (Occasion / Festival)</span>
+                      <span className="w-8 text-center">Action</span>
+                    </div>
+
                     <div className="max-h-96 overflow-y-auto divide-y divide-[#E4D5AE]/60 p-2 space-y-2">
                       {annualCalendar.visheshaDivasangal.map((row, idx) => (
                         <div key={row.id} className="flex flex-col sm:flex-row items-center gap-2 p-2 rounded-xl bg-[#FAF5E8]/40 border border-[#E4D5AE]">
@@ -649,6 +658,14 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
 
                   {/* List of Pradosham Dates */}
                   <div className="bg-white rounded-2xl border border-[#E4D5AE] shadow-xs overflow-hidden">
+                    <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#FAF5E8] border-b border-[#E4D5AE] font-bold text-[11px] text-[#8C6219]">
+                      <span className="w-6 text-center font-mono">#</span>
+                      <span className="w-44">മലയാളം (Mal Date)</span>
+                      <span className="flex-1">ഇംഗ്ലീഷ് (Eng Date)</span>
+                      <span className="w-32 text-center">ദിവസം (Day)</span>
+                      <span className="w-8 text-center">Action</span>
+                    </div>
+
                     <div className="max-h-96 overflow-y-auto divide-y divide-[#E4D5AE]/60 p-2 space-y-2">
                       {annualCalendar.pradosham.map((row, idx) => (
                         <div key={row.id} className="flex flex-col sm:flex-row items-center gap-2 p-2 rounded-xl bg-[#FAF5E8]/40 border border-[#E4D5AE]">
@@ -763,6 +780,14 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
 
                   {/* List of Samkramam Dates */}
                   <div className="bg-white rounded-2xl border border-[#E4D5AE] shadow-xs overflow-hidden">
+                    <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#FAF5E8] border-b border-[#E4D5AE] font-bold text-[11px] text-[#8C6219]">
+                      <span className="w-6 text-center font-mono">#</span>
+                      <span className="w-44">മാസം (Month)</span>
+                      <span className="flex-1">തീയതി / സംക്രമ മാസം (Occurring Month)</span>
+                      <span className="w-36 text-center">ദിവസം (Date & Day)</span>
+                      <span className="w-8 text-center">Action</span>
+                    </div>
+
                     <div className="max-h-96 overflow-y-auto divide-y divide-[#E4D5AE]/60 p-2 space-y-2">
                       {annualCalendar.samkramam.map((row, idx) => (
                         <div key={row.id} className="flex flex-col sm:flex-row items-center gap-2 p-2 rounded-xl bg-[#FAF5E8]/40 border border-[#E4D5AE]">
