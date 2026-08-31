@@ -283,28 +283,44 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             background: #E8F4FD;
             border: 1.5px solid #003366;
             border-radius: 5px;
-            padding: 5px 6px;
+            padding: 4px 5px;
             margin-top: 3.5px;
             font-size: 8px;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            align-items: center;
+            text-align: center;
           }
-          .bank-flex {
+          .bank-top-text {
+            width: 100%;
+            border-bottom: 0.5px solid rgba(0,51,102,0.25);
+            padding-bottom: 2px;
+            line-height: 1.2;
+          }
+          .bank-qr-center {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 4px;
+            justify-content: center;
+            padding: 2px 0;
           }
           .bank-qr {
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             border: 1px solid #003366;
             background: #fff;
             padding: 1.5px;
             border-radius: 4px;
-            flex-shrink: 0;
+          }
+          .bank-bottom-text {
+            width: 100%;
+            border-top: 0.5px solid rgba(0,51,102,0.25);
+            padding-top: 2px;
+            line-height: 1.25;
+            font-family: monospace;
+            font-size: 8px;
+            color: #002244;
           }
           .ulsavam-banner {
             margin-top: 4px;
@@ -452,17 +468,17 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                 <p class="pooja-text">${annualCalendar.poojaTimings.evening}</p>
               </div>
 
-              <!-- Bank Info (Enlarged & Stretched till bottom) -->
+              <!-- Bank Info (Text Top, Centered QR Middle, Account Bottom) -->
               <div class="bank-card">
-                <div class="bank-flex">
-                  <div style="line-height: 1.25;">
-                    <strong style="color:#002244; font-size:9.5px; text-transform:uppercase; font-family:'Cinzel', serif; letter-spacing:0.5px; display:block;">${annualCalendar.bankInfo.bankName}</strong>
-                    <span style="color:#5A382A; font-size:8px; font-weight:700; display:block;">${annualCalendar.bankInfo.branch}</span>
-                    <span style="color:#38050E; font-size:7px; opacity:0.85; display:block; margin-top:1px;">Managing Trustee & Treasurer<br/>Puliyannoor Devaswom</span>
-                  </div>
+                <div class="bank-top-text">
+                  <strong style="color:#002244; font-size:10px; text-transform:uppercase; font-family:'Cinzel', serif; letter-spacing:0.5px; display:block;">${annualCalendar.bankInfo.bankName}</strong>
+                  <span style="color:#5A382A; font-size:8px; font-weight:700; display:block;">${annualCalendar.bankInfo.branch}</span>
+                  <span style="color:#38050E; font-size:7px; opacity:0.85; display:block; margin-top:1px;">Managing Trustee & Treasurer, Puliyannoor Devaswom</span>
+                </div>
+                <div class="bank-qr-center">
                   <img src="/temple-qr-code.png" class="bank-qr" alt="Devaswom UPI QR" />
                 </div>
-                <div style="margin-top:4px; padding-top:3px; border-top:1px solid rgba(0,51,102,0.25); line-height: 1.3; font-family:monospace; font-size:8px; color:#002244;">
+                <div class="bank-bottom-text">
                   <div><strong style="font-family:'Manjari', sans-serif; color:#610C1B;">A/c No:</strong> <span style="font-weight:700; letter-spacing:0.5px;">${annualCalendar.bankInfo.accountNo}</span></div>
                   <div><strong style="font-family:'Manjari', sans-serif; color:#610C1B;">IFSC:</strong> <span style="font-weight:700; letter-spacing:0.5px;">${annualCalendar.bankInfo.ifsc}</span></div>
                 </div>
@@ -743,28 +759,30 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                     <p className="text-xs font-semibold mt-0.5">{annualCalendar.poojaTimings.evening}</p>
                   </div>
 
-                  {/* Canara Bank Info Card with Large QR - Expanded till bottom */}
-                  <div className="bg-[#E8F4FD] rounded-xl p-3.5 sm:p-4 border-2 border-[#003366]/50 shadow-sm flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between gap-3 mb-2.5">
-                        <div className="text-left space-y-0.5">
-                          <span className="font-extrabold text-xs sm:text-sm text-[#002244] uppercase tracking-wider block font-cinzel">
-                            {annualCalendar.bankInfo.bankName}
-                          </span>
-                          <span className="text-[11px] sm:text-xs text-[#5A382A] font-bold block">
-                            {annualCalendar.bankInfo.branch}
-                          </span>
-                          <span className="text-[10px] text-[#38050E]/80 font-medium block leading-tight">
-                            {annualCalendar.bankInfo.accountHolder}
-                          </span>
-                        </div>
-                        <div className="w-18 h-18 sm:w-20 sm:h-20 bg-white p-1 rounded-xl border-2 border-[#003366] shadow-sm flex-shrink-0 flex items-center justify-center">
-                          <img src="/temple-qr-code.png" alt="Devaswom UPI QR" className="w-full h-full object-contain" />
-                        </div>
+                  {/* Canara Bank Info Card with Large QR in Middle - Expanded till bottom */}
+                  <div className="bg-[#E8F4FD] rounded-xl p-3.5 sm:p-4 border-2 border-[#003366]/50 shadow-sm flex-1 flex flex-col justify-between items-center text-center">
+                    {/* Top: Bank Name & Branch & Authority */}
+                    <div className="w-full text-center space-y-0.5 pb-2 border-b border-[#003366]/20">
+                      <span className="font-extrabold text-sm sm:text-base text-[#002244] uppercase tracking-wider block font-cinzel">
+                        {annualCalendar.bankInfo.bankName}
+                      </span>
+                      <span className="text-xs text-[#5A382A] font-bold block">
+                        {annualCalendar.bankInfo.branch}
+                      </span>
+                      <span className="text-[11px] text-[#38050E]/80 font-medium block leading-tight">
+                        {annualCalendar.bankInfo.accountHolder}
+                      </span>
+                    </div>
+
+                    {/* Middle: Prominent Centered QR Code covering more area */}
+                    <div className="my-auto py-2.5 flex items-center justify-center">
+                      <div className="w-28 h-28 sm:w-36 sm:h-36 bg-white p-2 rounded-2xl border-2 border-[#003366] shadow-md flex items-center justify-center">
+                        <img src="/temple-qr-code.png" alt="Devaswom UPI QR" className="w-full h-full object-contain" />
                       </div>
                     </div>
 
-                    <div className="text-xs text-left text-[#002244] border-t border-[#003366]/30 pt-2 space-y-1 font-mono">
+                    {/* Bottom: Account and IFSC */}
+                    <div className="w-full text-xs text-[#002244] border-t border-[#003366]/30 pt-2 space-y-1 font-mono">
                       <p className="flex items-center justify-between">
                         <strong className="text-[11px] font-sans font-bold text-[#610C1B]">Account No:</strong>
                         <span className="font-bold tracking-wider">{annualCalendar.bankInfo.accountNo}</span>
