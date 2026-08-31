@@ -4,13 +4,15 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { MuralDivider } from './MuralDivider';
 import { LiveStatusBadge } from './LiveStatusBadge';
 import { AudioPlayer } from './AudioPlayer';
-import { Menu, X, Sparkles, ChevronRight, PhoneCall } from 'lucide-react';
+import { Menu, X, Sparkles, ChevronRight, PhoneCall, User, LogOut } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
+  const { currentUser, isAuthenticated, openAuthModal, logout } = useAuth();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,7 +48,6 @@ export const Header: React.FC = () => {
     { href: '/offerings', labelKey: 'nav_offerings' },
     { href: '/events', labelKey: 'nav_events' },
     { href: '/visit', labelKey: 'nav_visit' },
-    { href: '/contact', labelKey: 'nav_contact' },
   ];
 
   const isActive = (href: string) => {
@@ -111,7 +112,7 @@ export const Header: React.FC = () => {
             </div>
           </Link>
 
-          {/* RIGHT: Navigation Links + Language Toggle + Book Offering Button */}
+          {/* RIGHT: Navigation Links + Language Toggle + Profile Icon Button */}
           <div className="flex items-center justify-end gap-1.5 sm:gap-2.5 flex-1 pl-1">
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1.5 whitespace-nowrap">
@@ -166,16 +167,34 @@ export const Header: React.FC = () => {
               </button>
             </div>
 
-            {/* Book Offering CTA Button (Desktop) */}
-            <Link
-              href="/offerings"
-              className="hidden md:inline-flex items-center gap-1.5 px-3.5 xl:px-4 py-1.5 rounded-full bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-[#FAF5E8] text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all flex-shrink-0"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-[#E6BE65]" />
-              <span className={language === 'ml' ? 'text-[11px] font-malayalam-sans' : 'text-xs'}>
-                {t('btn_book_vazhipadu')}
-              </span>
-            </Link>
+            {/* Devotee Profile Round Icon / Sign In CTA (Desktop) */}
+            {isAuthenticated && currentUser ? (
+              <Link
+                href="/profile"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-[#610C1B] to-[#38050E] border-2 border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-xs flex items-center justify-center shadow-md hover:scale-105 transition-transform flex-shrink-0 cursor-pointer"
+                title={`Devotee Profile: ${currentUser.name}`}
+              >
+                <span>
+                  {currentUser.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')
+                    .slice(0, 2)
+                    .toUpperCase() || 'ॐ'}
+                </span>
+              </Link>
+            ) : (
+              <button
+                onClick={() => openAuthModal('login')}
+                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-[#FAF5E8] text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all flex-shrink-0 cursor-pointer"
+                title="Devotee Sign In"
+              >
+                <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center">
+                  <User className="w-2.5 h-2.5 text-[#E6BE65]" />
+                </div>
+                <span>Sign In</span>
+              </button>
+            )}
 
             {/* Mobile Menu Hamburger Button */}
             <button
@@ -195,6 +214,42 @@ export const Header: React.FC = () => {
         <div className="lg:hidden fixed inset-0 top-[88px] sm:top-[94px] bg-[#1A0409]/60 backdrop-blur-sm z-40 animate-fadeIn">
           <div className="bg-[#FAF5E8] border-b border-[#C99738]/40 shadow-2xl p-4 sm:p-6 max-h-[calc(100vh-94px)] overflow-y-auto animate-slideDown">
             <div className="space-y-1">
+              {/* Devotee Profile Link in Mobile Menu */}
+              {isAuthenticated && currentUser ? (
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between p-3.5 rounded-2xl bg-[#610C1B]/10 border border-[#610C1B]/20 mb-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-[#610C1B] text-[#E6BE65] font-cinzel font-bold text-xs flex items-center justify-center border border-[#C99738]">
+                      {currentUser.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .slice(0, 2)
+                        .toUpperCase() || 'ॐ'}
+                    </div>
+                    <div>
+                      <span className="font-bold text-xs text-[#38050E] block">{currentUser.name}</span>
+                      <span className="text-[10px] text-[#8C6219]">View Profile & Temple Chat</span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-[#610C1B]" />
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    openAuthModal('login');
+                  }}
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-white text-xs font-bold flex items-center justify-center gap-2 mb-3 shadow-sm cursor-pointer"
+                >
+                  <User className="w-4 h-4 text-[#E6BE65]" />
+                  <span>Devotee Sign In / Register</span>
+                </button>
+              )}
+
               {navItems.map((item) => {
                 const active = isActive(item.href);
                 return (

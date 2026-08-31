@@ -153,7 +153,13 @@ export const Footer: React.FC = () => {
         {/* Bottom Disclaimer & Copyright */}
         <div className="mt-12 pt-6 border-t border-[#FAF5E8]/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#FAF5E8]/60 text-center md:text-left">
           <p>{t('footer_disclaimer')}</p>
-          <p>© {currentYear} {t('footer_rights')}</p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+            <p>© {currentYear} {t('footer_rights')}</p>
+            <span className="hidden sm:inline text-[#C99738]/40">•</span>
+            <span className="text-[11px] text-[#E6BE65]/90 bg-[#FAF5E8]/10 px-2.5 py-0.5 rounded-full border border-[#C99738]/30 font-mono">
+              Current Website Version: v2.0.0
+            </span>
+          </div>
         </div>
       </div>
     </footer>

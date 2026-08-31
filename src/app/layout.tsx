@@ -3,9 +3,11 @@ import './globals.css';
 import { LanguageProvider } from '../context/LanguageContext';
 import { ContentProvider } from '../context/ContentContext';
 import { CartProvider } from '../context/CartContext';
+import { AuthProvider } from '../context/AuthContext';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { CartDrawer } from '../components/CartDrawer';
+import { AuthModal } from '../components/AuthModal';
 
 export const viewport: Viewport = {
   themeColor: '#1A0409',
@@ -63,23 +65,28 @@ export default function RootLayout({
     <html lang="en" id="htmlRoot" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col bg-[#FAF5E8] text-[#2B150F] selection:bg-[#C99738]/30 selection:text-[#610C1B]">
         <LanguageProvider>
-          <ContentProvider>
-            <CartProvider>
-              {/* Fixed Top Header */}
-              <Header />
+          <AuthProvider>
+            <ContentProvider>
+              <CartProvider>
+                {/* Fixed Top Header */}
+                <Header />
 
-              {/* Page Content Container */}
-              <div className="flex-1 w-full pt-[90px] sm:pt-[100px] md:pt-[104px] flex flex-col">
-                {children}
-              </div>
+                {/* Page Content Container */}
+                <div className="flex-1 w-full pt-[90px] sm:pt-[100px] md:pt-[104px] flex flex-col">
+                  {children}
+                </div>
 
-              {/* Floating Cart Drawer & Action Bar */}
-              <CartDrawer />
+                {/* Floating Cart Drawer & Action Bar */}
+                <CartDrawer />
 
-              {/* Persistent Footer */}
-              <Footer />
-            </CartProvider>
-          </ContentProvider>
+                {/* Global Devotee Auth Modal */}
+                <AuthModal />
+
+                {/* Persistent Footer */}
+                <Footer />
+              </CartProvider>
+            </ContentProvider>
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

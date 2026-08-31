@@ -321,7 +321,17 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const savedChats = localStorage.getItem('puliyannoor_chats');
       if (savedChats) {
         const sanitized = savedChats.replaceAll('പുളിയ', 'പുലിയ');
-        setChats(JSON.parse(sanitized));
+        const parsedChats: ChatConversation[] = JSON.parse(sanitized);
+        const now = Date.now();
+        const TWENTY_ONE_DAYS = 21 * 24 * 60 * 60 * 1000;
+        // Auto-prune chat messages older than 21 days for privacy and data retention policy
+        const prunedChats = parsedChats
+          .map((chat) => ({
+            ...chat,
+            messages: chat.messages.filter((m) => now - (m.createdAt || now) <= TWENTY_ONE_DAYS),
+          }))
+          .filter((chat) => chat.messages.length > 0);
+        setChats(prunedChats.length > 0 ? prunedChats : DEFAULT_CHATS);
       }
 
       const savedCalendar = localStorage.getItem('puliyannoor_annual_calendar');
