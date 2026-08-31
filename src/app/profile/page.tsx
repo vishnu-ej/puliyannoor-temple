@@ -1308,9 +1308,6 @@ function ProfileContent() {
               <div id="printable-single-receipt" className="p-6 sm:p-8 space-y-6 text-[#2B150F] bg-white print:p-4 print:space-y-4">
                 {/* Receipt Temple Header */}
                 <div className="text-center border-b-2 border-[#C99738] pb-4 space-y-1">
-                  <div className="w-12 h-12 rounded-full bg-[#610C1B] text-[#E6BE65] font-cinzel font-bold text-xl flex items-center justify-center mx-auto mb-1 border-2 border-[#C99738]">
-                    ॐ
-                  </div>
                   <h2 className="font-cinzel font-bold text-lg sm:text-xl text-[#38050E] tracking-wide">
                     PULIYANNOOR SREE MAHADEVA TEMPLE
                   </h2>
@@ -1361,9 +1358,6 @@ function ProfileContent() {
                     <p>
                       <span className="text-[#8C6219] font-bold">Payment Status:</span>{' '}
                       <strong className="text-[#1F4E34]">PAID & CONFIRMED (100%)</strong>
-                    </p>
-                    <p>
-                      <span className="text-[#8C6219] font-bold">Devaswom Seal:</span> OORANMA TRUST CERTIFIED
                     </p>
                   </div>
                 </div>
@@ -1450,9 +1444,6 @@ function ProfileContent() {
                     </p>
                   </div>
                   <div className="text-center">
-                    <div className="w-28 h-8 border-b border-gray-400 mx-auto mb-1 flex items-end justify-center text-[10px] text-gray-400 italic">
-                      [Devaswom Seal]
-                    </div>
                     <span className="text-[10px] font-bold text-[#8C6219] uppercase tracking-wider block print:text-black">
                       Authorized Signatory
                     </span>

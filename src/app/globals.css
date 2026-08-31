@@ -153,8 +153,13 @@ body {
 }
 
 /* ========================================================================= */
-/* STRICT PRINT OPTIMIZATION: PRINT ONLY THE OFFICIAL TEMPLE RECEIPT DOCUMENT */
+/* STRICT PRINT OPTIMIZATION: PRINT ONLY THE OFFICIAL RECEIPT (NO TOP/BOTTOM STAMPS) */
 /* ========================================================================= */
+@page {
+  size: A4 portrait;
+  margin: 0mm !important; /* Disables browser top title/date and bottom URL/page-number margin stamps */
+}
+
 @media print {
   html, body {
     background: #FFFFFF !important;
@@ -164,13 +169,14 @@ body {
     padding: 0 !important;
     width: 100% !important;
     height: auto !important;
+    box-shadow: none !important;
   }
 
   header, footer, nav, .print\:hidden {
     display: none !important;
   }
 
-  /* Hide entire page structure except printable receipt container */
+  /* Hide entire page UI except printable receipt container */
   body > * {
     visibility: hidden !important;
   }
@@ -186,11 +192,12 @@ body {
     top: 0 !important;
     width: 100% !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 12mm 15mm !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     z-index: 999999 !important;
+    box-sizing: border-box !important;
   }
 
   #printable-single-receipt {
@@ -204,10 +211,5 @@ body {
     border-radius: 8px !important;
     box-shadow: none !important;
     page-break-inside: avoid !important;
-  }
-
-  @page {
-    size: A4 portrait;
-    margin: 10mm;
   }
 }
