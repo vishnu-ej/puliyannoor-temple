@@ -31,8 +31,8 @@ export const EventsSection: React.FC = () => {
   });
 
   useEffect(() => {
-    // Target date from dynamic countdownConfig
-    const targetTime = new Date(countdownConfig.targetDate).getTime() || new Date('2027-02-28T04:00:00+05:30').getTime();
+    // Target date from dynamic countdownConfig (8 PM / 20:00 IST)
+    const targetTime = new Date(countdownConfig.targetDate).getTime() || new Date('2027-02-28T20:00:00+05:30').getTime();
 
     const updateCountdown = () => {
       const now = new Date().getTime();

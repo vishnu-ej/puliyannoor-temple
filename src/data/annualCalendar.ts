@@ -6,7 +6,7 @@ export const DEFAULT_ANNUAL_CALENDAR: AnnualCalendarData = {
   title: 'പ്രധാന വിശേഷ ദിവസങ്ങൾ',
   templeName: 'പുലിയന്നൂർ ശ്രീമഹാദേവ ക്ഷേത്രം',
   templeAddress: 'പുലിയന്നൂർ പി. ഒ. പാലാ 686 573, കോട്ടയം ജില്ല',
-  templePhones: '8891346001, 9605752642',
+  templePhones: '8891346001',
   visheshaDivasangal: [
     { id: 'vd_1', malayalamMonthDate: '1202 ചിങ്ങം 1', englishMonthDate: '2026 ആഗസ്റ്റ് 17', dayOfWeek: 'തിങ്കൾ', vishesham: 'ആണ്ടുപിറപ്പ്' },
     { id: 'vd_2', malayalamMonthDate: '10', englishMonthDate: '26', dayOfWeek: 'ബുധൻ', vishesham: 'തിരുവോണം, നിറപുത്തരി' },

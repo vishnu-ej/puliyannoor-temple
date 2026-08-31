@@ -66,7 +66,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <AudioPlayer />
             <a
-              href="tel:+914822212345"
+              href="tel:+918891346001"
               className="hidden lg:inline-flex items-center gap-1.5 text-[#FAF5E8]/85 hover:text-[#E6BE65] transition-colors"
             >
               <PhoneCall className="w-3 h-3 text-[#C99738]" />

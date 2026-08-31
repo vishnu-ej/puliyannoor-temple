@@ -15,7 +15,7 @@ import { FESTIVALS as DEFAULT_FESTIVALS } from '../data/festivals';
 import { DEFAULT_ANNUAL_CALENDAR } from '../data/annualCalendar';
 
 export const DEFAULT_COUNTDOWN_CONFIG: FestivalCountdownConfig = {
-  targetDate: '2027-02-28T04:00',
+  targetDate: '2027-02-28T20:00',
   eyebrow: {
     en: 'Upcoming 2027 Festival: Feb 28 – Mar 07, 2027 (Kumbham 16 – 23)',
     ml: 'അടുത്ത വാർഷിക തിരുവുത്സവം: 2027 ഫെബ്രുവരി 28 – മാർച്ച് 07 (കുംഭം 16 – 23)',
@@ -73,10 +73,10 @@ export interface TempleContactInfo {
 
 const DEFAULT_CONTACT_INFO: TempleContactInfo = {
   email: 'puliyannoordevaswom@gmail.com',
-  phone: '+914822212345',
-  phoneDisplay: '+91 4822 212345',
-  whatsapp: '919447000000',
-  whatsappDisplay: '+91 94470 00000',
+  phone: '+918891346001',
+  phoneDisplay: '+91 88913 46001',
+  whatsapp: '918891346001',
+  whatsappDisplay: '+91 88913 46001',
   address: 'PM34+XQ6, Puliyannoor, Mutholy, Pala, Kottayam District, Kerala 686573, India',
   bankName: 'CANARA BANK (കനറാ ബാങ്ക്)',
   bankBranch: 'Puliyannoor Branch',
@@ -260,7 +260,28 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const savedContact = localStorage.getItem('puliyannoor_contact');
       if (savedContact) {
         const sanitized = savedContact.replaceAll('പുളിയ', 'പുലിയ');
-        setContactInfo(JSON.parse(sanitized));
+        const parsed = JSON.parse(sanitized);
+        if (
+          !parsed.phone ||
+          parsed.phone.includes('4822') ||
+          parsed.phone === '+914822212345' ||
+          parsed.phone === '+91 4822 212345'
+        ) {
+          parsed.phone = '+918891346001';
+          parsed.phoneDisplay = '+91 88913 46001';
+        }
+        if (
+          !parsed.whatsapp ||
+          parsed.whatsapp.includes('9447') ||
+          parsed.whatsapp === '919447000000' ||
+          parsed.whatsapp === '+91 94470 00000'
+        ) {
+          parsed.whatsapp = '918891346001';
+          parsed.whatsappDisplay = '+91 88913 46001';
+        }
+        setContactInfo(parsed);
+      } else {
+        setContactInfo(DEFAULT_CONTACT_INFO);
       }
 
       const savedChats = localStorage.getItem('puliyannoor_chats');
@@ -273,6 +294,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (savedCalendar) {
         const sanitized = savedCalendar.replaceAll('പുളിയ', 'പുലിയ');
         const parsed = JSON.parse(sanitized);
+        if (parsed.templePhones && parsed.templePhones.includes('9605752642')) {
+          parsed.templePhones = '8891346001';
+        }
         if (parsed.visheshaDivasangal && parsed.visheshaDivasangal.length > 0) {
           parsed.visheshaDivasangal.forEach((vd: any) => {
             if (vd.id === 'vd_1' && (vd.dayOfWeek === 'ത' || vd.dayOfWeek === 'തി')) {
@@ -288,7 +312,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const savedCountdown = localStorage.getItem('puliyannoor_festival_countdown');
       if (savedCountdown) {
         const parsed = JSON.parse(savedCountdown);
-        // If old/default placeholder text exists, migrate to authentic text
+        // If targetDate is 4 AM or not 8 PM, migrate to 8:00 PM (20:00)
+        if (
+          !parsed.targetDate ||
+          parsed.targetDate.includes('04:00') ||
+          parsed.targetDate === '2027-02-28T04:00'
+        ) {
+          parsed.targetDate = '2027-02-28T20:00';
+        }
         if (
           !parsed.eyebrow?.en ||
           parsed.eyebrow.en === 'Next Major Festival Countdown' ||

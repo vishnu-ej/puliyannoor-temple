@@ -29,28 +29,33 @@ export const AudioPlayer: React.FC = () => {
       // Master Gain for smooth volume control
       const masterGain = ctx.createGain();
       masterGain.gain.setValueAtTime(0.001, ctx.currentTime);
-      masterGain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 2.5);
+      masterGain.gain.exponentialRampToValueAtTime(0.24, ctx.currentTime + 2.0);
       masterGain.connect(ctx.destination);
 
-      // --- 1. Pure Tanpura / Shruti Box Drone (Sa - Pa - Sa' - Kharaj) ---
-      // 136.1 Hz is the sacred Indian Classical Sadharana Gandhara / cosmic Om tuning (C#3)
+      // --- 1. Light, Atmospheric Tanpura / Shruti Box Drone in Background ---
+      const shrutiGain = ctx.createGain();
+      shrutiGain.gain.setValueAtTime(0.001, ctx.currentTime);
+      shrutiGain.gain.exponentialRampToValueAtTime(0.045, ctx.currentTime + 2.5); // Soft and light
+      shrutiGain.connect(masterGain);
+
+      // 136.1 Hz is the sacred cosmic Om tuning (C#3)
       const baseSa = 136.1;
       const pa = 204.15; // Fifth (Pa)
       const highSa = 272.2; // Octave Sa
       const kharajSa = 68.05; // Deep lower Sa
 
       const shrutiTones = [
-        { freq: kharajSa, type: 'sine' as OscillatorType, vol: 0.12 },
-        { freq: baseSa, type: 'triangle' as OscillatorType, vol: 0.14 },
-        { freq: pa, type: 'sine' as OscillatorType, vol: 0.09 },
-        { freq: highSa, type: 'sine' as OscillatorType, vol: 0.05 },
+        { freq: kharajSa, type: 'sine' as OscillatorType, vol: 0.035 },
+        { freq: baseSa, type: 'triangle' as OscillatorType, vol: 0.04 },
+        { freq: pa, type: 'sine' as OscillatorType, vol: 0.025 },
+        { freq: highSa, type: 'sine' as OscillatorType, vol: 0.015 },
       ];
 
-      // Subtle LFO for natural tanpura undulating resonance
+      // Subtle slow breath LFO for tanpura undulating resonance
       const lfo = ctx.createOscillator();
       const lfoGain = ctx.createGain();
-      lfo.frequency.setValueAtTime(0.25, ctx.currentTime); // 0.25 Hz slow breath cycle
-      lfoGain.gain.setValueAtTime(1.8, ctx.currentTime);
+      lfo.frequency.setValueAtTime(0.2, ctx.currentTime);
+      lfoGain.gain.setValueAtTime(1.2, ctx.currentTime);
       lfo.connect(lfoGain);
       lfo.start();
 
@@ -64,68 +69,120 @@ export const AudioPlayer: React.FC = () => {
         lfoGain.connect(osc.frequency);
 
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(600, ctx.currentTime);
+        filter.frequency.setValueAtTime(450, ctx.currentTime);
 
         gain.gain.setValueAtTime(0.001, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(vol, ctx.currentTime + 3);
 
         osc.connect(filter);
         filter.connect(gain);
-        gain.connect(masterGain);
+        gain.connect(shrutiGain);
         osc.start();
       });
 
-      // --- 2. Sacred Deep "Ohm" (ॐ) Chanting Synthesis ---
+      // --- 2. Sacred Crisp & Resonant "Ohm" (ॐ) Vocal Chanting ---
+      // Sanctum Sanctorum Ambient Delay/Echo
+      const delay = ctx.createDelay();
+      const delayFeedback = ctx.createGain();
+      const delayFilter = ctx.createBiquadFilter();
+
+      delay.delayTime.setValueAtTime(0.28, ctx.currentTime);
+      delayFeedback.gain.setValueAtTime(0.32, ctx.currentTime);
+      delayFilter.type = 'lowpass';
+      delayFilter.frequency.setValueAtTime(1800, ctx.currentTime);
+
+      delay.connect(delayFilter);
+      delayFilter.connect(delayFeedback);
+      delayFeedback.connect(delay);
+      delayFilter.connect(masterGain);
+
       const chantOhm = () => {
         if (!audioContextRef.current || audioContextRef.current.state === 'closed') return;
         const chantCtx = audioContextRef.current;
         const now = chantCtx.currentTime;
         const chantDuration = 7.5; // Each Ohm cycle lasts 7.5s
 
-        // Voice Oscillator 1 (Vocal fundamental ~136.1 Hz)
+        // Vocal Master Voice Gain
+        const vocalGain = chantCtx.createGain();
+        vocalGain.gain.setValueAtTime(0.0001, now);
+        vocalGain.gain.exponentialRampToValueAtTime(0.28, now + 1.5); // Crisp, prominent level
+        vocalGain.gain.setValueAtTime(0.28, now + 4.8);
+        vocalGain.gain.exponentialRampToValueAtTime(0.0001, now + chantDuration);
+
+        // Vocal Vibrato LFO (5.2 Hz gentle human vibrato)
+        const vibrato = chantCtx.createOscillator();
+        const vibratoGain = chantCtx.createGain();
+        vibrato.frequency.setValueAtTime(5.2, now);
+        vibratoGain.gain.setValueAtTime(0.5, now);
+        vibrato.connect(vibratoGain);
+        vibrato.start(now);
+        vibrato.stop(now + chantDuration);
+
+        // 1. Primary Voice Generator (Sawtooth + subtle slide)
         const voiceOsc1 = chantCtx.createOscillator();
         voiceOsc1.type = 'sawtooth';
         voiceOsc1.frequency.setValueAtTime(136.1, now);
-        // Gentle downward vocal slide as chant settles into Mmm sound
         voiceOsc1.frequency.linearRampToValueAtTime(135.2, now + chantDuration);
+        vibratoGain.connect(voiceOsc1.frequency);
 
-        // Formant Filter 1 (Vocal vowel shaping A -> U -> M)
+        // 2. Warm Body Sub-Voice (Triangle at fundamental)
+        const voiceOsc2 = chantCtx.createOscillator();
+        voiceOsc2.type = 'triangle';
+        voiceOsc2.frequency.setValueAtTime(136.1, now);
+        voiceOsc2.frequency.linearRampToValueAtTime(135.2, now + chantDuration);
+        vibratoGain.connect(voiceOsc2.frequency);
+
+        // Formant 1: Throat/Pharyngeal Tract (A -> U -> M vowel shaping)
         const formant1 = chantCtx.createBiquadFilter();
         formant1.type = 'bandpass';
-        formant1.Q.setValueAtTime(4.0, now);
-        // Starts at 'Ah' (700Hz) -> shifts to 'Oo' (380Hz) -> settles in 'Mmm' (220Hz)
-        formant1.frequency.setValueAtTime(650, now);
-        formant1.frequency.exponentialRampToValueAtTime(380, now + 3.0);
-        formant1.frequency.exponentialRampToValueAtTime(220, now + 5.5);
+        formant1.Q.setValueAtTime(4.8, now);
+        formant1.frequency.setValueAtTime(750, now); // 'Aaa' (750 Hz)
+        formant1.frequency.exponentialRampToValueAtTime(420, now + 2.8); // 'Ooo' (420 Hz)
+        formant1.frequency.exponentialRampToValueAtTime(240, now + 5.2); // 'Mmm' (240 Hz)
 
-        // Formant Filter 2 (Higher nasal resonance)
+        // Formant 2: Oral/Palatal Resonance
         const formant2 = chantCtx.createBiquadFilter();
         formant2.type = 'bandpass';
-        formant2.Q.setValueAtTime(5.0, now);
-        formant2.frequency.setValueAtTime(1100, now);
-        formant2.frequency.exponentialRampToValueAtTime(750, now + 3.2);
-        formant2.frequency.exponentialRampToValueAtTime(450, now + 5.5);
+        formant2.Q.setValueAtTime(5.5, now);
+        formant2.frequency.setValueAtTime(1250, now);
+        formant2.frequency.exponentialRampToValueAtTime(800, now + 2.8);
+        formant2.frequency.exponentialRampToValueAtTime(480, now + 5.2);
 
-        // Voice Gain Envelope (Gentle fade in, sustain, long meditative fade out)
-        const voiceGain = chantCtx.createGain();
-        voiceGain.gain.setValueAtTime(0.0001, now);
-        voiceGain.gain.exponentialRampToValueAtTime(0.16, now + 1.8);
-        voiceGain.gain.setValueAtTime(0.16, now + 4.5);
-        voiceGain.gain.exponentialRampToValueAtTime(0.0001, now + chantDuration);
+        // Formant 3: Crisp Vocal Presence & Overtones (High-definition clarity)
+        const formant3 = chantCtx.createBiquadFilter();
+        const f3Gain = chantCtx.createGain();
+        formant3.type = 'bandpass';
+        formant3.Q.setValueAtTime(4.2, now);
+        formant3.frequency.setValueAtTime(2800, now); // Crisp presence
+        formant3.frequency.exponentialRampToValueAtTime(2000, now + 3.0);
+        formant3.frequency.exponentialRampToValueAtTime(1200, now + 5.2);
+        f3Gain.gain.setValueAtTime(0.4, now);
 
-        // Parallel routing through formants
+        // Route oscillators through formant filters
         voiceOsc1.connect(formant1);
         voiceOsc1.connect(formant2);
-        formant1.connect(voiceGain);
-        formant2.connect(voiceGain);
-        voiceGain.connect(masterGain);
+        voiceOsc1.connect(formant3);
+
+        voiceOsc2.connect(formant1);
+        voiceOsc2.connect(formant2);
+
+        formant1.connect(vocalGain);
+        formant2.connect(vocalGain);
+        formant3.connect(f3Gain);
+        f3Gain.connect(vocalGain);
+
+        // Direct output + Sanctum Sanctorum reverb delay routing
+        vocalGain.connect(masterGain);
+        vocalGain.connect(delay);
 
         voiceOsc1.start(now);
+        voiceOsc2.start(now);
         voiceOsc1.stop(now + chantDuration + 0.1);
+        voiceOsc2.stop(now + chantDuration + 0.1);
       };
 
-      // Start initial Ohm chant after 0.8s, then repeat continuously every 8.5s
-      setTimeout(chantOhm, 800);
+      // Start initial Ohm chant after 0.5s, then repeat every 8.5s
+      setTimeout(chantOhm, 500);
       intervalRef.current = setInterval(chantOhm, 8500);
 
       setIsPlaying(true);
