@@ -1313,8 +1313,8 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2.5 flex-shrink-0">
-                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+                  <div className="flex flex-col justify-center items-stretch gap-2.5 flex-shrink-0 w-full lg:w-[420px]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full">
                       {/* View Calendar Button */}
                       <button
                         type="button"
@@ -1322,10 +1322,10 @@ export default function AdminPage() {
                           setAnnualCalendarInitialMode('poster');
                           setIsViewingAnnualCalendar(true);
                         }}
-                        className="px-4 py-2.5 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] text-xs font-bold border-2 border-[#C99738] flex items-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] text-xs font-bold border-2 border-[#C99738] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow text-center"
                       >
-                        <Eye className="w-4 h-4 text-[#8C6219]" />
-                        <span>📜 View Annual Calendar</span>
+                        <Eye className="w-4 h-4 text-[#8C6219] flex-shrink-0" />
+                        <span className="whitespace-nowrap">View Annual Calendar</span>
                       </button>
 
                       {/* Admin Level Direct Edit / Add / Remove Provision */}
@@ -1336,18 +1336,18 @@ export default function AdminPage() {
                             setAnnualCalendarInitialMode('edit');
                             setIsViewingAnnualCalendar(true);
                           }}
-                          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:from-[#8B1428] hover:to-[#610C1B] text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer border border-[#E6BE65]/40"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:from-[#8B1428] hover:to-[#610C1B] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer border border-[#E6BE65]/40 text-center"
                         >
-                          <Edit3 className="w-4 h-4 text-[#E6BE65]" />
-                          <span>✏️ Manage Calendar Entries</span>
+                          <Edit3 className="w-4 h-4 text-[#E6BE65] flex-shrink-0" />
+                          <span className="whitespace-nowrap">Manage Calendar</span>
                         </button>
                       )}
                     </div>
 
                     {/* Ulsavam Highlight Banner under the View & Edit Options */}
-                    <div className="px-3.5 py-2 rounded-xl bg-[#610C1B] text-[#FAF5E8] text-xs font-bold shadow-xs border border-[#C99738]/50 flex items-center gap-2">
-                      <span>🎪</span>
-                      <span>Ulsavam: {annualCalendar.ulsavamBox.gregorianDates}</span>
+                    <div className="w-full px-4 py-2.5 rounded-xl bg-[#610C1B] text-[#FAF5E8] text-xs font-bold shadow-xs border border-[#C99738]/50 flex items-center justify-center text-center gap-2">
+                      <span className="flex-shrink-0">🎪</span>
+                      <span className="leading-snug">Ulsavam: {annualCalendar.ulsavamBox.gregorianDates}</span>
                     </div>
                   </div>
                 </div>

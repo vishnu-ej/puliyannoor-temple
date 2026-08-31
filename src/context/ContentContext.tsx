@@ -246,22 +246,58 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => {
     try {
       const savedOfferings = localStorage.getItem('puliyannoor_offerings');
-      if (savedOfferings) setOfferings(JSON.parse(savedOfferings));
+      if (savedOfferings) {
+        const sanitized = savedOfferings.replaceAll('പുളിയ', 'പുലിയ');
+        setOfferings(JSON.parse(sanitized));
+      }
 
       const savedFestivals = localStorage.getItem('puliyannoor_festivals');
-      if (savedFestivals) setFestivals(JSON.parse(savedFestivals));
+      if (savedFestivals) {
+        const sanitized = savedFestivals.replaceAll('പുളിയ', 'പുലിയ');
+        setFestivals(JSON.parse(sanitized));
+      }
 
       const savedContact = localStorage.getItem('puliyannoor_contact');
-      if (savedContact) setContactInfo(JSON.parse(savedContact));
+      if (savedContact) {
+        const sanitized = savedContact.replaceAll('പുളിയ', 'പുലിയ');
+        setContactInfo(JSON.parse(sanitized));
+      }
 
       const savedChats = localStorage.getItem('puliyannoor_chats');
-      if (savedChats) setChats(JSON.parse(savedChats));
+      if (savedChats) {
+        const sanitized = savedChats.replaceAll('പുളിയ', 'പുലിയ');
+        setChats(JSON.parse(sanitized));
+      }
 
       const savedCalendar = localStorage.getItem('puliyannoor_annual_calendar');
-      if (savedCalendar) setAnnualCalendar(JSON.parse(savedCalendar));
+      if (savedCalendar) {
+        const sanitized = savedCalendar.replaceAll('പുളിയ', 'പുലിയ');
+        setAnnualCalendar(JSON.parse(sanitized));
+      } else {
+        setAnnualCalendar(DEFAULT_ANNUAL_CALENDAR);
+      }
 
       const savedCountdown = localStorage.getItem('puliyannoor_festival_countdown');
-      if (savedCountdown) setCountdownConfig(JSON.parse(savedCountdown));
+      if (savedCountdown) {
+        const parsed = JSON.parse(savedCountdown);
+        // If old/default placeholder text exists, migrate to authentic text
+        if (
+          !parsed.eyebrow?.en ||
+          parsed.eyebrow.en === 'Next Major Festival Countdown' ||
+          parsed.eyebrow.en === 'Next Major Temple Festival'
+        ) {
+          parsed.eyebrow = DEFAULT_COUNTDOWN_CONFIG.eyebrow;
+        }
+        if (!parsed.title?.en) {
+          parsed.title = DEFAULT_COUNTDOWN_CONFIG.title;
+        }
+        if (!parsed.subtitle?.en) {
+          parsed.subtitle = DEFAULT_COUNTDOWN_CONFIG.subtitle;
+        }
+        setCountdownConfig(parsed);
+      } else {
+        setCountdownConfig(DEFAULT_COUNTDOWN_CONFIG);
+      }
     } catch (e) {
       console.warn('Error reading from localStorage:', e);
     }
