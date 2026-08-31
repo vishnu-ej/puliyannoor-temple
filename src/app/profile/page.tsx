@@ -1266,9 +1266,12 @@ function ProfileContent() {
         {/* MULTI-DEVOTEE CONSOLIDATED OFFICIAL RECEIPT PRINT MODAL (PDF) */}
         {/* ================================================================= */}
         {isPrintReceiptModalOpen && filteredBookings.length > 0 && (
-          <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-fadeIn">
-            <div className="bg-white rounded-3xl max-w-3xl w-full border-2 border-[#C99738] shadow-2xl overflow-hidden my-auto animate-scaleUp">
-              {/* Modal Top Action Bar (Hidden on Print) */}
+          <div
+            id="printable-receipt-modal-wrapper"
+            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-fadeIn print:static print:bg-transparent print:p-0 print:m-0 print:overflow-visible"
+          >
+            <div className="bg-white rounded-3xl max-w-3xl w-full border-2 border-[#C99738] shadow-2xl overflow-hidden my-auto animate-scaleUp print:border-none print:shadow-none print:w-full print:max-w-full print:rounded-none">
+              {/* Modal Top Action Bar (Strictly Hidden on Print) */}
               <div className="p-4 bg-[#FAF5E8] border-b border-[#E4D5AE] flex flex-wrap items-center justify-between gap-3 print:hidden">
                 <div className="flex items-center gap-2">
                   <FileText className="w-5 h-5 text-[#610C1B]" />
@@ -1301,8 +1304,8 @@ function ProfileContent() {
                 </div>
               </div>
 
-              {/* Printable Multi-Devotee Structured Document */}
-              <div id="printable-single-receipt" className="p-6 sm:p-8 space-y-6 text-[#2B150F] bg-white">
+              {/* Printable Multi-Devotee Structured Document (Crisp Vector A4 Print) */}
+              <div id="printable-single-receipt" className="p-6 sm:p-8 space-y-6 text-[#2B150F] bg-white print:p-4 print:space-y-4">
                 {/* Receipt Temple Header */}
                 <div className="text-center border-b-2 border-[#C99738] pb-4 space-y-1">
                   <div className="w-12 h-12 rounded-full bg-[#610C1B] text-[#E6BE65] font-cinzel font-bold text-xl flex items-center justify-center mx-auto mb-1 border-2 border-[#C99738]">
@@ -1316,6 +1319,14 @@ function ProfileContent() {
                   </p>
                   <p className="text-[11px] text-[#5A382A]">
                     Administered by Puliyannoor Ooranma Temple Devaswom · Mutholy, Pala, Kottayam, Kerala 686573
+                  </p>
+                  {/* Temple Contact Number & Official Email under Temple Address */}
+                  <p className="text-[11px] font-semibold text-[#610C1B] flex flex-wrap items-center justify-center gap-2 pt-0.5">
+                    <span>Devaswom Phone: <strong>+91 88913 46001</strong></span>
+                    <span>•</span>
+                    <span>Temple Office: <strong>+91 4822 212345</strong></span>
+                    <span>•</span>
+                    <span>Email: <strong>puliyannoordevaswom@gmail.com</strong></span>
                   </p>
                   <div className="inline-block mt-2 px-3 py-0.5 rounded-full bg-[#FAF5E8] border border-[#C99738] text-[10px] font-bold uppercase tracking-widest text-[#610C1B]">
                     OFFICIAL VAZHIPADU POOJA RECEIPT ({activeDateFilterLabel.toUpperCase()})
@@ -1358,33 +1369,33 @@ function ProfileContent() {
                 </div>
 
                 {/* Separate Devotee Sections within the Single Print Document */}
-                <div className="space-y-5">
+                <div className="space-y-5 print:space-y-3">
                   {Object.entries(groupedByDevotee)
                     .filter(([devotee]) => selectedDevoteeFilter === 'ALL' || selectedDevoteeFilter === devotee)
                     .map(([devotee, data], devIdx) => (
-                      <div key={devotee} className="border border-[#E4D5AE] rounded-xl overflow-hidden">
+                      <div key={devotee} className="border border-[#E4D5AE] rounded-xl overflow-hidden print:border-gray-400">
                         {/* Devotee Section Header */}
-                        <div className="bg-[#FAF5E8] px-4 py-2 border-b border-[#E4D5AE] flex items-center justify-between">
+                        <div className="bg-[#FAF5E8] px-4 py-2 border-b border-[#E4D5AE] flex items-center justify-between print:bg-gray-100">
                           <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-[#610C1B] text-[#E6BE65] font-bold text-[10px] flex items-center justify-center">
+                            <span className="w-5 h-5 rounded-full bg-[#610C1B] text-[#E6BE65] font-bold text-[10px] flex items-center justify-center print:bg-black print:text-white">
                               {devIdx + 1}
                             </span>
                             <span className="font-bold text-xs text-[#38050E]">
                               Devotee: <strong>{devotee}</strong>
                             </span>
                             <span className="text-gray-400">•</span>
-                            <span className="text-[11px] text-[#610C1B] font-semibold">
+                            <span className="text-[11px] text-[#610C1B] font-semibold print:text-black">
                               Birth Star: {data.star}
                             </span>
                           </div>
-                          <span className="text-[11px] text-[#8C6219] font-bold">
-                            Subtotal: <span className="font-mono text-[#610C1B]">₹{data.subtotal}.00</span>
+                          <span className="text-[11px] text-[#8C6219] font-bold print:text-black">
+                            Subtotal: <span className="font-mono text-[#610C1B] print:text-black">₹{data.subtotal}.00</span>
                           </span>
                         </div>
 
                         {/* Table for this specific devotee */}
                         <table className="w-full text-xs text-left">
-                          <thead className="bg-[#1A0409]/90 text-[#FAF5E8] font-cinzel text-[10px]">
+                          <thead className="bg-[#1A0409]/90 text-[#FAF5E8] font-cinzel text-[10px] print:bg-gray-800 print:text-white">
                             <tr>
                               <th className="py-2 px-3 w-10">Sl.</th>
                               <th className="py-2 px-3">Vazhipad</th>
@@ -1393,14 +1404,14 @@ function ProfileContent() {
                               <th className="py-2 px-3 text-right">Rate (₹)</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-[#E4D5AE]/60 bg-white">
+                          <tbody className="divide-y divide-[#E4D5AE]/60 bg-white print:divide-gray-300">
                             {data.items.map((item, itemIdx) => (
                               <tr key={item.id}>
                                 <td className="py-2 px-3 font-mono text-gray-500">{itemIdx + 1}</td>
-                                <td className="py-2 px-3 font-bold text-[#38050E]">{item.vazhipadName}</td>
-                                <td className="py-2 px-3 text-[#5A382A]">{item.offeringDate}</td>
-                                <td className="py-2 px-3 text-[#8C6219]">{item.deity}</td>
-                                <td className="py-2 px-3 text-right font-mono font-bold text-[#38050E]">
+                                <td className="py-2 px-3 font-bold text-[#38050E] print:text-black">{item.vazhipadName}</td>
+                                <td className="py-2 px-3 text-[#5A382A] print:text-black">{item.offeringDate}</td>
+                                <td className="py-2 px-3 text-[#8C6219] print:text-black">{item.deity}</td>
+                                <td className="py-2 px-3 text-right font-mono font-bold text-[#38050E] print:text-black">
                                   ₹{item.amount}.00
                                 </td>
                               </tr>
@@ -1412,29 +1423,29 @@ function ProfileContent() {
                 </div>
 
                 {/* Unified Grand Total Strip */}
-                <div className="p-4 rounded-xl bg-[#FAF5E8] border-2 border-[#C99738] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div className="p-4 rounded-xl bg-[#FAF5E8] border-2 border-[#C99738] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 print:bg-gray-50 print:border-gray-600">
                   <div>
-                    <span className="text-[11px] uppercase font-bold text-[#8C6219] block font-cinzel">
+                    <span className="text-[11px] uppercase font-bold text-[#8C6219] block font-cinzel print:text-black">
                       Consolidated Grand Total Paid
                     </span>
-                    <span className="text-xs text-[#5A382A] italic">
+                    <span className="text-xs text-[#5A382A] italic print:text-black">
                       Amount in words: <strong>Rupees {numberToWords(selectedDevoteeFilter === 'ALL' ? grandTotalAmount : groupedByDevotee[selectedDevoteeFilter]?.subtotal || 0)} Only</strong>
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="font-mono font-extrabold text-lg text-[#610C1B]">
+                    <span className="font-mono font-extrabold text-lg text-[#610C1B] print:text-black">
                       ₹{selectedDevoteeFilter === 'ALL' ? grandTotalAmount : groupedByDevotee[selectedDevoteeFilter]?.subtotal || 0}.00
                     </span>
                   </div>
                 </div>
 
                 {/* Footer Signature & Blessings Note */}
-                <div className="pt-4 flex items-end justify-between text-xs text-[#5A382A] border-t border-[#E4D5AE]/60">
+                <div className="pt-4 flex items-end justify-between text-xs text-[#5A382A] border-t border-[#E4D5AE]/60 print:border-gray-400">
                   <div className="space-y-0.5 max-w-sm">
-                    <p className="font-bold text-[#38050E]">
+                    <p className="font-bold text-[#38050E] print:text-black">
                       Lord Puliyannoor Sree Mahadeva Blessings & Prasadam
                     </p>
-                    <p className="text-[10px] text-gray-500 leading-tight">
+                    <p className="text-[10px] text-gray-500 leading-tight print:text-gray-700">
                       This is an official computer-generated receipt from Puliyannoor Ooranma Temple Devaswom portal for registered account {currentUser.email}. Prasadam may be collected directly from the temple counter upon presenting this receipt.
                     </p>
                   </div>
@@ -1442,10 +1453,10 @@ function ProfileContent() {
                     <div className="w-28 h-8 border-b border-gray-400 mx-auto mb-1 flex items-end justify-center text-[10px] text-gray-400 italic">
                       [Devaswom Seal]
                     </div>
-                    <span className="text-[10px] font-bold text-[#8C6219] uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-[#8C6219] uppercase tracking-wider block print:text-black">
                       Authorized Signatory
                     </span>
-                    <span className="text-[9px] text-gray-500">Puliyannoor Ooranma Devaswom</span>
+                    <span className="text-[9px] text-gray-500 print:text-gray-700">Puliyannoor Ooranma Devaswom</span>
                   </div>
                 </div>
               </div>

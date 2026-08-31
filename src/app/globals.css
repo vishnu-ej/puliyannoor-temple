@@ -78,55 +78,41 @@ body {
 }
 
 .font-malayalam-sans {
-  font-family: 'Noto Sans Malayalam', 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Noto Sans Malayalam', sans-serif;
 }
 
-/* Glassmorphism */
+/* Glassmorphism Classes */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(228, 213, 174, 0.6);
-}
-
-.glass-panel-dark {
-  background: rgba(43, 7, 14, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(230, 190, 101, 0.25);
+  border: 1px solid rgba(201, 151, 56, 0.25);
 }
 
 .glass-card {
-  background: rgba(250, 245, 232, 0.95);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(201, 151, 56, 0.28);
+  border: 1px solid rgba(228, 213, 174, 0.6);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Divine Glows & Accents */
-.gold-gradient-text {
-  background: linear-gradient(135deg, #A16E14 0%, #D4AF37 50%, #F5DE88 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.glass-dark {
+  background: rgba(26, 4, 9, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(201, 151, 56, 0.3);
 }
 
-.crimson-gradient-text {
-  background: linear-gradient(135deg, #38050E 0%, #610C1B 60%, #8B1428 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.gold-border-glow {
-  box-shadow: 0 0 15px rgba(201, 151, 56, 0.3), inset 0 0 10px rgba(201, 151, 56, 0.1);
-}
-
+/* Micro-interactions */
 .card-hover-effect {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
+
 @media (hover: hover) {
   .card-hover-effect:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 30px -8px rgba(97, 12, 27, 0.15), 0 0 12px rgba(201, 151, 56, 0.25);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card);
     border-color: rgba(201, 151, 56, 0.6);
   }
 }
@@ -164,4 +150,64 @@ body {
 
 .animate-pulse-glow {
   animation: pulseGlow 4s infinite ease-in-out;
+}
+
+/* ========================================================================= */
+/* STRICT PRINT OPTIMIZATION: PRINT ONLY THE OFFICIAL TEMPLE RECEIPT DOCUMENT */
+/* ========================================================================= */
+@media print {
+  html, body {
+    background: #FFFFFF !important;
+    background-image: none !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  header, footer, nav, .print\:hidden {
+    display: none !important;
+  }
+
+  /* Hide entire page structure except printable receipt container */
+  body > * {
+    visibility: hidden !important;
+  }
+
+  #printable-receipt-modal-wrapper,
+  #printable-receipt-modal-wrapper * {
+    visibility: visible !important;
+  }
+
+  #printable-receipt-modal-wrapper {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 999999 !important;
+  }
+
+  #printable-single-receipt {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 16px !important;
+    background: #FFFFFF !important;
+    border: 2px solid #C99738 !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
 }
