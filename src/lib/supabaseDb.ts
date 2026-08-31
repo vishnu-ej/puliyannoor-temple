@@ -43,6 +43,18 @@ export interface DbChatMessage {
   created_at?: string;
 }
 
+export interface DbAdminUser {
+  id: string;
+  username: string;
+  password_hash?: string;
+  password?: string;
+  name: string;
+  email: string;
+  role: 'super_admin' | 'staff_admin';
+  is_active: boolean;
+  created_at?: string;
+}
+
 // -----------------------------------------------------------------------------------
 // 1. PROFILES DATABASE OPERATIONS
 // -----------------------------------------------------------------------------------
@@ -182,7 +194,169 @@ export async function sendChatMessageToSupabase(chatMsg: DbChatMessage): Promise
 }
 
 // -----------------------------------------------------------------------------------
-// 4. ADMIN PORTAL CONTENT SYNCHRONIZATION (Offerings, Festivals, Settings)
+// 4. TEMPLE ADMIN AUTHENTICATION & CREDENTIALS (DATABASE DRIVEN)
+// -----------------------------------------------------------------------------------
+const ADMIN_STORE_KEY = 'puliyannoor_db_admin_users';
+
+// Default initial database seed record
+const DEFAULT_SEED_ADMINS: DbAdminUser[] = [
+  {
+    id: 'admin_root_1',
+    username: 'PDTemple',
+    password_hash: 'test1209',
+    name: 'Puliyannoor Devaswom Super Admin',
+    email: 'puliyannoordevaswom@gmail.com',
+    role: 'super_admin',
+    is_active: true,
+    created_at: '2026-08-01T00:00:00Z',
+  },
+];
+
+/**
+ * Verifies admin login credentials dynamically against Supabase `public.admin_users` table
+ */
+export async function verifyAdminCredentialsFromSupabase(
+  username: string,
+  passwordAttempt: string
+): Promise<{ success: boolean; admin?: DbAdminUser; error?: string }> {
+  const cleanUsername = username.trim();
+  const cleanPassword = passwordAttempt.trim();
+
+  if (!cleanUsername || !cleanPassword) {
+    return { success: false, error: 'Please enter both username and password' };
+  }
+
+  try {
+    // 1. Check live Supabase public.admin_users table
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('*')
+      .ilike('username', cleanUsername)
+      .eq('is_active', true)
+      .single();
+
+    if (!error && data) {
+      const match =
+        data.password_hash === cleanPassword ||
+        data.password === cleanPassword ||
+        data.password_hash === btoa(cleanPassword);
+
+      if (match) {
+        return {
+          success: true,
+          admin: {
+            id: data.id,
+            username: data.username,
+            name: data.name || data.full_name || 'Devaswom Admin',
+            email: data.email || 'puliyannoordevaswom@gmail.com',
+            role: data.role || 'super_admin',
+            is_active: true,
+            created_at: data.created_at,
+          },
+        };
+      } else {
+        return { success: false, error: 'Invalid password. Please check your credentials.' };
+      }
+    }
+  } catch (err) {
+    console.warn('Supabase admin verify note:', err);
+  }
+
+  // 2. Check virtual/local admin database store (with auto-sync to Supabase)
+  try {
+    let localAdmins = DEFAULT_SEED_ADMINS;
+    const stored = localStorage.getItem(ADMIN_STORE_KEY);
+    if (stored) {
+      localAdmins = JSON.parse(stored);
+    }
+
+    const matchedAdmin = localAdmins.find(
+      (a) => a.username.toLowerCase() === cleanUsername.toLowerCase() && a.is_active
+    );
+
+    if (matchedAdmin) {
+      if (matchedAdmin.password_hash === cleanPassword || matchedAdmin.password === cleanPassword) {
+        // Attempt to lazily sync this admin into Supabase public.admin_users
+        syncAdminUserToSupabase(matchedAdmin);
+
+        return {
+          success: true,
+          admin: matchedAdmin,
+        };
+      }
+    }
+  } catch (e) {
+    console.warn('Local admin fallback check:', e);
+  }
+
+  return { success: false, error: 'Admin username not found in database' };
+}
+
+export async function getAdminUsersFromSupabase(): Promise<DbAdminUser[]> {
+  try {
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('id, username, name, email, role, is_active, created_at')
+      .order('created_at', { ascending: true });
+
+    if (!error && data && data.length > 0) {
+      return data as DbAdminUser[];
+    }
+  } catch (err) {
+    console.warn('Supabase getAdminUsers note:', err);
+  }
+
+  // Fallback to local admin database store
+  try {
+    const stored = localStorage.getItem(ADMIN_STORE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {}
+  return DEFAULT_SEED_ADMINS;
+}
+
+export async function syncAdminUserToSupabase(adminUser: DbAdminUser): Promise<boolean> {
+  try {
+    const payload = {
+      id: adminUser.id,
+      username: adminUser.username,
+      password_hash: adminUser.password_hash || adminUser.password,
+      name: adminUser.name,
+      email: adminUser.email,
+      role: adminUser.role,
+      is_active: adminUser.is_active ?? true,
+      created_at: adminUser.created_at || new Date().toISOString(),
+    };
+
+    const { error } = await supabase.from('admin_users').upsert(payload);
+    if (error) {
+      console.warn('Supabase syncAdminUser note:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Supabase syncAdminUser exception:', e);
+    return false;
+  }
+}
+
+export async function deleteAdminUserFromSupabase(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('admin_users').delete().eq('id', id);
+    if (error) {
+      console.warn('Supabase deleteAdminUser note:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Supabase deleteAdminUser exception:', e);
+    return false;
+  }
+}
+
+// -----------------------------------------------------------------------------------
+// 5. ADMIN PORTAL CONTENT SYNCHRONIZATION (Offerings, Festivals, Settings)
 // -----------------------------------------------------------------------------------
 export async function syncOfferingToSupabase(offering: any): Promise<boolean> {
   try {
@@ -298,7 +472,7 @@ export async function getTempleSettingsFromSupabase<T>(key: string): Promise<T |
 }
 
 // -----------------------------------------------------------------------------------
-// 5. SUPABASE STORAGE (Avatars, Receipts, Uploads)
+// 6. SUPABASE STORAGE (Avatars, Receipts, Uploads)
 // -----------------------------------------------------------------------------------
 export const STORAGE_BUCKET_MEDIA = 'temple-media';
 

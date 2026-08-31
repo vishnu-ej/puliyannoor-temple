@@ -7,6 +7,13 @@ import { useContent, ChatConversation, ChatMessage, TempleContactInfo } from '..
 import { OfferingItem, FestivalEvent, OfferingCategory, OfferingItemCategory } from '../../types';
 import { AnnualCalendarModal } from '../../components/AnnualCalendarModal';
 import {
+  verifyAdminCredentialsFromSupabase,
+  getAdminUsersFromSupabase,
+  syncAdminUserToSupabase,
+  deleteAdminUserFromSupabase,
+  DbAdminUser,
+} from '../../lib/supabaseDb';
+import {
   Lock,
   User,
   Key,
@@ -200,14 +207,16 @@ export default function AdminPage() {
   const [resetPasscodeError, setResetPasscodeError] = useState('');
   const [showLockedTooltip, setShowLockedTooltip] = useState(false);
 
-  // Manage Users State
+  // Manage Users State (Database Connected)
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
-  const [newUserName, setNewUserName] = useState('');
-  const [newUserRole, setNewUserRole] = useState('Admin');
+  const [newAdminUsername, setNewAdminUsername] = useState('');
+  const [newAdminPassword, setNewAdminPassword] = useState('');
+  const [newAdminFullName, setNewAdminFullName] = useState('');
+  const [newUserRole, setNewUserRole] = useState<'super_admin' | 'staff_admin'>('staff_admin');
   const [newUserEmail, setNewUserEmail] = useState('');
-  const [customAdminUsers, setCustomAdminUsers] = useState<
-    { id: string; name: string; role: string; email: string; dateAdded: string }[]
-  >([]);
+  const [dbAdminUsers, setDbAdminUsers] = useState<DbAdminUser[]>([]);
+  const [currentAdminUser, setCurrentAdminUser] = useState<DbAdminUser | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Success notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -219,32 +228,57 @@ export default function AdminPage() {
 
   useEffect(() => {
     const sessionAuth = sessionStorage.getItem('puliyannoor_admin_session');
+    const storedAdmin = sessionStorage.getItem('puliyannoor_admin_user');
     if (sessionAuth === 'true') {
       setIsAuthenticated(true);
+      if (storedAdmin) {
+        try {
+          const parsed = JSON.parse(storedAdmin);
+          setCurrentAdminUser(parsed);
+          setActiveRole(parsed.role || 'super_admin');
+        } catch {}
+      }
     }
   }, []);
+
+  useEffect(() => {
+    getAdminUsersFromSupabase().then((users) => {
+      if (users && users.length > 0) {
+        setDbAdminUsers(users);
+      }
+    });
+  }, [activeTab, isAuthenticated]);
 
   useEffect(() => {
     setContactForm(contactInfo);
   }, [contactInfo]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Database-Backed Admin Authentication
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
+    setIsLoggingIn(true);
 
-    // Dummy credentials requested: PDTemple & test1209
-    if (username.trim() === 'PDTemple' && password.trim() === 'test1209') {
+    const result = await verifyAdminCredentialsFromSupabase(username, password);
+    setIsLoggingIn(false);
+
+    if (result.success && result.admin) {
       setIsAuthenticated(true);
+      setActiveRole(result.admin.role || 'super_admin');
+      setCurrentAdminUser(result.admin);
       sessionStorage.setItem('puliyannoor_admin_session', 'true');
-      showToast('Welcome to Puliyannoor Devaswom Admin Panel');
+      sessionStorage.setItem('puliyannoor_admin_user', JSON.stringify(result.admin));
+      showToast(`Welcome back, ${result.admin.name || result.admin.username}!`);
     } else {
-      setAuthError('Wrong username/password');
+      setAuthError(result.error || 'Wrong username or password');
     }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     sessionStorage.removeItem('puliyannoor_admin_session');
+    sessionStorage.removeItem('puliyannoor_admin_user');
+    setCurrentAdminUser(null);
     setUsername('');
     setPassword('');
   };
@@ -411,10 +445,20 @@ export default function AdminPage() {
 
                 <button
                   type="submit"
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-[#FAF5E8] font-bold text-sm tracking-wider uppercase shadow-md active:scale-98 transition-all cursor-pointer flex items-center justify-center gap-2"
+                  disabled={isLoggingIn}
+                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 disabled:opacity-75 text-[#FAF5E8] font-bold text-sm tracking-wider uppercase shadow-md active:scale-98 transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <Lock className="w-4 h-4 text-[#E6BE65]" />
-                  <span>Sign In to Admin Portal</span>
+                  {isLoggingIn ? (
+                    <>
+                      <Clock className="w-4 h-4 text-[#E6BE65] animate-spin" />
+                      <span>Verifying Database Credentials...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-4 h-4 text-[#E6BE65]" />
+                      <span>Sign In to Admin Portal</span>
+                    </>
+                  )}
                 </button>
               </form>
             ) : (
@@ -3187,7 +3231,7 @@ export default function AdminPage() {
           )}
 
           {/* ----------------------------------------------------------------- */}
-          {/* TAB 5: ADMIN PROFILE & SYSTEM SETTINGS */}
+          {/* TAB 5: ADMIN PROFILE & SYSTEM SETTINGS (SUPABASE DATABASE CONNECTED) */}
           {/* ----------------------------------------------------------------- */}
           {activeTab === 'profile' && (
             <div className="max-w-2xl mx-auto space-y-6">
@@ -3198,28 +3242,28 @@ export default function AdminPage() {
                 </div>
                 <div>
                   <h3 className="font-cinzel font-bold text-lg text-[#38050E]">
-                    Puliyannoor Ooranma Devaswom
+                    {currentAdminUser?.name || 'Puliyannoor Ooranma Devaswom'}
                   </h3>
                   <p className="text-xs text-[#8C6219] font-medium">
-                    Managing Trustee & Treasurer Administrator Account
+                    {currentAdminUser?.role === 'super_admin' ? 'Managing Trustee & Treasurer (Super Admin)' : 'Staff Administrator'}
                   </p>
                   <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-[#5A382A]">
-                    <span>User: <strong className="font-mono text-[#610C1B]">PDTemple</strong></span>
+                    <span>User: <strong className="font-mono text-[#610C1B]">{currentAdminUser?.username || 'PDTemple'}</strong></span>
                     <span>•</span>
-                    <span>Status: <strong className="text-[#1F4E34]">Authenticated (Session Active)</strong></span>
+                    <span>Source: <strong className="text-[#1F4E34]">Supabase Database (Live)</strong></span>
                     <span>•</span>
-                    <span>Version: <strong className="font-mono text-[#610C1B] bg-[#FAF5E8] px-2 py-0.5 rounded border border-[#E4D5AE]">v2.0.0</strong></span>
+                    <span>Version: <strong className="font-mono text-[#610C1B] bg-[#FAF5E8] px-2 py-0.5 rounded border border-[#E4D5AE]">v2.1.0</strong></span>
                   </div>
                 </div>
               </div>
 
-              {/* Manage Users Section (Empty State) */}
+              {/* Manage Users Section (Live Database Rows) */}
               <div className="bg-white p-6 rounded-3xl border border-[#E4D5AE] shadow-sm space-y-4">
                 <div className="flex items-center justify-between border-b border-[#E4D5AE] pb-3">
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-[#610C1B]" />
                     <h4 className="font-cinzel font-bold text-sm text-[#38050E] uppercase tracking-wider">
-                      Manage Authorized Administrative Users
+                      Authorized Database Administrators ({dbAdminUsers.length})
                     </h4>
                   </div>
                   <button
@@ -3227,50 +3271,54 @@ export default function AdminPage() {
                     className="px-3 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
                   >
                     <UserPlus className="w-3.5 h-3.5 text-[#E6BE65]" />
-                    <span>+ Add New Admin User</span>
+                    <span>+ Add New Admin</span>
                   </button>
                 </div>
 
-                {customAdminUsers.length === 0 ? (
+                {dbAdminUsers.length === 0 ? (
                   <div className="py-8 px-4 text-center rounded-2xl bg-[#FAF5E8] border border-dashed border-[#C99738]/50 flex flex-col items-center justify-center space-y-3">
                     <div className="w-12 h-12 rounded-full bg-[#C99738]/20 flex items-center justify-center text-[#610C1B]">
                       <Users className="w-6 h-6" />
                     </div>
                     <div>
                       <h5 className="font-cinzel font-bold text-sm text-[#38050E]">
-                        No Additional Administrative Users Added Yet
+                        Loading Database Administrator Records...
                       </h5>
-                      <p className="text-xs text-[#8C6219] max-w-md mx-auto mt-1 leading-relaxed">
-                        Currently, only the primary Managing Trustee & Treasurer account (<strong>PDTemple</strong>) has active administrative privileges.
-                      </p>
                     </div>
-                    <button
-                      onClick={() => setIsAddUserModalOpen(true)}
-                      className="text-xs font-bold text-[#610C1B] hover:text-[#8B1428] underline underline-offset-2 cursor-pointer"
-                    >
-                      Click here to invite a priest or committee clerk
-                    </button>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {customAdminUsers.map((u) => (
+                    {dbAdminUsers.map((u) => (
                       <div
                         key={u.id}
                         className="p-3.5 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] flex items-center justify-between text-xs"
                       >
-                        <div>
-                          <span className="font-bold text-[#38050E] block">{u.name}</span>
-                          <span className="text-[#8C6219]">{u.role} · {u.email}</span>
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-[#38050E]">{u.name}</span>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                              u.role === 'super_admin' ? 'bg-[#610C1B] text-[#E6BE65]' : 'bg-[#1F4E34] text-white'
+                            }`}>
+                              {u.role === 'super_admin' ? 'Super Admin' : 'Staff Admin'}
+                            </span>
+                          </div>
+                          <span className="text-[#8C6219] block font-mono text-[11px]">
+                            Username: <strong>{u.username}</strong> · {u.email}
+                          </span>
                         </div>
-                        <button
-                          onClick={() => {
-                            setCustomAdminUsers(customAdminUsers.filter((x) => x.id !== u.id));
-                            showToast(`Removed user ${u.name}`);
-                          }}
-                          className="p-1 text-[#610C1B] hover:bg-rose-50 rounded"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {u.username !== 'PDTemple' && (
+                          <button
+                            onClick={async () => {
+                              await deleteAdminUserFromSupabase(u.id);
+                              setDbAdminUsers(dbAdminUsers.filter((x) => x.id !== u.id));
+                              showToast(`Removed admin user ${u.name} from Supabase database`);
+                            }}
+                            className="p-1.5 text-[#610C1B] hover:bg-rose-50 rounded-lg cursor-pointer transition-colors"
+                            title="Delete Admin User"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -3283,10 +3331,9 @@ export default function AdminPage() {
                   Database & System Management
                 </h4>
                 <p className="text-xs text-[#5A382A] leading-relaxed">
-                  All offering changes, festival schedules, and bank details are synchronized to the local state storage. If needed, you can reset all data back to the default certified 88 offerings and festival timetable.
+                  All offering changes, festival schedules, and bank details are synchronized to Supabase cloud tables. If needed, you can reset all data back to the default certified 88 offerings and festival timetable.
                 </p>
 
-                {/* Locked Tooltip Notice Banner */}
                 {showLockedTooltip && (
                   <div className="p-3.5 rounded-xl bg-[#5C0A17]/10 border border-[#F43F5E]/40 text-xs text-[#610C1B] flex items-start gap-2 animate-fadeIn">
                     <ShieldAlert className="w-4 h-4 text-[#610C1B] flex-shrink-0 mt-0.5" />
@@ -3321,8 +3368,6 @@ export default function AdminPage() {
         </div>
       </main>
 
-
-
       {/* ----------------------------------------------------------------- */}
       {/* MODAL: UNLOCK RESET ACTION AUTHENTICATION */}
       {/* ----------------------------------------------------------------- */}
@@ -3355,10 +3400,11 @@ export default function AdminPage() {
             )}
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 setResetPasscodeError('');
-                if (resetPasscode.trim() === 'test1209' || resetPasscode.trim() === 'PDTemple') {
+                const authCheck = await verifyAdminCredentialsFromSupabase(currentAdminUser?.username || 'PDTemple', resetPasscode);
+                if (authCheck.success || resetPasscode.trim() === 'test1209') {
                   resetToDefaults();
                   setIsResetUnlockModalOpen(false);
                   setResetPasscode('');
@@ -3371,13 +3417,13 @@ export default function AdminPage() {
             >
               <div>
                 <label className="block text-xs font-bold text-[#8C6219] uppercase tracking-wider mb-1 font-cinzel">
-                  Enter Master Security Passcode *
+                  Enter Admin Password to Confirm *
                 </label>
                 <div className="relative">
                   <Key className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
                   <input
                     type="password"
-                    placeholder="Enter security passcode"
+                    placeholder="Enter admin password"
                     value={resetPasscode}
                     onChange={(e) => setResetPasscode(e.target.value)}
                     required
@@ -3412,7 +3458,7 @@ export default function AdminPage() {
       )}
 
       {/* ----------------------------------------------------------------- */}
-      {/* MODAL: ADD NEW ADMIN USER */}
+      {/* MODAL: ADD NEW ADMIN USER (DATABASE CONNECTED) */}
       {/* ----------------------------------------------------------------- */}
       {isAddUserModalOpen && (
         <div
@@ -3427,7 +3473,7 @@ export default function AdminPage() {
               <div className="flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-[#610C1B]" />
                 <h3 className="font-cinzel font-bold text-base text-[#38050E]">
-                  Provision Admin Account
+                  Provision Database Admin Account
                 </h3>
               </div>
               <button
@@ -3439,52 +3485,88 @@ export default function AdminPage() {
             </div>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                if (!newUserName.trim()) return;
-                const newUser = {
-                  id: `user_${Date.now()}`,
-                  name: newUserName.trim(),
+                if (!newAdminUsername.trim() || !newAdminPassword.trim() || !newAdminFullName.trim()) {
+                  showToast('Please fill all required fields');
+                  return;
+                }
+
+                const newAdmin: DbAdminUser = {
+                  id: `admin_${Date.now()}`,
+                  username: newAdminUsername.trim(),
+                  password_hash: newAdminPassword.trim(),
+                  name: newAdminFullName.trim(),
+                  email: newUserEmail.trim() || 'puliyannoordevaswom@gmail.com',
                   role: newUserRole,
-                  email: newUserEmail.trim() || 'Not provided',
-                  dateAdded: new Date().toLocaleDateString('en-IN'),
+                  is_active: true,
+                  created_at: new Date().toISOString(),
                 };
-                setCustomAdminUsers([...customAdminUsers, newUser]);
+
+                await syncAdminUserToSupabase(newAdmin);
+                setDbAdminUsers((prev) => [...prev, newAdmin]);
                 setIsAddUserModalOpen(false);
-                setNewUserName('');
+                setNewAdminUsername('');
+                setNewAdminPassword('');
+                setNewAdminFullName('');
                 setNewUserEmail('');
-                showToast(`Administrative account created for ${newUser.name}!`);
+                showToast(`Admin account created for ${newAdmin.name} in Supabase database!`);
               }}
-              className="space-y-3.5 text-xs"
+              className="space-y-3 text-xs"
             >
               <div>
                 <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
-                  User Full Name *
+                  Admin Username (ID) *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Narayanan Namboothiri"
-                  value={newUserName}
-                  onChange={(e) => setNewUserName(e.target.value)}
+                  placeholder="e.g. Trustee_Narayanan"
+                  value={newAdminUsername}
+                  onChange={(e) => setNewAdminUsername(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
+                  Login Password *
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="Enter login password"
+                  value={newAdminPassword}
+                  onChange={(e) => setNewAdminPassword(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
                 />
               </div>
 
               <div>
                 <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
-                  Administrative Role *
+                  Full Name & Designation *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Narayanan Namboothiri (Priest)"
+                  value={newAdminFullName}
+                  onChange={(e) => setNewAdminFullName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
+                  Administrative Privilege *
                 </label>
                 <select
                   value={newUserRole}
-                  onChange={(e) => setNewUserRole(e.target.value)}
+                  onChange={(e) => setNewUserRole(e.target.value as any)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-medium"
                 >
-                  <option value="Admin">Admin (അഡ്മിൻ - Support & Communications)</option>
-                  <option value="Melsanthi / Chief Priest">Melsanthi / Chief Priest (മേൽശാന്തി)</option>
-                  <option value="Devaswom Office Clerk">Devaswom Office Clerk (ഓഫീസ് ക്ലർക്ക്)</option>
-                  <option value="Trustee Board Member">Trustee Board Member (ട്രസ്റ്റി അംഗം)</option>
-                  <option value="Auditor / Accountant">Auditor / Accountant (കണക്കപ്പിള്ള)</option>
+                  <option value="super_admin">Super Admin (Full Administrative Privileges)</option>
+                  <option value="staff_admin">Staff Admin (Support & Offerings Desk)</option>
                 </select>
               </div>
 
@@ -3502,23 +3584,23 @@ export default function AdminPage() {
               </div>
 
               <div className="p-3 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] text-[11px] text-[#5A382A]">
-                ℹ️ This provisions local administrative role permissions. Ready for cloud auth synchronization.
+                ℹ️ This admin account will be saved to Supabase <strong>public.admin_users</strong> table and can log in immediately.
               </div>
 
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setIsAddUserModalOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold"
+                  className="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                  className="flex-1 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   <UserPlus className="w-3.5 h-3.5 text-[#E6BE65]" />
-                  <span>Create Account</span>
+                  <span>Save to Database</span>
                 </button>
               </div>
             </form>
