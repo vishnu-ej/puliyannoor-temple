@@ -53,6 +53,15 @@ interface AuthContextType {
 const STORAGE_KEY = 'puliyannoor_devotee_user_session';
 const USERS_DB_KEY = 'puliyannoor_devotees_virtual_db';
 
+// Helper to log out and clear admin panel session when devotee logs in
+const clearAdminSession = () => {
+  try {
+    sessionStorage.removeItem('puliyannoor_admin_session');
+    sessionStorage.removeItem('puliyannoor_admin_user');
+    window.dispatchEvent(new Event('storage'));
+  } catch {}
+};
+
 // Default mock initial user for demonstration / testing
 const DEFAULT_DEMO_USERS: UserProfile[] = [
   {
@@ -111,6 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           };
           setCurrentUser(devoteeProfile);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(devoteeProfile));
+          clearAdminSession();
 
           // Ensure profile exists in Supabase public.profiles
           if (!dbProf) {
@@ -130,6 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
         if (session?.user) {
+          clearAdminSession();
           const userMeta = session.user.user_metadata || {};
           const dbProf = await getProfileFromSupabase(session.user.id);
 
@@ -258,12 +269,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // ignore
     }
 
+    clearAdminSession();
     closeAuthModal();
     return { success: true };
   };
 
   // Sign in / Sign up with Google OAuth via Supabase
   const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+    clearAdminSession();
     try {
       const redirectOrigin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
       const { error } = await supabase.auth.signInWithOAuth({
@@ -295,6 +308,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setCurrentUser(newGoogleUser);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(newGoogleUser));
+        clearAdminSession();
         closeAuthModal();
         return { success: true };
       }
@@ -315,6 +329,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setCurrentUser(newGoogleUser);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newGoogleUser));
+      clearAdminSession();
       closeAuthModal();
       return { success: true };
     }
@@ -409,6 +424,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // ignore
     }
 
+    clearAdminSession();
     closeAuthModal();
     return { success: true };
   };
