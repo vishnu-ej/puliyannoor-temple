@@ -445,8 +445,8 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Sidebar Navigation (Frozen & Fixed on Desktop) */}
-      <aside className="w-full md:w-72 md:h-screen md:sticky md:top-0 bg-[#1A0409] text-[#FAF5E8] flex flex-col justify-between border-r border-[#C99738]/30 flex-shrink-0 z-40 overflow-y-auto">
+      {/* Sidebar Navigation (Permanently Frozen & Fixed across all sections) */}
+      <aside className="w-full md:w-72 md:fixed md:left-0 md:top-0 md:bottom-0 md:h-screen bg-[#1A0409] text-[#FAF5E8] flex flex-col justify-between border-r border-[#C99738]/30 flex-shrink-0 z-40">
         <div>
           {/* Header Branding */}
           <div className="p-5 border-b border-[#C99738]/20 flex items-center justify-between">
@@ -570,7 +570,7 @@ export default function AdminPage() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col overflow-hidden bg-[#FAF5E8]">
+      <main className="flex-1 flex flex-col min-w-0 bg-[#FAF5E8] min-h-screen md:ml-72">
         {/* Top App Bar */}
         <header className="px-6 py-3.5 bg-white border-b border-[#E4D5AE] flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2">
@@ -823,9 +823,6 @@ export default function AdminPage() {
                                 <span className="font-bold text-xs text-[#610C1B]">
                                   Editing Devaswom Sent Message
                                 </span>
-                                <span className="text-[10px] text-[#8C6219] bg-[#FAF5E8] px-2 py-0.5 rounded-full font-medium border border-[#E4D5AE]">
-                                  Sent at {msg.timestamp} · {15 - elapsedMinutes}m remaining to edit
-                                </span>
                               </div>
                               <button
                                 type="button"
@@ -894,28 +891,22 @@ export default function AdminPage() {
                                 {/* Action Dropdown Menu */}
                                 {openMenuMsgId === msg.id && (
                                   <div className="absolute right-0 top-5 z-30 w-44 bg-white rounded-xl shadow-xl border border-[#E4D5AE] py-1 text-xs text-[#38050E] animate-scaleUp">
-                                    {isWithin15Min ? (
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          setEditingMsgId(msg.id);
-                                          setEditMsgText(msg.text);
-                                          setOpenMenuMsgId(null);
-                                        }}
-                                        className="w-full text-left px-3 py-1.5 hover:bg-[#FAF5E8] flex items-center justify-between text-[#610C1B] font-bold cursor-pointer"
-                                      >
-                                        <span className="flex items-center gap-1.5">
+                                    {isWithin15Min && (
+                                      <>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setEditingMsgId(msg.id);
+                                            setEditMsgText(msg.text);
+                                            setOpenMenuMsgId(null);
+                                          }}
+                                          className="w-full text-left px-3 py-2 hover:bg-[#FAF5E8] flex items-center gap-2 text-[#610C1B] font-bold cursor-pointer transition-colors"
+                                        >
                                           <Edit3 className="w-3.5 h-3.5" />
                                           <span>Edit Message</span>
-                                        </span>
-                                        <span className="text-[9px] font-normal text-[#8C6219]">
-                                          {15 - elapsedMinutes}m left
-                                        </span>
-                                      </button>
-                                    ) : (
-                                      <div className="px-3 py-1.5 text-[10px] text-gray-400 italic">
-                                        Edit window expired (15m passed)
-                                      </div>
+                                        </button>
+                                        <div className="border-t border-[#E4D5AE]/60 my-1" />
+                                      </>
                                     )}
 
                                     <div className="border-t border-[#E4D5AE]/60 my-1" />
