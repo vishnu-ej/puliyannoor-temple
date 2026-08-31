@@ -115,7 +115,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
         <style>
           @page {
             size: A4 portrait;
-            margin: 3.5mm 4.5mm;
+            margin: 4mm 5mm;
           }
           * {
             box-sizing: border-box;
@@ -129,77 +129,87 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
             -webkit-font-smoothing: antialiased;
+          }
+          @media print {
+            html, body {
+              height: 100%;
+              overflow: hidden;
+              page-break-after: avoid;
+              page-break-inside: avoid;
+            }
           }
           .poster-container {
             width: 100%;
+            box-sizing: border-box;
             background: #FAF5E8;
             border: 2px solid #1A365D;
             border-radius: 6px;
-            padding: 5px 6px;
+            padding: 4px 6px;
+            page-break-inside: avoid;
           }
           .poster-header {
             text-align: center;
             border-bottom: 2px solid #1A365D;
-            padding-bottom: 3px;
-            margin-bottom: 4px;
+            padding-bottom: 2px;
+            margin-bottom: 3px;
             background: linear-gradient(to right, rgba(0,51,102,0.08), rgba(250,245,232,1), rgba(0,51,102,0.08));
             border-radius: 4px;
           }
           .sacred-emblem {
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             color: #8C6219;
             font-family: 'Cinzel', serif;
             letter-spacing: 1.5px;
-            margin-bottom: 1px;
+            margin-bottom: 0px;
           }
           .temple-title {
             font-family: 'Gayathri', sans-serif;
-            font-size: 24px;
+            font-size: 21px;
             font-weight: 900;
             color: #990000;
             margin: 0;
-            line-height: 1.05;
+            line-height: 1.02;
           }
           .temple-sub {
-            font-size: 10.5px;
+            font-size: 9.5px;
             font-weight: 700;
-            margin: 1px 0 0 0;
+            margin: 0.5px 0 0 0;
             color: #1A0409;
           }
           .temple-phone {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 800;
             font-family: monospace;
             color: #003366;
-            margin: 1px 0 0 0;
+            margin: 0.5px 0 0 0;
           }
           .year-banner {
-            margin-top: 3px;
-            padding-top: 2px;
+            margin-top: 2px;
+            padding-top: 1.5px;
             border-top: 1px solid rgba(0,51,102,0.2);
           }
           .year-title {
             font-family: 'Gayathri', sans-serif;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 900;
             color: #CC0000;
             margin: 0;
-            line-height: 1.05;
+            line-height: 1.02;
           }
           .section-title {
             font-family: 'Gayathri', sans-serif;
-            font-size: 14px;
+            font-size: 12.5px;
             font-weight: 900;
             color: #990000;
-            margin: 1px 0 0 0;
+            margin: 0;
+            line-height: 1.05;
           }
           .grid-columns {
             display: grid;
             grid-template-columns: 42% 31% 27%;
-            gap: 4.5px;
+            gap: 4px;
             align-items: stretch;
           }
           .col-card {
@@ -218,34 +228,34 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             background: #002244;
             color: #ffffff;
             text-align: center;
-            font-size: 10.5px;
+            font-size: 9.5px;
             font-weight: 800;
-            padding: 3px 2px;
+            padding: 2px 1.5px;
             font-family: 'Gayathri', sans-serif;
           }
           table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 8px;
+            font-size: 7.2px;
             table-layout: fixed;
           }
           thead tr {
             background: #E60000;
             color: #ffffff;
             font-weight: 800;
-            font-size: 7.5px;
+            font-size: 7px;
           }
           th {
-            padding: 2px 1.5px;
+            padding: 1.2px 1px;
             text-align: center;
             vertical-align: middle;
             border: 0.5px solid rgba(255,255,255,0.3);
           }
           td {
-            padding: 1.5px 2px;
+            padding: 0.8px 1.5px;
             border-bottom: 0.5px solid #E4D5AE;
             vertical-align: middle;
-            line-height: 1.15;
+            line-height: 1.08;
           }
           tr:nth-child(even) {
             background: #FFF9EE;
@@ -260,32 +270,32 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
           .pooja-card {
             background: #1F4E34;
             color: #ffffff;
-            border-radius: 5px;
-            padding: 3.5px 4px;
+            border-radius: 4px;
+            padding: 2.5px 3px;
             text-align: center;
             border: 1.5px solid #C99738;
-            margin-top: 3px;
+            margin-top: 2.5px;
           }
           .pooja-title {
             color: #E6BE65;
             font-weight: 800;
-            font-size: 9.5px;
-            margin-bottom: 1px;
+            font-size: 8.5px;
+            margin-bottom: 0.5px;
             font-family: 'Gayathri', sans-serif;
           }
           .pooja-text {
-            font-size: 7.5px;
+            font-size: 7px;
             font-weight: 700;
             margin: 0;
-            line-height: 1.15;
+            line-height: 1.1;
           }
           .bank-card {
             background: #E8F4FD;
             border: 1.5px solid #003366;
-            border-radius: 5px;
-            padding: 4px 5px;
-            margin-top: 3.5px;
-            font-size: 8px;
+            border-radius: 4px;
+            padding: 3px 4px;
+            margin-top: 2.5px;
+            font-size: 7px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -296,66 +306,66 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
           .bank-top-text {
             width: 100%;
             border-bottom: 0.5px solid rgba(0,51,102,0.25);
-            padding-bottom: 2px;
-            line-height: 1.2;
+            padding-bottom: 1.5px;
+            line-height: 1.15;
           }
           .bank-qr-center {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2px 0;
+            padding: 1.5px 0;
           }
           .bank-qr {
-            width: 56px;
-            height: 56px;
+            width: 44px;
+            height: 44px;
             border: 1px solid #003366;
             background: #fff;
-            padding: 1.5px;
-            border-radius: 4px;
+            padding: 1px;
+            border-radius: 3px;
           }
           .bank-bottom-text {
             width: 100%;
             border-top: 0.5px solid rgba(0,51,102,0.25);
-            padding-top: 2px;
-            line-height: 1.25;
+            padding-top: 1.5px;
+            line-height: 1.15;
             font-family: monospace;
-            font-size: 8px;
+            font-size: 7px;
             color: #002244;
           }
           .ulsavam-banner {
-            margin-top: 4px;
+            margin-top: 3px;
             background: linear-gradient(to right, #800000, #A00000, #800000);
             color: #ffffff;
             border-radius: 5px;
-            padding: 4px 6px;
+            padding: 3px 5px;
             text-align: center;
             border: 1.5px solid #E6BE65;
           }
           .ulsavam-title {
             font-family: 'Gayathri', sans-serif;
-            font-size: 15px;
+            font-size: 13.5px;
             font-weight: 900;
             color: #FFD700;
             margin: 0;
-            line-height: 1.05;
+            line-height: 1.02;
           }
           .ulsavam-dates {
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
-            margin: 1px 0 0 0;
+            margin: 0.5px 0 0 0;
             color: #ffffff;
           }
           .ulsavam-mal {
-            font-size: 9.5px;
+            font-size: 9px;
             font-weight: 800;
-            margin: 1px 0 0 0;
+            margin: 0.5px 0 0 0;
             color: #FFD700;
           }
           .ulsavam-footer {
-            font-size: 7.5px;
+            font-size: 6.5px;
             color: rgba(255,255,255,0.8);
             font-style: italic;
-            margin: 2px 0 0 0;
+            margin: 1px 0 0 0;
           }
         </style>
       </head>
