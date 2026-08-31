@@ -21,6 +21,8 @@ import {
   Flame,
   ArrowLeft,
   ChevronRight,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 
 interface AnnualCalendarModalProps {
@@ -54,6 +56,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
 
   const { language } = useLanguage();
   const [activeView, setActiveView] = useState<'poster' | 'edit'>(initialMode);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -541,8 +544,8 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1A0409]/85 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className="bg-[#FAF5E8] rounded-3xl max-w-5xl w-full shadow-2xl border-2 border-[#C99738] flex flex-col max-h-[94vh] overflow-hidden animate-scaleUp">
+    <div className={`fixed inset-0 z-50 bg-[#1A0409]/85 backdrop-blur-xs flex items-center justify-center ${isFullscreen ? 'p-0' : 'p-2 sm:p-4'} overflow-y-auto`}>
+      <div className={`bg-[#FAF5E8] shadow-2xl border-2 border-[#C99738] flex flex-col overflow-hidden transition-all duration-200 ${isFullscreen ? 'w-full h-full max-w-none max-h-none rounded-none' : 'rounded-3xl max-w-5xl w-full max-h-[94vh] animate-scaleUp'}`}>
         {/* Modal Top Bar */}
         <div className="p-4 bg-gradient-to-r from-[#610C1B] via-[#8B1428] to-[#610C1B] text-white flex items-center justify-between flex-shrink-0 border-b border-[#C99738]/40 shadow-sm">
           <div className="flex items-center gap-2.5">
@@ -586,9 +589,25 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
               <span className="hidden sm:inline">Print / PDF</span>
             </button>
 
+            {/* Expand / Fullscreen Toggle Button */}
+            <button
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="p-1.5 rounded-lg text-[#FAF5E8]/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              title={isFullscreen ? 'Exit Fullscreen' : 'Make Full Screen'}
+              aria-label={isFullscreen ? 'Exit Fullscreen' : 'Make Full Screen'}
+            >
+              {isFullscreen ? (
+                <Minimize2 className="w-5 h-5 text-[#E6BE65]" />
+              ) : (
+                <Maximize2 className="w-5 h-5 text-[#E6BE65]" />
+              )}
+            </button>
+
             <button
               onClick={onClose}
               className="text-[#FAF5E8]/80 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+              title="Close"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -601,7 +620,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             /* ------------------------------------------------------------- */
             /* 1. LETTERPAD / POSTER VIEW (Traditional Devaswom Notice)     */
             /* ------------------------------------------------------------- */
-            <div className="max-w-4xl mx-auto bg-gradient-to-b from-[#87CEEB]/20 via-[#FAF5E8] to-[#FFF9EE] p-4 sm:p-6 rounded-2xl border-2 border-[#1A365D]/30 shadow-lg text-[#1A0409]">
+            <div className={`${isFullscreen ? 'max-w-6xl' : 'max-w-4xl'} mx-auto bg-gradient-to-b from-[#87CEEB]/20 via-[#FAF5E8] to-[#FFF9EE] p-4 sm:p-6 rounded-2xl border-2 border-[#1A365D]/30 shadow-lg text-[#1A0409]`}>
               {/* Clean Letterpad Header (Centered, Authentic Kerala Temple Notice Style) */}
               <div className="relative rounded-2xl overflow-hidden mb-5 border-b-2 border-[#1A365D]/30 pb-5 bg-gradient-to-r from-[#003366]/10 via-[#FAF5E8] to-[#003366]/10 p-4 text-center">
                 {/* Traditional Sacred Emblem */}
