@@ -3203,10 +3203,12 @@ export default function AdminPage() {
                   <p className="text-xs text-[#8C6219] font-medium">
                     Managing Trustee & Treasurer Administrator Account
                   </p>
-                  <div className="flex items-center gap-3 mt-2 text-xs text-[#5A382A]">
+                  <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-[#5A382A]">
                     <span>User: <strong className="font-mono text-[#610C1B]">PDTemple</strong></span>
                     <span>•</span>
                     <span>Status: <strong className="text-[#1F4E34]">Authenticated (Session Active)</strong></span>
+                    <span>•</span>
+                    <span>Version: <strong className="font-mono text-[#610C1B] bg-[#FAF5E8] px-2 py-0.5 rounded border border-[#E4D5AE]">v1.0.0</strong></span>
                   </div>
                 </div>
               </div>
