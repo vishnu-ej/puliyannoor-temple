@@ -175,3 +175,21 @@ export interface AnnualCalendarData {
     footerNote: string;         // "* പുളിയന്നൂർ ദേവസ്വം പ്രസിദ്ധീകരണം"
   };
 }
+
+export interface FestivalCountdownConfig {
+  targetDate: string;           // ISO date string e.g. "2027-02-28T04:00"
+  eyebrow: {
+    en: string;
+    ml: string;
+  };
+  title: {
+    en: string;
+    ml: string;
+  };
+  subtitle: {
+    en: string;
+    ml: string;
+  };
+  isActive: boolean;
+}
+

@@ -20,10 +20,10 @@ import {
 
 export const EventsSection: React.FC = () => {
   const { language, t } = useLanguage();
-  const { festivals } = useContent();
+  const { festivals, countdownConfig } = useContent();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  // Next Major Festival Countdown (2027 Annual Temple Festival: Feb 28, 2027)
+  // Live Festival Countdown
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -32,12 +32,12 @@ export const EventsSection: React.FC = () => {
   });
 
   useEffect(() => {
-    // Target date for 2027 Annual Temple Festival (Feb 28, 2027, 4:00 AM IST)
-    const targetDate = new Date('2027-02-28T04:00:00+05:30').getTime();
+    // Target date from dynamic countdownConfig
+    const targetTime = new Date(countdownConfig.targetDate).getTime() || new Date('2027-02-28T04:00:00+05:30').getTime();
 
     const updateCountdown = () => {
       const now = new Date().getTime();
-      const distance = targetDate - now;
+      const distance = targetTime - now;
 
       if (distance > 0) {
         setTimeLeft({
@@ -46,13 +46,15 @@ export const EventsSection: React.FC = () => {
           minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((distance % (1000 * 60)) / 1000),
         });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
 
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [countdownConfig.targetDate]);
 
   const getEventIcon = (name: string) => {
     switch (name) {
@@ -90,24 +92,23 @@ export const EventsSection: React.FC = () => {
           <MuralDivider variant="simple" className="my-2" />
         </div>
 
-        {/* Live Festival Countdown Banner for 2027 Annual Festival */}
-        <div className="max-w-3xl mx-auto mb-14 rounded-3xl bg-gradient-to-br from-[#610C1B] via-[#38050E] to-[#1A0409] text-[#FAF5E8] p-6 sm:p-8 shadow-xl border-2 border-[#C99738]/40 relative overflow-hidden text-center">
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#C99738]/20 border border-[#E6BE65]/40 text-xs font-semibold text-[#E6BE65] mb-3">
-              <Timer className="w-3.5 h-3.5" />
-              <span>{t('countdown_heading')}</span>
-            </div>
+        {/* Live Festival Countdown Banner */}
+        {countdownConfig.isActive && (
+          <div className="max-w-3xl mx-auto mb-14 rounded-3xl bg-gradient-to-br from-[#610C1B] via-[#38050E] to-[#1A0409] text-[#FAF5E8] p-6 sm:p-8 shadow-xl border-2 border-[#C99738]/40 relative overflow-hidden text-center">
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#C99738]/20 border border-[#E6BE65]/40 text-xs font-semibold text-[#E6BE65] mb-3">
+                <Timer className="w-3.5 h-3.5" />
+                <span>{countdownConfig.eyebrow[language] || t('countdown_heading')}</span>
+              </div>
 
-            <h3 className="font-cinzel text-xl sm:text-2xl md:text-3xl font-bold text-[#FAF5E8] mb-2">
-              {language === 'en' ? '2027 Annual Temple Festival' : '2027 വാർഷിക തിരുവുത്സവം'}
-            </h3>
-            <p className="text-xs sm:text-sm text-[#E6BE65] font-semibold mb-6 font-cinzel">
-              {language === 'en'
-                ? 'Feb 28, 2027 (Sun) – Mar 07, 2027 (Sun) · 1202 Kumbham 16 – 23'
-                : '2027 ഫെബ്രുവരി 28 ഞായർ – മാർച്ച് 07 ഞായർ · 1202 കുംഭം 16 – 23'}
-            </p>
+              <h3 className="font-cinzel text-xl sm:text-2xl md:text-3xl font-bold text-[#FAF5E8] mb-2">
+                {countdownConfig.title[language]}
+              </h3>
+              <p className="text-xs sm:text-sm text-[#E6BE65] font-semibold mb-6 font-cinzel">
+                {countdownConfig.subtitle[language]}
+              </p>
 
-            {/* Countdown Grid */}
+              {/* Countdown Grid */}
             <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
               <div className="bg-[#FAF5E8]/10 rounded-2xl p-2.5 sm:p-4 border border-[#E6BE65]/30">
                 <span className="block font-cinzel text-xl sm:text-3xl font-extrabold text-[#E6BE65]">
@@ -163,6 +164,7 @@ export const EventsSection: React.FC = () => {
             </div>
           </div>
         </div>
+        )}
 
         {/* Festival Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

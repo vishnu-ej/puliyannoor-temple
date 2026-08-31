@@ -46,6 +46,9 @@ import {
   ShieldAlert,
   AlertCircle,
   Unlock,
+  Timer,
+  CheckSquare,
+  ListChecks,
 } from 'lucide-react';
 
 type AdminTab = 'chats' | 'offerings' | 'festivals' | 'contacts' | 'profile';
@@ -56,6 +59,8 @@ export default function AdminPage() {
     festivals,
     contactInfo,
     chats,
+    annualCalendar,
+    countdownConfig,
     addOffering,
     updateOffering,
     deleteOffering,
@@ -64,6 +69,7 @@ export default function AdminPage() {
     deleteFestival,
     deleteMultipleFestivals,
     updateContactInfo,
+    updateCountdownConfig,
     sendMessage,
     markChatAsRead,
     updateChatStatus,
@@ -103,7 +109,34 @@ export default function AdminPage() {
   const [editingFestival, setEditingFestival] = useState<FestivalEvent | null>(null);
   const [isAddingFestival, setIsAddingFestival] = useState(false);
   const [isViewingAnnualCalendar, setIsViewingAnnualCalendar] = useState(false);
+  const [annualCalendarInitialMode, setAnnualCalendarInitialMode] = useState<'poster' | 'edit'>('poster');
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedFestivalIds, setSelectedFestivalIds] = useState<string[]>([]);
+  const [isEditingCountdown, setIsEditingCountdown] = useState(false);
+  const [countdownForm, setCountdownForm] = useState({
+    targetDate: countdownConfig.targetDate || '2027-02-28T04:00',
+    eyebrowEn: countdownConfig.eyebrow?.en || 'Next Major Temple Festival',
+    eyebrowMl: countdownConfig.eyebrow?.ml || 'അടുത്ത പ്രധാന ക്ഷേത്ര ഉത്സവം',
+    titleEn: countdownConfig.title?.en || '2027 Annual Temple Festival',
+    titleMl: countdownConfig.title?.ml || '2027 വാർഷിക തിരുവുത്സവം',
+    subtitleEn: countdownConfig.subtitle?.en || 'Feb 28, 2027 (Sun) – Mar 07, 2027 (Sun) · 1202 Kumbham 16 – 23',
+    subtitleMl: countdownConfig.subtitle?.ml || '2027 ഫെബ്രുവരി 28 ഞായർ – മാർച്ച് 07 ഞായർ · 1202 കുംഭം 16 – 23',
+    isActive: countdownConfig.isActive ?? true,
+  });
+
+  useEffect(() => {
+    setCountdownForm({
+      targetDate: countdownConfig.targetDate || '2027-02-28T04:00',
+      eyebrowEn: countdownConfig.eyebrow?.en || 'Next Major Temple Festival',
+      eyebrowMl: countdownConfig.eyebrow?.ml || 'അടുത്ത പ്രധാന ക്ഷേത്ര ഉത്സവം',
+      titleEn: countdownConfig.title?.en || '2027 Annual Temple Festival',
+      titleMl: countdownConfig.title?.ml || '2027 വാർഷിക തിരുവുത്സവം',
+      subtitleEn: countdownConfig.subtitle?.en || 'Feb 28, 2027 (Sun) – Mar 07, 2027 (Sun) · 1202 Kumbham 16 – 23',
+      subtitleMl: countdownConfig.subtitle?.ml || '2027 ഫെബ്രുവരി 28 ഞായർ – മാർച്ച് 07 ഞായർ · 1202 കുംഭം 16 – 23',
+      isActive: countdownConfig.isActive ?? true,
+    });
+  }, [countdownConfig]);
+
   const [newFestivalForm, setNewFestivalForm] = useState<{
     title: { en: string; ml: string };
     subtitle: { en: string; ml: string };
@@ -1233,10 +1266,11 @@ export default function AdminPage() {
           )}
 
           {/* ----------------------------------------------------------------- */}
+          {/* ----------------------------------------------------------------- */}
           {/* TAB 3: CALENDAR & FESTIVALS EDITOR */}
           {/* ----------------------------------------------------------------- */}
           {activeTab === 'festivals' && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {/* Staff Admin Notice Banner */}
               {activeRole === 'staff_admin' && (
                 <div className="p-3.5 rounded-2xl bg-[#5C0A17]/10 border border-[#F43F5E]/40 text-xs text-[#610C1B] flex items-center gap-2 animate-fadeIn">
@@ -1247,97 +1281,357 @@ export default function AdminPage() {
                 </div>
               )}
 
-              {/* Tab Header with Actions */}
+              {/* ------------------------------------------------------------- */}
+              {/* 1. SEPARATE ANNUAL MALAYALAM CALENDAR MANAGEMENT BOX          */}
+              {/* ------------------------------------------------------------- */}
+              <div className="p-5 sm:p-6 bg-gradient-to-br from-[#FAF5E8] via-[#FFF9EE] to-[#F3EBD7] rounded-3xl border-2 border-[#C99738]/60 shadow-md">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                  <div>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#610C1B]/10 border border-[#610C1B]/20 text-[11px] font-bold text-[#610C1B] uppercase tracking-wider mb-2">
+                      <Calendar className="w-3.5 h-3.5 text-[#C99738]" />
+                      <span>{annualCalendar.malayalamYear} {annualCalendar.gregorianYear}</span>
+                    </div>
+
+                    <h3 className="font-cinzel font-bold text-lg sm:text-xl text-[#38050E] mb-1 flex items-center gap-2">
+                      <span>📜 {annualCalendar.templeName} — Official Malayalam Annual Calendar</span>
+                    </h3>
+                    <p className="text-xs text-[#5A382A] max-w-2xl leading-relaxed">
+                      Official Devaswom publication poster containing {annualCalendar.visheshaDivasangal.length} Special Days (പ്രധാന വിശേഷങ്ങൾ), {annualCalendar.pradosham.length} Pradosham Dates (പ്രദോഷം), {annualCalendar.samkramam.length} Samkramam Dates (സംക്രമം), Pooja Timings, and Ulsavam schedule.
+                    </p>
+
+                    {/* Summary Chips */}
+                    <div className="flex flex-wrap gap-2 mt-3 text-[11px] font-bold">
+                      <span className="px-2.5 py-1 rounded-lg bg-white border border-[#C99738]/40 text-[#610C1B] shadow-2xs">
+                        🏷️ {annualCalendar.visheshaDivasangal.length} Special Days (വിശേഷങ്ങൾ)
+                      </span>
+                      <span className="px-2.5 py-1 rounded-lg bg-white border border-[#C99738]/40 text-[#003366] shadow-2xs">
+                        🌙 {annualCalendar.pradosham.length} Pradosham Dates (പ്രദോഷം)
+                      </span>
+                      <span className="px-2.5 py-1 rounded-lg bg-white border border-[#C99738]/40 text-[#1F4E34] shadow-2xs">
+                        ☀️ {annualCalendar.samkramam.length} Samkramam Dates (സംക്രമം)
+                      </span>
+                      <span className="px-2.5 py-1 rounded-lg bg-[#610C1B] text-[#FAF5E8] shadow-2xs">
+                        🎪 Ulsavam: {annualCalendar.ulsavamBox.gregorianDates}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 flex-shrink-0">
+                    {/* View Calendar Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAnnualCalendarInitialMode('poster');
+                        setIsViewingAnnualCalendar(true);
+                      }}
+                      className="px-4 py-2.5 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] text-xs font-bold border-2 border-[#C99738] flex items-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow"
+                    >
+                      <Eye className="w-4 h-4 text-[#8C6219]" />
+                      <span>📜 View Annual Calendar</span>
+                    </button>
+
+                    {/* Admin Level Direct Edit / Add / Remove Provision */}
+                    {activeRole === 'super_admin' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAnnualCalendarInitialMode('edit');
+                          setIsViewingAnnualCalendar(true);
+                        }}
+                        className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:from-[#8B1428] hover:to-[#610C1B] text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer border border-[#E6BE65]/40"
+                      >
+                        <Edit3 className="w-4 h-4 text-[#E6BE65]" />
+                        <span>✏️ Manage Calendar Entries</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* ------------------------------------------------------------- */}
+              {/* 2. LIVE FESTIVAL COUNTDOWN BANNER EDITOR SECTION              */}
+              {/* ------------------------------------------------------------- */}
+              <div className="p-5 sm:p-6 bg-white rounded-3xl border border-[#E4D5AE] shadow-xs space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-cinzel font-bold text-base text-[#38050E] flex items-center gap-2">
+                      <Timer className="w-4 h-4 text-[#C99738]" />
+                      <span>⏳ Live Festival Countdown Editor</span>
+                    </h3>
+                    <p className="text-xs text-[#8C6219]">
+                      Edit the real-time countdown banner shown to devotees on the website (target date, title, subtitle, and eyebrow text).
+                    </p>
+                  </div>
+
+                  {activeRole === 'super_admin' && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingCountdown(!isEditingCountdown)}
+                      className="px-3.5 py-1.5 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold border border-[#C99738] flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Edit3 className="w-3.5 h-3.5 text-[#8C6219]" />
+                      <span>{isEditingCountdown ? 'Hide Editor' : 'Edit Countdown'}</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Countdown Edit Form */}
+                {isEditingCountdown && activeRole === 'super_admin' && (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      updateCountdownConfig({
+                        targetDate: countdownForm.targetDate,
+                        eyebrow: {
+                          en: countdownForm.eyebrowEn,
+                          ml: countdownForm.eyebrowMl,
+                        },
+                        title: {
+                          en: countdownForm.titleEn,
+                          ml: countdownForm.titleMl,
+                        },
+                        subtitle: {
+                          en: countdownForm.subtitleEn,
+                          ml: countdownForm.subtitleMl,
+                        },
+                        isActive: countdownForm.isActive,
+                      });
+                      setIsEditingCountdown(false);
+                      showToast('Live festival countdown updated successfully!');
+                    }}
+                    className="p-4 bg-[#FAF5E8]/60 rounded-2xl border border-[#E4D5AE] space-y-3.5 text-xs animate-fadeIn"
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">
+                          Target Date & Time (IST) *
+                        </label>
+                        <input
+                          type="datetime-local"
+                          value={countdownForm.targetDate}
+                          onChange={(e) => setCountdownForm({ ...countdownForm, targetDate: e.target.value })}
+                          required
+                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE] bg-white font-mono text-xs text-[#38050E]"
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-2 sm:pt-6">
+                        <input
+                          type="checkbox"
+                          id="countdownIsActive"
+                          checked={countdownForm.isActive}
+                          onChange={(e) => setCountdownForm({ ...countdownForm, isActive: e.target.checked })}
+                          className="w-4 h-4 rounded border-[#C99738] text-[#610C1B] focus:ring-[#610C1B] cursor-pointer"
+                        />
+                        <label htmlFor="countdownIsActive" className="font-bold text-[#38050E] cursor-pointer select-none text-xs">
+                          Display Live Countdown Banner on Website
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">
+                          Text Above Title / Eyebrow (English)
+                        </label>
+                        <input
+                          type="text"
+                          value={countdownForm.eyebrowEn}
+                          onChange={(e) => setCountdownForm({ ...countdownForm, eyebrowEn: e.target.value })}
+                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE] bg-white text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">
+                          Text Above Title / Eyebrow (Malayalam)
+                        </label>
+                        <input
+                          type="text"
+                          value={countdownForm.eyebrowMl}
+                          onChange={(e) => setCountdownForm({ ...countdownForm, eyebrowMl: e.target.value })}
+                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE] bg-white text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">
+                          Countdown Title (English) *
+                        </label>
+                        <input
+                          type="text"
+                          value={countdownForm.titleEn}
+                          onChange={(e) => setCountdownForm({ ...countdownForm, titleEn: e.target.value })}
+                          required
+                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE] bg-white text-xs font-bold text-[#38050E]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">
+                          Countdown Title (Malayalam) *
+                        </label>
+                        <input
+                          type="text"
+                          value={countdownForm.titleMl}
+                          onChange={(e) => setCountdownForm({ ...countdownForm, titleMl: e.target.value })}
+                          required
+                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE] bg-white text-xs font-bold text-[#38050E]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">
+                          Subtitle / Festival Dates Info (English)
+                        </label>
+                        <input
+                          type="text"
+                          value={countdownForm.subtitleEn}
+                          onChange={(e) => setCountdownForm({ ...countdownForm, subtitleEn: e.target.value })}
+                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE] bg-white text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">
+                          Subtitle / Festival Dates Info (Malayalam)
+                        </label>
+                        <input
+                          type="text"
+                          value={countdownForm.subtitleMl}
+                          onChange={(e) => setCountdownForm({ ...countdownForm, subtitleMl: e.target.value })}
+                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE] bg-white text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E4D5AE]">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditingCountdown(false)}
+                        className="px-4 py-2 rounded-xl bg-white hover:bg-gray-100 text-gray-700 text-xs font-bold border border-[#E4D5AE]"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-5 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                      >
+                        <Save className="w-3.5 h-3.5 text-[#E6BE65]" />
+                        <span>Save Countdown Settings</span>
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+
+              {/* ------------------------------------------------------------- */}
+              {/* 3. TEMPLE FESTIVALS & EVENTS SECTION WITH SELECTION MODE     */}
+              {/* ------------------------------------------------------------- */}
               <div className="p-4 bg-white rounded-2xl border border-[#E4D5AE] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="font-cinzel font-bold text-sm text-[#38050E] flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-[#C99738]" />
+                    <Sparkles className="w-4 h-4 text-[#C99738]" />
                     <span>Annual Calendar Events ({festivals.length})</span>
                   </h3>
                   <p className="text-xs text-[#8C6219]">
-                    Manage 2027 festival dates, countdowns, rituals, and the official Malayalam annual calendar.
+                    Manage individual festival celebration cards, dates, descriptions, and rituals.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
-                  {/* View Annual Calendar Button */}
-                  <button
-                    type="button"
-                    onClick={() => setIsViewingAnnualCalendar(true)}
-                    className="px-3.5 py-2 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold border border-[#C99738] flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
-                  >
-                    <Eye className="w-3.5 h-3.5 text-[#8C6219]" />
-                    <span>📜 View Annual Calendar (1202)</span>
-                  </button>
-
-                  {/* Add New Festival Button (Super Admin Only) */}
-                  {activeRole === 'super_admin' && (
-                    <button
-                      type="button"
-                      onClick={() => setIsAddingFestival(true)}
-                      className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5 text-[#E6BE65]" />
-                      <span>+ Add Festival</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Multi-Select Bulk Actions Toolbar (Super Admin Only) */}
-              {activeRole === 'super_admin' && festivals.length > 0 && (
-                <div className="p-3 bg-[#FAF5E8]/80 rounded-2xl border border-[#E4D5AE] flex flex-wrap items-center justify-between gap-2.5 text-xs">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="selectAllFestivals"
-                      checked={selectedFestivalIds.length === festivals.length && festivals.length > 0}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedFestivalIds(festivals.map((f) => f.id));
-                        } else {
-                          setSelectedFestivalIds([]);
-                        }
-                      }}
-                      className="w-4 h-4 rounded border-[#C99738] text-[#610C1B] focus:ring-[#610C1B] cursor-pointer"
-                    />
-                    <label htmlFor="selectAllFestivals" className="font-bold text-[#38050E] cursor-pointer select-none">
-                      Select All Festivals ({selectedFestivalIds.length}/{festivals.length} selected)
-                    </label>
-                  </div>
-
-                  {selectedFestivalIds.length > 0 && (
-                    <div className="flex items-center gap-2">
+                  {/* Normal Mode Buttons */}
+                  {!isSelectionMode && activeRole === 'super_admin' && (
+                    <>
                       <button
                         type="button"
+                        onClick={() => setIsAddingFestival(true)}
+                        className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5 text-[#E6BE65]" />
+                        <span>+ Add Festival</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsSelectionMode(true)}
+                        className="px-3.5 py-2 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold border border-[#C99738] flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                      >
+                        <CheckSquare className="w-3.5 h-3.5 text-[#8C6219]" />
+                        <span>Select</span>
+                      </button>
+                    </>
+                  )}
+
+                  {/* Selection Mode Toolbar (Checkboxes appear now) */}
+                  {isSelectionMode && activeRole === 'super_admin' && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE]">
+                        <input
+                          type="checkbox"
+                          id="selectAllFestivals"
+                          checked={selectedFestivalIds.length === festivals.length && festivals.length > 0}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedFestivalIds(festivals.map((f) => f.id));
+                            } else {
+                              setSelectedFestivalIds([]);
+                            }
+                          }}
+                          className="w-4 h-4 rounded border-[#C99738] text-[#610C1B] focus:ring-[#610C1B] cursor-pointer"
+                        />
+                        <label htmlFor="selectAllFestivals" className="font-bold text-[#38050E] cursor-pointer select-none text-xs">
+                          Select All ({selectedFestivalIds.length}/{festivals.length})
+                        </label>
+                      </div>
+
+                      {/* Delete Selected with Bin Icon */}
+                      <button
+                        type="button"
+                        disabled={selectedFestivalIds.length === 0}
                         onClick={() => {
+                          if (selectedFestivalIds.length === 0) return;
                           if (
                             confirm(
-                              `Are you sure you want to delete ${selectedFestivalIds.length} selected festival(s)?`
+                              `Are you sure you want to delete ${selectedFestivalIds.length} selected festival(s)? This action cannot be undone.`
                             )
                           ) {
+                            const count = selectedFestivalIds.length;
                             deleteMultipleFestivals(selectedFestivalIds);
                             setSelectedFestivalIds([]);
-                            showToast(`Deleted ${selectedFestivalIds.length} festival(s)`);
+                            setIsSelectionMode(false);
+                            showToast(`Deleted ${count} selected festival(s)`);
                           }
                         }}
-                        className="px-3.5 py-1.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors ${
+                          selectedFestivalIds.length > 0
+                            ? 'bg-rose-700 hover:bg-rose-800 text-white cursor-pointer'
+                            : 'bg-rose-100 text-rose-300 border border-rose-200 cursor-not-allowed'
+                        }`}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         <span>Delete Selected ({selectedFestivalIds.length})</span>
                       </button>
 
+                      {/* Cancel Selection Mode */}
                       <button
                         type="button"
-                        onClick={() => setSelectedFestivalIds([])}
-                        className="px-3 py-1.5 rounded-xl bg-white hover:bg-gray-100 text-gray-700 font-semibold border border-[#E4D5AE] transition-colors cursor-pointer"
+                        onClick={() => {
+                          setSelectedFestivalIds([]);
+                          setIsSelectionMode(false);
+                        }}
+                        className="px-3.5 py-2 rounded-xl bg-white hover:bg-gray-100 text-gray-700 text-xs font-semibold border border-[#E4D5AE] transition-colors cursor-pointer"
                       >
-                        Clear Selection
+                        Cancel
                       </button>
                     </div>
                   )}
                 </div>
-              )}
+              </div>
 
               {/* Festival Cards Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1355,7 +1649,8 @@ export default function AdminPage() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            {activeRole === 'super_admin' && (
+                            {/* Checkbox ONLY appears in selection mode */}
+                            {isSelectionMode && activeRole === 'super_admin' && (
                               <input
                                 type="checkbox"
                                 checked={isSelected}
@@ -1905,6 +2200,7 @@ export default function AdminPage() {
                 isOpen={isViewingAnnualCalendar}
                 onClose={() => setIsViewingAnnualCalendar(false)}
                 isAdmin={activeRole === 'super_admin'}
+                initialMode={annualCalendarInitialMode}
               />
             </div>
           )}

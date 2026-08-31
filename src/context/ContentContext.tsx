@@ -8,10 +8,28 @@ import {
   VisheshaDivasam,
   PradoshamDate,
   SamkramamDate,
+  FestivalCountdownConfig,
 } from '../types';
 import { OFFERINGS as DEFAULT_OFFERINGS } from '../data/offerings';
 import { FESTIVALS as DEFAULT_FESTIVALS } from '../data/festivals';
 import { DEFAULT_ANNUAL_CALENDAR } from '../data/annualCalendar';
+
+export const DEFAULT_COUNTDOWN_CONFIG: FestivalCountdownConfig = {
+  targetDate: '2027-02-28T04:00',
+  eyebrow: {
+    en: 'Next Major Festival Countdown',
+    ml: 'അടുത്ത പ്രധാന ക്ഷേത്ര ഉത്സവം',
+  },
+  title: {
+    en: '2027 Annual Temple Festival',
+    ml: '2027 വാർഷിക തിരുവുത്സവം',
+  },
+  subtitle: {
+    en: 'Feb 28, 2027 (Sun) – Mar 07, 2027 (Sun) · 1202 Kumbham 16 – 23',
+    ml: '2027 ഫെബ്രുവരി 28 ഞായർ – മാർച്ച് 07 ഞായർ · 1202 കുംഭം 16 – 23',
+  },
+  isActive: true,
+};
 
 export interface ChatMessage {
   id: string;
@@ -185,6 +203,7 @@ interface ContentContextType {
   contactInfo: TempleContactInfo;
   chats: ChatConversation[];
   annualCalendar: AnnualCalendarData;
+  countdownConfig: FestivalCountdownConfig;
   addOffering: (offering: Omit<OfferingItem, 'slNo'> & { slNo?: number }) => void;
   updateOffering: (id: string, updatedFields: Partial<OfferingItem>) => void;
   deleteOffering: (id: string) => void;
@@ -194,6 +213,7 @@ interface ContentContextType {
   deleteMultipleFestivals: (ids: string[]) => void;
   updateContactInfo: (updatedFields: Partial<TempleContactInfo>) => void;
   updateAnnualCalendar: (updatedFields: Partial<AnnualCalendarData>) => void;
+  updateCountdownConfig: (updatedFields: Partial<FestivalCountdownConfig>) => void;
   addVisheshaDivasam: (item: Omit<VisheshaDivasam, 'id'>) => void;
   updateVisheshaDivasam: (id: string, updatedFields: Partial<VisheshaDivasam>) => void;
   deleteVisheshaDivasam: (id: string) => void;
@@ -220,6 +240,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [contactInfo, setContactInfo] = useState<TempleContactInfo>(DEFAULT_CONTACT_INFO);
   const [chats, setChats] = useState<ChatConversation[]>(DEFAULT_CHATS);
   const [annualCalendar, setAnnualCalendar] = useState<AnnualCalendarData>(DEFAULT_ANNUAL_CALENDAR);
+  const [countdownConfig, setCountdownConfig] = useState<FestivalCountdownConfig>(DEFAULT_COUNTDOWN_CONFIG);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -238,6 +259,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       const savedCalendar = localStorage.getItem('puliyannoor_annual_calendar');
       if (savedCalendar) setAnnualCalendar(JSON.parse(savedCalendar));
+
+      const savedCountdown = localStorage.getItem('puliyannoor_festival_countdown');
+      if (savedCountdown) setCountdownConfig(JSON.parse(savedCountdown));
     } catch (e) {
       console.warn('Error reading from localStorage:', e);
     }
@@ -278,6 +302,13 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       localStorage.setItem('puliyannoor_annual_calendar', JSON.stringify(annualCalendar));
     } catch (e) {}
   }, [annualCalendar, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    try {
+      localStorage.setItem('puliyannoor_festival_countdown', JSON.stringify(countdownConfig));
+    } catch (e) {}
+  }, [countdownConfig, isInitialized]);
 
   // Offering actions
   const addOffering = (newOff: Omit<OfferingItem, 'slNo'> & { slNo?: number }) => {
@@ -428,6 +459,25 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } catch (e) {}
   };
 
+  const updateCountdownConfig = (updatedFields: Partial<FestivalCountdownConfig>) => {
+    setCountdownConfig((prev) => ({
+      ...prev,
+      ...updatedFields,
+      eyebrow: {
+        ...prev.eyebrow,
+        ...(updatedFields.eyebrow || {}),
+      },
+      title: {
+        ...prev.title,
+        ...(updatedFields.title || {}),
+      },
+      subtitle: {
+        ...prev.subtitle,
+        ...(updatedFields.subtitle || {}),
+      },
+    }));
+  };
+
   // Chat actions
   const sendMessage = (conversationId: string, text: string) => {
     if (!text.trim()) return;
@@ -505,12 +555,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setContactInfo(DEFAULT_CONTACT_INFO);
     setChats(DEFAULT_CHATS);
     setAnnualCalendar(DEFAULT_ANNUAL_CALENDAR);
+    setCountdownConfig(DEFAULT_COUNTDOWN_CONFIG);
     try {
       localStorage.removeItem('puliyannoor_offerings');
       localStorage.removeItem('puliyannoor_festivals');
       localStorage.removeItem('puliyannoor_contact');
       localStorage.removeItem('puliyannoor_chats');
       localStorage.removeItem('puliyannoor_annual_calendar');
+      localStorage.removeItem('puliyannoor_festival_countdown');
     } catch (e) {}
   };
 
@@ -522,6 +574,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         contactInfo,
         chats,
         annualCalendar,
+        countdownConfig,
         addOffering,
         updateOffering,
         deleteOffering,
@@ -531,6 +584,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         deleteMultipleFestivals,
         updateContactInfo,
         updateAnnualCalendar,
+        updateCountdownConfig,
         addVisheshaDivasam,
         updateVisheshaDivasam,
         deleteVisheshaDivasam,

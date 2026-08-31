@@ -27,12 +27,14 @@ interface AnnualCalendarModalProps {
   isOpen: boolean;
   onClose: () => void;
   isAdmin?: boolean;
+  initialMode?: 'poster' | 'edit';
 }
 
 export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
   isOpen,
   onClose,
   isAdmin = false,
+  initialMode = 'poster',
 }) => {
   const {
     annualCalendar,
@@ -51,7 +53,13 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
   } = useContent();
 
   const { language } = useLanguage();
-  const [activeView, setActiveView] = useState<'poster' | 'edit'>('poster');
+  const [activeView, setActiveView] = useState<'poster' | 'edit'>(initialMode);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setActiveView(initialMode);
+    }
+  }, [isOpen, initialMode]);
   const [activeEditTab, setActiveEditTab] = useState<'vishesham' | 'pradosham' | 'samkramam' | 'general'>('vishesham');
 
   // Form states for adding new rows
