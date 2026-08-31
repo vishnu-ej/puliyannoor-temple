@@ -593,6 +593,33 @@ export const AuthModal: React.FC = () => {
               </div>
             </div>
 
+            {/* Birth Star (Nakshatram - Optional) */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
+                Birth Star (ജന്മനക്ഷത്രം - Optional)
+              </label>
+              <select
+                value={signupStar}
+                onChange={(e) => setSignupStar(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] cursor-pointer"
+              >
+                <option value="">Select Birth Star (Optional - Can be edited later)</option>
+                {[
+                  'Ashwathi (അശ്വതി)', 'Bharani (ഭരണി)', 'Karthika (കാർത്തിക)', 'Rohini (രോഹിണി)',
+                  'Makayiram (മകയിരം)', 'Thiruvathira (തിരുവാതിര)', 'Punartham (പുണർതം)', 'Pooyam (പൂയം)',
+                  'Ayilyam (ആയില്യം)', 'Makam (മകം)', 'Pooram (പൂരം)', 'Uthram (ഉത്രം)',
+                  'Atham (അത്തം)', 'Chithira (ചിത്തിര)', 'Chothi (ചോതി)', 'Visakham (വിശാഖം)',
+                  'Anizham (അനിഴം)', 'Thrikketta (തൃക്കേട്ട)', 'Moolam (മൂലം)', 'Pooradam (പൂരാടം)',
+                  'Uthrダム (ഉത്രാടം)', 'Thiruvonam (തിരുവോണം)', 'Avittom (അവിട്ടം)', 'Chathayam (ചതയം)',
+                  'Poororuttathi (പൂരുരുട്ടാതി)', 'Uthrattathi (ഉത്രട്ടാതി)', 'Revathi (രേവതി)',
+                ].map((star) => (
+                  <option key={star} value={star}>
+                    {star}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Phone Number */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
