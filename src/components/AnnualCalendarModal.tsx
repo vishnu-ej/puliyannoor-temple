@@ -172,100 +172,82 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             /* ------------------------------------------------------------- */
             /* 1. LETTERPAD / POSTER VIEW (Traditional Devaswom Notice)     */
             /* ------------------------------------------------------------- */
-            <div className="max-w-4xl mx-auto bg-gradient-to-b from-[#87CEEB]/25 via-[#FAF5E8] to-[#FFF9EE] p-4 sm:p-6 rounded-2xl border-2 border-[#1A365D]/30 shadow-lg text-[#1A0409]">
-              {/* Letterpad Header */}
-              <div className="relative rounded-2xl overflow-hidden mb-5 border-b-2 border-[#1A365D]/30 pb-4 bg-gradient-to-r from-[#003366]/10 via-[#FAF5E8] to-[#003366]/10 p-4">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  {/* Left: Traditional Deity Idol Frame */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-16 h-20 sm:w-20 sm:h-24 rounded-xl border-2 border-[#C99738] p-1 bg-white shadow-md flex-shrink-0 flex items-center justify-center overflow-hidden">
-                      <img
-                        src="/temple-qr-code.png"
-                        alt="Temple Deity Emblem"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                      <span className="text-2xl font-serif text-[#C99738] select-none">ॐ</span>
-                    </div>
-                  </div>
+            <div className="max-w-4xl mx-auto bg-gradient-to-b from-[#87CEEB]/20 via-[#FAF5E8] to-[#FFF9EE] p-4 sm:p-6 rounded-2xl border-2 border-[#1A365D]/30 shadow-lg text-[#1A0409]">
+              {/* Clean Letterpad Header (Centered, Authentic Kerala Temple Notice Style) */}
+              <div className="relative rounded-2xl overflow-hidden mb-5 border-b-2 border-[#1A365D]/30 pb-5 bg-gradient-to-r from-[#003366]/10 via-[#FAF5E8] to-[#003366]/10 p-4 text-center">
+                {/* Traditional Sacred Emblem */}
+                <div className="inline-flex items-center justify-center gap-2 mb-1.5">
+                  <span className="text-xl text-[#C99738] select-none font-serif">ॐ</span>
+                  <span className="text-[11px] font-bold text-[#8C6219] uppercase tracking-widest font-cinzel">
+                    SREE MAHADEVA TEMPLE · PULIYANNOOR
+                  </span>
+                  <span className="text-xl text-[#C99738] select-none font-serif">ॐ</span>
+                </div>
 
-                  {/* Center: Temple Name & Header Typography */}
-                  <div className="text-center flex-1">
-                    <h2 className="font-malayalam-heading font-extrabold text-xl sm:text-2xl md:text-3xl text-[#990000] tracking-wide drop-shadow-xs">
-                      {annualCalendar.templeName}
-                    </h2>
-                    <p className="text-xs sm:text-sm font-semibold text-[#1A0409] mt-0.5">
-                      {annualCalendar.templeAddress}
-                    </p>
-                    <p className="text-xs font-mono font-bold text-[#003366] mt-0.5">
-                      മൊബൈൽ : {annualCalendar.templePhones}
-                    </p>
+                {/* Primary Temple Title in Malayalam */}
+                <h1 className="font-malayalam-heading font-extrabold text-2xl sm:text-3xl md:text-4xl text-[#990000] tracking-wide drop-shadow-xs">
+                  {annualCalendar.templeName}
+                </h1>
+                <p className="text-xs sm:text-sm font-semibold text-[#1A0409] mt-1">
+                  {annualCalendar.templeAddress}
+                </p>
+                <p className="text-xs font-mono font-bold text-[#003366] mt-0.5">
+                  മൊബൈൽ : {annualCalendar.templePhones}
+                </p>
 
-                    {/* Year & Main Heading */}
-                    <div className="mt-2.5 inline-block">
-                      <h1 className="font-malayalam-heading font-extrabold text-lg sm:text-2xl md:text-3xl text-[#CC0000] tracking-wider">
-                        {annualCalendar.malayalamYear} {annualCalendar.gregorianYear}
-                      </h1>
-                      <h3 className="font-malayalam-heading font-bold text-base sm:text-xl md:text-2xl text-[#990000] mt-0.5">
-                        {annualCalendar.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Right: Temple Shikhara/Architecture Emblem */}
-                  <div className="hidden sm:flex items-center justify-center w-16 h-20 sm:w-20 sm:h-24 rounded-xl border-2 border-[#C99738] p-1 bg-[#610C1B] text-[#E6BE65] shadow-md flex-shrink-0">
-                    <div className="text-center">
-                      <Flame className="w-6 h-6 mx-auto text-[#E6BE65]" />
-                      <span className="text-[10px] font-cinzel font-bold block mt-1">PULIYANNOOR</span>
-                    </div>
-                  </div>
+                {/* Year & Main Notice Title */}
+                <div className="mt-3.5 pt-3 border-t border-[#003366]/15 inline-block w-full max-w-2xl">
+                  <h2 className="font-malayalam-heading font-extrabold text-xl sm:text-2xl md:text-3xl text-[#CC0000] tracking-wider">
+                    {annualCalendar.malayalamYear} {annualCalendar.gregorianYear}
+                  </h2>
+                  <h3 className="font-malayalam-heading font-bold text-base sm:text-xl md:text-2xl text-[#990000] mt-1">
+                    {annualCalendar.title}
+                  </h3>
                 </div>
               </div>
 
-              {/* 3 Parallel Columns Grid */}
+              {/* 3 Parallel Columns Grid with Semantic Tables */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
                 {/* --------------------------------------------------------- */}
                 {/* COLUMN 1: പ്രധാന വിശേഷ ദിവസങ്ങൾ (Vishesha Divasangal)     */}
                 {/* --------------------------------------------------------- */}
                 <div className="lg:col-span-5 bg-white rounded-xl border border-[#003366]/40 shadow-xs overflow-hidden">
-                  {/* Column Header */}
                   <div className="bg-[#002244] text-white text-center py-2 px-3 font-malayalam-heading font-bold text-xs sm:text-sm tracking-wide">
                     പ്രധാന വിശേഷ ദിവസങ്ങൾ
                   </div>
 
-                  {/* Table Subheaders */}
-                  <div className="bg-[#E60000] text-white text-[10px] sm:text-[11px] font-bold grid grid-cols-12 py-1 px-1.5 text-center">
-                    <span className="col-span-3">മലയാളം</span>
-                    <span className="col-span-3">ഇംഗ്ലീഷ്</span>
-                    <span className="col-span-2">ദിവസം</span>
-                    <span className="col-span-4">വിശേഷം</span>
-                  </div>
-
-                  {/* Table Rows */}
-                  <div className="divide-y divide-[#E4D5AE]/70 text-[10px] sm:text-[11px] font-medium">
-                    {annualCalendar.visheshaDivasangal.map((row, idx) => (
-                      <div
-                        key={row.id || idx}
-                        className={`grid grid-cols-12 py-1.5 px-1.5 items-center ${
-                          idx % 2 === 0 ? 'bg-white' : 'bg-[#FFF9EE]'
-                        }`}
-                      >
-                        <span className="col-span-3 font-bold text-[#002244] font-malayalam-sans">
-                          {row.malayalamMonthDate}
-                        </span>
-                        <span className="col-span-3 font-semibold text-[#610C1B]">
-                          {row.englishMonthDate}
-                        </span>
-                        <span className="col-span-2 text-center text-[#1A0409]">
-                          {row.dayOfWeek}
-                        </span>
-                        <span className="col-span-4 font-bold text-[#990000] leading-tight pl-1">
-                          {row.vishesham}
-                        </span>
-                      </div>
-                    ))}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-[10px] sm:text-[11px] border-collapse">
+                      <thead>
+                        <tr className="bg-[#E60000] text-white text-[10px] sm:text-[11px] font-bold">
+                          <th className="py-1 px-1.5 text-center font-bold">മലയാളം</th>
+                          <th className="py-1 px-1.5 text-center font-bold">ഇംഗ്ലീഷ്</th>
+                          <th className="py-1 px-1 text-center font-bold">ദിവസം</th>
+                          <th className="py-1 px-2 text-left font-bold">വിശേഷം</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#E4D5AE]/70 font-medium">
+                        {annualCalendar.visheshaDivasangal.map((row, idx) => (
+                          <tr
+                            key={row.id || idx}
+                            className={idx % 2 === 0 ? 'bg-white' : 'bg-[#FFF9EE]'}
+                          >
+                            <td className="py-1.5 px-1.5 font-bold text-[#002244] font-malayalam-sans text-center whitespace-nowrap">
+                              {row.malayalamMonthDate}
+                            </td>
+                            <td className="py-1.5 px-1.5 font-semibold text-[#610C1B] text-center whitespace-nowrap">
+                              {row.englishMonthDate}
+                            </td>
+                            <td className="py-1.5 px-1 text-center text-[#1A0409] whitespace-nowrap">
+                              {row.dayOfWeek}
+                            </td>
+                            <td className="py-1.5 px-2 font-bold text-[#990000] leading-tight text-left">
+                              {row.vishesham}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
 
@@ -273,38 +255,38 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                 {/* COLUMN 2: പ്രദോഷം (Pradosham)                            */}
                 {/* --------------------------------------------------------- */}
                 <div className="lg:col-span-4 bg-white rounded-xl border border-[#003366]/40 shadow-xs overflow-hidden">
-                  {/* Column Header */}
                   <div className="bg-[#002244] text-white text-center py-2 px-3 font-malayalam-heading font-bold text-xs sm:text-sm tracking-wide">
                     പ്രദോഷം
                   </div>
 
-                  {/* Table Subheaders */}
-                  <div className="bg-[#E60000] text-white text-[10px] sm:text-[11px] font-bold grid grid-cols-12 py-1 px-1.5 text-center">
-                    <span className="col-span-4">മലയാളം</span>
-                    <span className="col-span-5">ഇംഗ്ലീഷ്</span>
-                    <span className="col-span-3">ദിവസം</span>
-                  </div>
-
-                  {/* Table Rows */}
-                  <div className="divide-y divide-[#E4D5AE]/70 text-[10px] sm:text-[11px] font-medium">
-                    {annualCalendar.pradosham.map((row, idx) => (
-                      <div
-                        key={row.id || idx}
-                        className={`grid grid-cols-12 py-1.5 px-1.5 items-center ${
-                          idx % 2 === 0 ? 'bg-white' : 'bg-[#FFF9EE]'
-                        }`}
-                      >
-                        <span className="col-span-4 font-bold text-[#002244] font-malayalam-sans">
-                          {row.malayalamMonthDate}
-                        </span>
-                        <span className="col-span-5 font-semibold text-[#610C1B]">
-                          {row.englishMonthDate}
-                        </span>
-                        <span className="col-span-3 text-center text-[#1A0409]">
-                          {row.dayOfWeek}
-                        </span>
-                      </div>
-                    ))}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-[10px] sm:text-[11px] border-collapse">
+                      <thead>
+                        <tr className="bg-[#E60000] text-white text-[10px] sm:text-[11px] font-bold">
+                          <th className="py-1 px-1.5 text-center font-bold">മലയാളം</th>
+                          <th className="py-1 px-1.5 text-center font-bold">ഇംഗ്ലീഷ്</th>
+                          <th className="py-1 px-1.5 text-center font-bold">ദിവസം</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#E4D5AE]/70 font-medium">
+                        {annualCalendar.pradosham.map((row, idx) => (
+                          <tr
+                            key={row.id || idx}
+                            className={idx % 2 === 0 ? 'bg-white' : 'bg-[#FFF9EE]'}
+                          >
+                            <td className="py-1.5 px-1.5 font-bold text-[#002244] font-malayalam-sans text-center whitespace-nowrap">
+                              {row.malayalamMonthDate}
+                            </td>
+                            <td className="py-1.5 px-1.5 font-semibold text-[#610C1B] text-center whitespace-nowrap">
+                              {row.englishMonthDate}
+                            </td>
+                            <td className="py-1.5 px-1.5 text-center text-[#1A0409] whitespace-nowrap">
+                              {row.dayOfWeek}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
 
@@ -312,37 +294,40 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                 {/* COLUMN 3: സംക്രമം (Samkramam) + Timings & Bank Info      */}
                 {/* --------------------------------------------------------- */}
                 <div className="lg:col-span-3 space-y-3">
-                  {/* Samkramam Table Card */}
+                  {/* Samkramam Semantic Table Card */}
                   <div className="bg-white rounded-xl border border-[#003366]/40 shadow-xs overflow-hidden">
                     <div className="bg-[#002244] text-white text-center py-2 px-3 font-malayalam-heading font-bold text-xs sm:text-sm tracking-wide">
                       സംക്രമം
                     </div>
 
-                    <div className="bg-[#E60000] text-white text-[10px] font-bold grid grid-cols-12 py-1 px-1 text-center">
-                      <span className="col-span-4">മാസം</span>
-                      <span className="col-span-4">തീയതി</span>
-                      <span className="col-span-4">ദിവസം</span>
-                    </div>
-
-                    <div className="divide-y divide-[#E4D5AE]/70 text-[10px] sm:text-[11px] font-medium">
-                      {annualCalendar.samkramam.map((row, idx) => (
-                        <div
-                          key={row.id || idx}
-                          className={`grid grid-cols-12 py-1.5 px-1.5 items-center ${
-                            idx % 2 === 0 ? 'bg-white' : 'bg-[#FFF9EE]'
-                          }`}
-                        >
-                          <span className="col-span-4 font-bold text-[#002244]">
-                            {row.malayalamMonth}
-                          </span>
-                          <span className="col-span-4 text-center font-semibold text-[#610C1B]">
-                            {row.occurringMonthDate}
-                          </span>
-                          <span className="col-span-4 text-center text-[#1A0409]">
-                            {row.dayOfWeek}
-                          </span>
-                        </div>
-                      ))}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-[10px] sm:text-[11px] border-collapse">
+                        <thead>
+                          <tr className="bg-[#E60000] text-white text-[10px] font-bold">
+                            <th className="py-1 px-1.5 text-center font-bold">മാസം</th>
+                            <th className="py-1 px-1.5 text-center font-bold">തീയതി</th>
+                            <th className="py-1 px-1.5 text-center font-bold">ദിവസം</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E4D5AE]/70 font-medium">
+                          {annualCalendar.samkramam.map((row, idx) => (
+                            <tr
+                              key={row.id || idx}
+                              className={idx % 2 === 0 ? 'bg-white' : 'bg-[#FFF9EE]'}
+                            >
+                              <td className="py-1.5 px-1.5 font-bold text-[#002244] text-center whitespace-nowrap">
+                                {row.malayalamMonth}
+                              </td>
+                              <td className="py-1.5 px-1.5 text-center font-semibold text-[#610C1B] whitespace-nowrap">
+                                {row.occurringMonthDate}
+                              </td>
+                              <td className="py-1.5 px-1.5 text-center text-[#1A0409] whitespace-nowrap">
+                                {row.dayOfWeek}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
 
@@ -355,7 +340,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                     <p className="text-[11px] font-semibold mt-0.5">{annualCalendar.poojaTimings.evening}</p>
                   </div>
 
-                  {/* Canara Bank Info Card with QR preview */}
+                  {/* Canara Bank Info Card with QR */}
                   <div className="bg-[#E8F4FD] rounded-xl p-2.5 border border-[#003366]/40 text-center shadow-xs">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <div className="text-left">
@@ -366,7 +351,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                           {annualCalendar.bankInfo.branch}
                         </span>
                       </div>
-                      <div className="w-9 h-9 bg-white p-0.5 rounded border border-[#003366] flex-shrink-0">
+                      <div className="w-8 h-8 bg-white p-0.5 rounded border border-[#003366] flex-shrink-0">
                         <img src="/temple-qr-code.png" alt="UPI QR" className="w-full h-full object-contain" />
                       </div>
                     </div>
@@ -391,7 +376,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                 <p className="font-malayalam-sans font-extrabold text-sm sm:text-base text-[#FFD700] mt-0.5">
                   {annualCalendar.ulsavamBox.malayalamDates}
                 </p>
-                <p className="text-[10px] text-white/70 italic mt-2">
+                <p className="text-[10px] text-white/75 italic mt-2 font-medium">
                   {annualCalendar.ulsavamBox.footerNote}
                 </p>
               </div>
@@ -945,7 +930,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
 
         {/* Modal Footer */}
         <div className="p-3.5 bg-white border-t border-[#E4D5AE] flex items-center justify-between text-xs text-[#8C6219] flex-shrink-0">
-          <span className="text-[11px]">
+          <span className="text-[11px] font-medium">
             ✨ Puliyannoor Sree Mahadeva Temple Official Annual Calendar
           </span>
           <button
