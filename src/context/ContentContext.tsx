@@ -36,6 +36,8 @@ export interface ChatMessage {
   sender: 'devotee' | 'admin';
   text: string;
   timestamp: string;
+  createdAt?: number;
+  isEdited?: boolean;
   deliveryStatus?: 'sent' | 'delivered' | 'read';
 }
 
@@ -227,10 +229,11 @@ interface ContentContextType {
   updateUlsavamBox: (ulsavamData: Partial<AnnualCalendarData['ulsavamBox']>) => void;
   resetAnnualCalendar: () => void;
   sendMessage: (conversationId: string, text: string) => void;
+  editChatMessage: (conversationId: string, messageId: string, newText: string) => void;
   createDevoteeInquiryChat: (devoteeName: string, phone: string, subject: string, messageText: string, star?: string) => void;
   markChatAsRead: (conversationId: string) => void;
   updateChatStatus: (conversationId: string, status: 'active' | 'resolved' | 'pending') => void;
-  toggleMessageDeliveryStatus: (conversationId: string, messageId: string) => void;
+  advanceMessageDeliveryStatus: (conversationId: string, messageId: string) => 'sent' | 'delivered' | 'read';
   setMessageDeliveryStatus: (conversationId: string, messageId: string, status: 'sent' | 'delivered' | 'read') => void;
   resetToDefaults: () => void;
 }
@@ -580,6 +583,8 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       sender: 'admin',
       text: text.trim(),
       timestamp: timeStr,
+      createdAt: Date.now(),
+      deliveryStatus: 'sent',
     };
 
     setChats((prev) =>
@@ -589,6 +594,30 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
             ...chat,
             lastMessageTime: timeStr,
             messages: [...chat.messages, newMsg],
+          };
+        }
+        return chat;
+      })
+    );
+  };
+
+  const editChatMessage = (conversationId: string, messageId: string, newText: string) => {
+    if (!newText.trim()) return;
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat.id === conversationId) {
+          return {
+            ...chat,
+            messages: chat.messages.map((msg) => {
+              if (msg.id === messageId) {
+                return {
+                  ...msg,
+                  text: newText.trim(),
+                  isEdited: true,
+                };
+              }
+              return msg;
+            }),
           };
         }
         return chat;
@@ -621,6 +650,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
           sender: 'devotee',
           text: messageText,
           timestamp: timeStr,
+          createdAt: Date.now(),
         },
       ],
     };
@@ -640,7 +670,11 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
   };
 
-  const toggleMessageDeliveryStatus = (conversationId: string, messageId: string) => {
+  const advanceMessageDeliveryStatus = (
+    conversationId: string,
+    messageId: string
+  ): 'sent' | 'delivered' | 'read' => {
+    let resultingStatus: 'sent' | 'delivered' | 'read' = 'read';
     setChats((prev) =>
       prev.map((chat) => {
         if (chat.id === conversationId) {
@@ -649,9 +683,15 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
             messages: chat.messages.map((msg) => {
               if (msg.id === messageId) {
                 const cur = msg.deliveryStatus || 'sent';
-                const nextStatus: 'sent' | 'delivered' | 'read' =
-                  cur === 'sent' ? 'delivered' : cur === 'delivered' ? 'read' : 'sent';
-                return { ...msg, deliveryStatus: nextStatus };
+                // Unidirectional flow: sent -> delivered -> read (Locked once read)
+                if (cur === 'sent') {
+                  resultingStatus = 'delivered';
+                } else if (cur === 'delivered') {
+                  resultingStatus = 'read';
+                } else {
+                  resultingStatus = 'read';
+                }
+                return { ...msg, deliveryStatus: resultingStatus };
               }
               return msg;
             }),
@@ -660,6 +700,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         return chat;
       })
     );
+    return resultingStatus;
   };
 
   const setMessageDeliveryStatus = (
@@ -730,10 +771,11 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateUlsavamBox,
         resetAnnualCalendar,
         sendMessage,
+        editChatMessage,
         createDevoteeInquiryChat,
         markChatAsRead,
         updateChatStatus,
-        toggleMessageDeliveryStatus,
+        advanceMessageDeliveryStatus,
         setMessageDeliveryStatus,
         resetToDefaults,
       }}

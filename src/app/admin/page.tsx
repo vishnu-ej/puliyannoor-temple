@@ -34,6 +34,7 @@ import {
   QrCode,
   Save,
   ChevronRight,
+  ChevronDown,
   Filter,
   UserCheck,
   Settings,
@@ -71,9 +72,10 @@ export default function AdminPage() {
     updateContactInfo,
     updateCountdownConfig,
     sendMessage,
+    editChatMessage,
     markChatAsRead,
     updateChatStatus,
-    toggleMessageDeliveryStatus,
+    advanceMessageDeliveryStatus,
     setMessageDeliveryStatus,
     resetToDefaults,
   } = useContent();
@@ -93,12 +95,17 @@ export default function AdminPage() {
   const [replyText, setReplyText] = useState('');
   const [chatFilter, setChatFilter] = useState<'all' | 'active' | 'resolved' | 'pending'>('all');
   const [chatSearch, setChatSearch] = useState('');
+  const [editingMsgId, setEditingMsgId] = useState<string | null>(null);
+  const [editMsgText, setEditMsgText] = useState<string>('');
+  const [openMenuMsgId, setOpenMenuMsgId] = useState<string | null>(null);
 
   // Global Escape key listener to close active chat
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setSelectedChatId(null);
+        setEditingMsgId(null);
+        setOpenMenuMsgId(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -774,82 +781,197 @@ export default function AdminPage() {
                   </div>
 
                   {/* Messages Scroll Area */}
-                  <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#FAF5E8]/20">
+                  <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-[#FAF5E8]/20">
                     {selectedChat.messages.map((msg) => {
                       const isAdmin = msg.sender === 'admin';
-                      const status = msg.deliveryStatus || (isAdmin ? 'delivered' : 'read');
+                      const status = msg.deliveryStatus || 'sent';
+                      const isEditingThis = editingMsgId === msg.id;
 
-                      return (
-                        <div
-                          key={msg.id}
-                          className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div
-                            className={`max-w-md rounded-2xl p-3 text-xs leading-relaxed shadow-xs ${
-                              isAdmin
-                                ? 'bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-white rounded-br-none'
-                                : 'bg-white border border-[#E4D5AE] text-[#2B150F] rounded-bl-none'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between gap-3 mb-1 text-[10px] opacity-80">
-                              <span className="font-bold">
-                                {isAdmin ? 'Devaswom Office' : selectedChat.devoteeName}
-                              </span>
-                              <div className="flex items-center gap-1.5">
+                      // 15-minute edit window calculation
+                      const msgCreatedTime = msg.createdAt || Date.now();
+                      const elapsedMinutes = Math.floor((Date.now() - msgCreatedTime) / (60 * 1000));
+                      const isWithin15Min = elapsedMinutes < 15;
+
+                      if (!isAdmin) {
+                        // Received Devotee Message (NO ticks)
+                        return (
+                          <div key={msg.id} className="flex justify-start">
+                            <div className="max-w-md rounded-2xl p-3 text-xs leading-relaxed shadow-xs bg-white border border-[#E4D5AE] text-[#2B150F] rounded-bl-none">
+                              <div className="flex items-center justify-between gap-3 mb-1 text-[10px] text-[#8C6219] font-bold">
+                                <span>{selectedChat.devoteeName}</span>
+                              </div>
+                              <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
+                              {/* Bottom Right Corner: Timestamp only */}
+                              <div className="flex items-center justify-end mt-1.5 text-[10px] text-[#8C6219]/70">
                                 <span>{msg.timestamp}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
 
-                                {/* WhatsApp-style Delivery Status Tick Badge */}
+                      // Sent Admin Message
+                      return (
+                        <div key={msg.id} className="flex justify-end relative group">
+                          <div className="relative max-w-md rounded-2xl p-3 text-xs leading-relaxed shadow-xs bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-white rounded-br-none">
+                            {/* Message Header with Downward Arrow on Right */}
+                            <div className="flex items-center justify-between gap-3 mb-1 text-[10px] text-white/80">
+                              <span className="font-bold">Devaswom Office</span>
+
+                              <div className="relative">
+                                {/* Downward Arrow Menu Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => setOpenMenuMsgId(openMenuMsgId === msg.id ? null : msg.id)}
+                                  className="opacity-70 group-hover:opacity-100 hover:bg-white/20 p-0.5 rounded transition-all cursor-pointer"
+                                  title="Message Options"
+                                >
+                                  <ChevronDown className="w-3.5 h-3.5 text-white" />
+                                </button>
+
+                                {/* Action Dropdown Menu */}
+                                {openMenuMsgId === msg.id && (
+                                  <div className="absolute right-0 top-5 z-30 w-44 bg-white rounded-xl shadow-xl border border-[#E4D5AE] py-1 text-xs text-[#38050E] animate-scaleUp">
+                                    {isWithin15Min ? (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setEditingMsgId(msg.id);
+                                          setEditMsgText(msg.text);
+                                          setOpenMenuMsgId(null);
+                                        }}
+                                        className="w-full text-left px-3 py-1.5 hover:bg-[#FAF5E8] flex items-center justify-between text-[#610C1B] font-bold cursor-pointer"
+                                      >
+                                        <span className="flex items-center gap-1.5">
+                                          <Edit3 className="w-3.5 h-3.5" />
+                                          <span>Edit Message</span>
+                                        </span>
+                                        <span className="text-[9px] font-normal text-[#8C6219]">
+                                          {15 - elapsedMinutes}m left
+                                        </span>
+                                      </button>
+                                    ) : (
+                                      <div className="px-3 py-1.5 text-[10px] text-gray-400 italic">
+                                        Edit window expired (15m passed)
+                                      </div>
+                                    )}
+
+                                    <div className="border-t border-[#E4D5AE]/60 my-1" />
+
+                                    {status === 'sent' && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          advanceMessageDeliveryStatus(selectedChat.id, msg.id);
+                                          setOpenMenuMsgId(null);
+                                          showToast('Marked as Delivered (✓✓)');
+                                        }}
+                                        className="w-full text-left px-3 py-1.5 hover:bg-[#FAF5E8] text-[#5A382A] flex items-center gap-1.5 cursor-pointer font-medium text-[11px]"
+                                      >
+                                        <span>Mark Delivered (✓✓)</span>
+                                      </button>
+                                    )}
+
+                                    {status === 'delivered' && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          advanceMessageDeliveryStatus(selectedChat.id, msg.id);
+                                          setOpenMenuMsgId(null);
+                                          showToast('Marked as Read by Devotee (✓✓)');
+                                        }}
+                                        className="w-full text-left px-3 py-1.5 hover:bg-[#FAF5E8] text-[#610C1B] flex items-center gap-1.5 cursor-pointer font-bold text-[11px]"
+                                      >
+                                        <span>Mark as Read (✓✓)</span>
+                                      </button>
+                                    )}
+
+                                    {status === 'read' && (
+                                      <div className="px-3 py-1.5 text-[10px] text-[#1F4E34] font-semibold">
+                                        ✓ Read by Devotee (Locked)
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Message Body or Inline Editor */}
+                            {isEditingThis ? (
+                              <div className="space-y-2 pt-1">
+                                <textarea
+                                  value={editMsgText}
+                                  onChange={(e) => setEditMsgText(e.target.value)}
+                                  rows={2}
+                                  className="w-full px-2.5 py-1.5 rounded-lg bg-white text-[#2B150F] text-xs focus:outline-none focus:ring-2 focus:ring-[#E6BE65] resize-none"
+                                  autoFocus
+                                />
+                                <div className="flex items-center justify-end gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingMsgId(null)}
+                                    className="px-2 py-0.5 rounded-md bg-white/20 hover:bg-white/30 text-white text-[11px] font-medium cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      editChatMessage(selectedChat.id, msg.id, editMsgText);
+                                      setEditingMsgId(null);
+                                      showToast('Message updated (edited)');
+                                    }}
+                                    className="px-2.5 py-0.5 rounded-md bg-[#E6BE65] text-[#1A0409] font-bold text-[11px] hover:brightness-105 cursor-pointer"
+                                  >
+                                    Save
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
+                            )}
+
+                            {/* Right Lower Corner: Timestamp & Delivery Ticks */}
+                            <div className="flex items-center justify-end gap-1.5 mt-1.5 text-[10px] text-white/75">
+                              {msg.isEdited && (
+                                <span className="italic text-[9px] text-[#E6BE65]">edited</span>
+                              )}
+                              <span>{msg.timestamp}</span>
+
+                              {/* WhatsApp-style Delivery Status Tick Badge */}
+                              {status === 'read' ? (
+                                <span
+                                  className="font-extrabold text-[12px] text-[#E6BE65] leading-none select-none tracking-tighter"
+                                  title="Read / Seen by Devotee (Locked)"
+                                >
+                                  ✓✓
+                                </span>
+                              ) : status === 'delivered' ? (
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    toggleMessageDeliveryStatus(selectedChat.id, msg.id);
-                                    const nextSt =
-                                      status === 'sent'
-                                        ? 'Delivered (✓✓)'
-                                        : status === 'delivered'
-                                        ? 'Read (Dark Brown ✓✓)'
-                                        : 'Sent (✓)';
-                                    showToast(`Message delivery status: ${nextSt}`);
+                                    advanceMessageDeliveryStatus(selectedChat.id, msg.id);
+                                    showToast('Status advanced to Read (✓✓)');
                                   }}
-                                  className={`inline-flex items-center px-1 py-0.2 rounded transition-transform cursor-pointer select-none ${
-                                    isAdmin
-                                      ? 'hover:bg-white/20'
-                                      : 'hover:bg-[#FAF5E8]'
-                                  }`}
-                                  title="Click to toggle delivery status: Sent (✓) → Delivered (✓✓) → Read (Dark Brown ✓✓)"
+                                  className="font-semibold text-[11px] text-white/75 hover:text-white leading-none cursor-pointer tracking-tighter select-none"
+                                  title="Click to advance status to Read (✓✓)"
                                 >
-                                  {status === 'read' ? (
-                                    <span
-                                      className={`font-extrabold text-[12px] leading-none tracking-tighter ${
-                                        isAdmin ? 'text-[#E6BE65]' : 'text-[#610C1B]'
-                                      }`}
-                                      title="Read / Seen (Dark Brown Checkmarks)"
-                                    >
-                                      ✓✓
-                                    </span>
-                                  ) : status === 'delivered' ? (
-                                    <span
-                                      className={`font-semibold text-[11px] leading-none tracking-tighter ${
-                                        isAdmin ? 'text-white/70' : 'text-[#8C6219]/80'
-                                      }`}
-                                      title="Delivered (Double Checkmarks)"
-                                    >
-                                      ✓✓
-                                    </span>
-                                  ) : (
-                                    <span
-                                      className={`font-semibold text-[11px] leading-none ${
-                                        isAdmin ? 'text-white/70' : 'text-[#8C6219]/80'
-                                      }`}
-                                      title="Sent (Single Checkmark)"
-                                    >
-                                      ✓
-                                    </span>
-                                  )}
+                                  ✓✓
                                 </button>
-                              </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    advanceMessageDeliveryStatus(selectedChat.id, msg.id);
+                                    showToast('Status advanced to Delivered (✓✓)');
+                                  }}
+                                  className="font-semibold text-[11px] text-white/75 hover:text-white leading-none cursor-pointer select-none"
+                                  title="Click to advance status to Delivered (✓✓)"
+                                >
+                                  ✓
+                                </button>
+                              )}
                             </div>
-                            <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
                           </div>
                         </div>
                       );

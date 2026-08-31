@@ -228,7 +228,7 @@ _Sent via Puliyannoor Temple Official Web Portal_`;
                     <select
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="w-[76px] sm:w-[82px] flex-shrink-0 px-1.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-[11px] sm:text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                      className="w-[96px] sm:w-[102px] flex-shrink-0 pl-2.5 pr-1.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738] cursor-pointer"
                     >
                       <option value="+91">+91 (IN)</option>
                       <option value="+1">+1 (US)</option>
