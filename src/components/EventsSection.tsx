@@ -15,7 +15,6 @@ import {
   Timer,
   CheckCircle2,
   Bell,
-  BookOpen,
 } from 'lucide-react';
 
 export const EventsSection: React.FC = () => {
@@ -152,13 +151,13 @@ export const EventsSection: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsCalendarOpen(true)}
-                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#C99738] via-[#E6BE65] to-[#C99738] text-[#38050E] font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all cursor-pointer border border-[#FAF5E8]/40"
+                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#C99738] via-[#E6BE65] to-[#C99738] text-[#38050E] font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all cursor-pointer border border-[#FAF5E8]/40 font-cinzel"
               >
-                <BookOpen className="w-4 h-4 text-[#38050E]" />
+                <Calendar className="w-4 h-4 text-[#38050E]" />
                 <span>
                   {language === 'en'
-                    ? '📜 View Official Malayalam Calendar 1202 (2026–2027)'
-                    : '📜 1202 -ാമാണ്ടിലെ പ്രധാന വിശേഷ ദിവസങ്ങൾ കാണുക'}
+                    ? 'View Official Malayalam Calendar 1202 (2026–2027)'
+                    : '1202 -ാമാണ്ടിലെ പ്രധാന വിശേഷ ദിവസങ്ങൾ കാണുക'}
                 </span>
               </button>
             </div>
