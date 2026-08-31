@@ -702,27 +702,68 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    const newChat: ChatConversation = {
-      id: `chat_${Date.now()}`,
-      devoteeName,
-      devoteePhone: phone,
-      star,
-      subject: subject || 'Devotee Inquiry',
-      unread: true,
-      status: 'active',
-      lastMessageTime: timeStr,
-      messages: [
-        {
+    // Normalize input phone number (extract digits, matching the primary phone number)
+    const normalizedInputPhone = phone ? phone.replace(/\D/g, '').slice(-10) : '';
+
+    setChats((prev) => {
+      // Find existing chat with matching mobile phone number
+      const existingChatIndex = prev.findIndex((chat) => {
+        if (!chat.devoteePhone || !normalizedInputPhone) return false;
+        const normalizedChatPhone = chat.devoteePhone.replace(/\D/g, '').slice(-10);
+        return normalizedChatPhone === normalizedInputPhone && normalizedChatPhone.length >= 7;
+      });
+
+      if (existingChatIndex !== -1) {
+        // Devotee sent a message again: append to the existing chat thread!
+        const existingChat = prev[existingChatIndex];
+        const newMsg: ChatMessage = {
           id: `msg_${Date.now()}`,
           sender: 'devotee',
           text: messageText,
           timestamp: timeStr,
           createdAt: Date.now(),
-        },
-      ],
-    };
+        };
 
-    setChats((prev) => [newChat, ...prev]);
+        const updatedChat: ChatConversation = {
+          ...existingChat,
+          devoteeName: devoteeName || existingChat.devoteeName,
+          devoteePhone: phone || existingChat.devoteePhone,
+          star: star || existingChat.star,
+          subject: existingChat.subject || subject || 'Devotee Inquiry',
+          unread: true, // Show unread badge to notify admin
+          status: 'active', // Re-activate conversation if it was resolved
+          lastMessageTime: timeStr,
+          messages: [...existingChat.messages, newMsg],
+        };
+
+        // Move updated chat to the top of the list
+        const remainingChats = prev.filter((_, idx) => idx !== existingChatIndex);
+        return [updatedChat, ...remainingChats];
+      }
+
+      // First time inquiry from this phone number: create new chat thread
+      const newChat: ChatConversation = {
+        id: `chat_${Date.now()}`,
+        devoteeName,
+        devoteePhone: phone,
+        star,
+        subject: subject || 'Devotee Inquiry',
+        unread: true,
+        status: 'active',
+        lastMessageTime: timeStr,
+        messages: [
+          {
+            id: `msg_${Date.now()}`,
+            sender: 'devotee',
+            text: messageText,
+            timestamp: timeStr,
+            createdAt: Date.now(),
+          },
+        ],
+      };
+
+      return [newChat, ...prev];
+    });
   };
 
   const markChatAsRead = (conversationId: string) => {
