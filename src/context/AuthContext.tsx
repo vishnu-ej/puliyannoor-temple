@@ -2,6 +2,11 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import {
+  getProfileFromSupabase,
+  upsertProfileInSupabase,
+  uploadFileToSupabaseStorage,
+} from '../lib/supabaseDb';
 
 export interface UserProfile {
   id: string;
@@ -40,7 +45,8 @@ interface AuthContextType {
   sendOtp: (email: string) => Promise<{ success: boolean; otp?: string; message?: string }>;
   verifyOtpAndRegister: (otpEntered: string, profileDetails: Omit<UserProfile, 'id' | 'createdAt' | 'email'>) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
-  updateProfile: (updatedFields: Partial<UserProfile>) => void;
+  updateProfile: (updatedFields: Partial<UserProfile>) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<{ success: boolean; url?: string; error?: string }>;
   pendingSignupData: PendingSignupData | null;
 }
 
@@ -85,37 +91,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // 2. Listen to Supabase Auth State Changes (Google OAuth redirect, Email login, etc.)
     try {
-      supabase.auth.getSession().then(({ data: { session } }) => {
+      supabase.auth.getSession().then(async ({ data: { session } }) => {
         if (session?.user) {
           const userMeta = session.user.user_metadata || {};
+          
+          // Try fetching rich profile from Supabase public.profiles table
+          const dbProf = await getProfileFromSupabase(session.user.id);
+
           const devoteeProfile: UserProfile = {
             id: session.user.id,
-            email: session.user.email || '',
-            name: userMeta.full_name || userMeta.name || session.user.email?.split('@')[0] || 'Devotee Pilgrim',
-            phone: userMeta.phone || '', // Empty for new Google login
-            dob: userMeta.dob || '',
-            place: userMeta.place || '',
-            star: userMeta.star || '', // Empty for new Google login
-            avatar: userMeta.avatar_url || userMeta.picture,
+            email: session.user.email || dbProf?.email || '',
+            name: dbProf?.name || userMeta.full_name || userMeta.name || session.user.email?.split('@')[0] || 'Devotee Pilgrim',
+            phone: dbProf?.phone || userMeta.phone || '',
+            dob: dbProf?.dob || userMeta.dob || '',
+            place: dbProf?.place || userMeta.place || '',
+            star: dbProf?.star || userMeta.star || '',
+            avatar: dbProf?.avatar_url || userMeta.avatar_url || userMeta.picture,
             createdAt: new Date(session.user.created_at).getTime() || Date.now(),
           };
           setCurrentUser(devoteeProfile);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(devoteeProfile));
+
+          // Ensure profile exists in Supabase public.profiles
+          if (!dbProf) {
+            upsertProfileInSupabase({
+              id: devoteeProfile.id,
+              name: devoteeProfile.name,
+              email: devoteeProfile.email,
+              phone: devoteeProfile.phone,
+              star: devoteeProfile.star,
+              dob: devoteeProfile.dob,
+              place: devoteeProfile.place,
+              avatar_url: devoteeProfile.avatar,
+            });
+          }
         }
       });
 
-      const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
         if (session?.user) {
           const userMeta = session.user.user_metadata || {};
+          const dbProf = await getProfileFromSupabase(session.user.id);
+
           const devoteeProfile: UserProfile = {
             id: session.user.id,
-            email: session.user.email || '',
-            name: userMeta.full_name || userMeta.name || session.user.email?.split('@')[0] || 'Devotee Pilgrim',
-            phone: userMeta.phone || '', // Empty for new Google login
-            dob: userMeta.dob || '',
-            place: userMeta.place || '',
-            star: userMeta.star || '', // Empty for new Google login
-            avatar: userMeta.avatar_url || userMeta.picture,
+            email: session.user.email || dbProf?.email || '',
+            name: dbProf?.name || userMeta.full_name || userMeta.name || session.user.email?.split('@')[0] || 'Devotee Pilgrim',
+            phone: dbProf?.phone || userMeta.phone || '',
+            dob: dbProf?.dob || userMeta.dob || '',
+            place: dbProf?.place || userMeta.place || '',
+            star: dbProf?.star || userMeta.star || '',
+            avatar: dbProf?.avatar_url || userMeta.avatar_url || userMeta.picture,
             createdAt: new Date(session.user.created_at).getTime() || Date.now(),
           };
           setCurrentUser(devoteeProfile);
@@ -168,7 +194,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Sign In using Email & Password (with Supabase Auth + local fallback)
+  // Sign In using Email & Password (with Supabase Auth + public.profiles table + local fallback)
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
@@ -179,7 +205,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      // Attempt Supabase email password authentication
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
         password,
@@ -187,14 +212,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (!error && data.user) {
         const userMeta = data.user.user_metadata || {};
+        const dbProf = await getProfileFromSupabase(data.user.id);
+
         const userProfile: UserProfile = {
           id: data.user.id,
-          name: userMeta.name || userMeta.full_name || cleanEmail.split('@')[0],
+          name: dbProf?.name || userMeta.name || userMeta.full_name || cleanEmail.split('@')[0],
           email: cleanEmail,
-          phone: userMeta.phone || '',
-          dob: userMeta.dob || '',
-          place: userMeta.place || '',
-          star: userMeta.star || '',
+          phone: dbProf?.phone || userMeta.phone || '',
+          dob: dbProf?.dob || userMeta.dob || '',
+          place: dbProf?.place || userMeta.place || '',
+          star: dbProf?.star || userMeta.star || '',
+          avatar: dbProf?.avatar_url || userMeta.avatar_url,
           createdAt: new Date(data.user.created_at).getTime() || Date.now(),
         };
         setCurrentUser(userProfile);
@@ -203,7 +231,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true };
       }
     } catch {
-      // Supabase offline or user not registered in live db yet -> Fallback to virtual DB
+      // Fallback
     }
 
     const users = getRegisteredUsers();
@@ -234,7 +262,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: true };
   };
 
-  // Sign in / Sign up with Google OAuth via Supabase (Clean un-prefilled profile)
+  // Sign in / Sign up with Google OAuth via Supabase
   const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
     try {
       const redirectOrigin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
@@ -252,10 +280,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: `user_google_${Date.now()}`,
           name: 'Devotee Pilgrim',
           email: 'devotee.pilgrim@gmail.com',
-          phone: '', // NOT prefilled
-          dob: '', // NOT prefilled
-          place: '', // NOT prefilled
-          star: '', // NOT prefilled
+          phone: '',
+          dob: '',
+          place: '',
+          star: '',
           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
           createdAt: Date.now(),
         };
@@ -273,15 +301,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { success: true };
     } catch {
-      // Fallback: Clean un-prefilled Google devotee
       const newGoogleUser: UserProfile = {
         id: `user_google_${Date.now()}`,
         name: 'Devotee Pilgrim',
         email: 'devotee.pilgrim@gmail.com',
-        phone: '', // NOT prefilled
-        dob: '', // NOT prefilled
-        place: '', // NOT prefilled
-        star: '', // NOT prefilled
+        phone: '',
+        dob: '',
+        place: '',
+        star: '',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
         createdAt: Date.now(),
       };
@@ -313,7 +340,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   };
 
-  // Step 2: Submit profile details + verify OTP + register with Supabase
+  // Step 2: Submit profile details + verify OTP + register with Supabase Auth & public.profiles
   const verifyOtpAndRegister = async (
     otpEntered: string,
     profileDetails: Omit<UserProfile, 'id' | 'createdAt' | 'email'>
@@ -322,7 +349,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, error: 'Registration session expired. Please start again.' };
     }
 
-    // Check OTP
     const cleanOtp = otpEntered.trim();
     if (cleanOtp !== generatedOtp && cleanOtp !== '123456' && cleanOtp.length !== 6) {
       return { success: false, error: 'Invalid 6-digit OTP code. Please check your email and try again.' };
@@ -330,7 +356,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     let supabaseUserId = `user_${Date.now()}`;
 
-    // Attempt registration with Supabase Auth
     try {
       const { data } = await supabase.auth.signUp({
         email: pendingSignupData.email,
@@ -362,6 +387,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       star: profileDetails.star || 'Ashwathi (അശ്വതി)',
       createdAt: Date.now(),
     };
+
+    // Upsert into Supabase public.profiles table
+    upsertProfileInSupabase({
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      phone: newUser.phone,
+      star: newUser.star,
+      dob: newUser.dob,
+      place: newUser.place,
+    });
 
     const users = getRegisteredUsers();
     saveRegisteredUsers([...users.filter((u) => u.email !== newUser.email), newUser]);
@@ -407,7 +443,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const users = getRegisteredUsers();
     saveRegisteredUsers(users.map((u) => (u.id === updated.id ? updated : u)));
 
-    // Sync to Supabase user metadata
+    // 1. Sync to Supabase user auth metadata
     try {
       await supabase.auth.updateUser({
         data: {
@@ -416,11 +452,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           star: updated.star,
           dob: updated.dob,
           place: updated.place,
+          avatar_url: updated.avatar,
         },
       });
     } catch {
       // ignore
     }
+
+    // 2. Sync to Supabase public.profiles table
+    upsertProfileInSupabase({
+      id: updated.id,
+      name: updated.name,
+      email: updated.email,
+      phone: updated.phone,
+      star: updated.star,
+      dob: updated.dob,
+      place: updated.place,
+      avatar_url: updated.avatar,
+    });
+  };
+
+  // Upload Avatar to Supabase Storage
+  const uploadAvatar = async (file: File): Promise<{ success: boolean; url?: string; error?: string }> => {
+    if (!currentUser) return { success: false, error: 'Not authenticated' };
+
+    const fileExt = file.name.split('.').pop() || 'jpg';
+    const filePath = `avatars/${currentUser.id}_${Date.now()}.${fileExt}`;
+
+    const { publicUrl, error } = await uploadFileToSupabaseStorage(file, filePath);
+    if (error || !publicUrl) {
+      return { success: false, error: error || 'Failed to upload avatar' };
+    }
+
+    await updateProfile({ avatar: publicUrl });
+    return { success: true, url: publicUrl };
   };
 
   return (
@@ -441,6 +506,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         verifyOtpAndRegister,
         logout,
         updateProfile,
+        uploadAvatar,
         pendingSignupData,
       }}
     >

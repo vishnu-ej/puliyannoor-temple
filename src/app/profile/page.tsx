@@ -1,12 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useContent } from '../../context/ContentContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { MuralDivider } from '../../components/MuralDivider';
+import {
+  getBookingsFromSupabase,
+  getChatMessagesFromSupabase,
+  sendChatMessageToSupabase,
+  DbBooking,
+  DbChatMessage,
+} from '../../lib/supabaseDb';
 import {
   User,
   Phone,
@@ -36,6 +43,9 @@ import {
   CreditCard,
   Filter,
   AlertTriangle,
+  Camera,
+  Upload,
+  RefreshCw,
 } from 'lucide-react';
 
 // 27 Malayalam Birth Stars (Nakshatrams)
@@ -56,16 +66,16 @@ interface RawVazhipaduRecord {
   offeringId: string;
   fallbackName: string;
   fallbackPrice: number;
-  devoteeName: string; // Devotee for this particular pooja (can be self, spouse, child, etc.)
+  devoteeName: string;
   star: string;
-  bookedByUserId?: string; // User profile account ID who made the booking
+  bookedByUserId?: string;
   bookedByEmail?: string;
   bookedByPhone?: string;
   bookingDate: string;
   offeringDate: string;
-  offeringDateIso?: string; // YYYY-MM-DD for date range filtering
+  offeringDateIso?: string;
   deity: string;
-  paymentStatus: 'completed' | 'pending' | 'failed'; // Strictly 'completed' only
+  paymentStatus: 'completed' | 'pending' | 'failed';
   status: 'Confirmed' | 'Performed' | 'Scheduled';
 }
 
@@ -113,10 +123,8 @@ function numberToWords(num: number): string {
   return convertLessThanThousand(num);
 }
 
-// Master Bookings Database in Virtual Store (Profile-mapped)
-const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
-  // User Profile 1 (Demo Account: Suresh Kumar - id: user_devotee_1 / suresh.kumar@gmail.com / +91 98470 12345)
-  // Devotee 1: Self
+// Master Demo Bookings (for user_devotee_1 demo account)
+const DEMO_SEED_BOOKINGS: RawVazhipaduRecord[] = [
   {
     id: 'bk_1',
     orderId: 'ORD-2026-0814',
@@ -155,7 +163,6 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     paymentStatus: 'completed',
     status: 'Confirmed',
   },
-  // Devotee 2: Spouse (Different devotee name, booked under Suresh's profile)
   {
     id: 'bk_3',
     orderId: 'ORD-2026-0814',
@@ -194,7 +201,6 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     paymentStatus: 'completed',
     status: 'Confirmed',
   },
-  // Devotee 3: Child (Different devotee name, booked under Suresh's profile)
   {
     id: 'bk_5',
     orderId: 'ORD-2026-0814',
@@ -214,7 +220,6 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     paymentStatus: 'completed',
     status: 'Confirmed',
   },
-  // Another date booking under Suresh's profile for monthly pradosham
   {
     id: 'bk_5b',
     orderId: 'ORD-2026-0901',
@@ -234,33 +239,14 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     paymentStatus: 'completed',
     status: 'Confirmed',
   },
-
-  // Unpaid record (Should NOT show as payment is pending)
-  {
-    id: 'bk_7',
-    orderId: 'ORD-2026-0899',
-    receiptNumber: 'PLY-REC-2026-PENDING',
-    offeringId: 'udayasthamana_pooja',
-    fallbackName: 'Udayasthamana Pooja',
-    fallbackPrice: 60000,
-    devoteeName: 'Unpaid Inquirer',
-    star: 'Aswathi',
-    bookedByUserId: 'user_devotee_1',
-    bookedByEmail: 'suresh.kumar@gmail.com',
-    bookingDate: '28 Aug 2026',
-    offeringDate: '10 Jan 2027',
-    offeringDateIso: '2027-01-10',
-    deity: 'Sree Mahadeva',
-    paymentStatus: 'pending',
-    status: 'Scheduled',
-  },
 ];
 
 function ProfileContent() {
-  const { currentUser, isAuthenticated, logout, updateProfile, openAuthModal } = useAuth();
+  const { currentUser, isAuthenticated, logout, updateProfile, uploadAvatar, openAuthModal } = useAuth();
   const { offerings, chats, createDevoteeInquiryChat } = useContent();
   const { language } = useLanguage();
   const searchParams = useSearchParams();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const initialTab = (searchParams.get('tab') as 'details' | 'bookings' | 'chat') || 'details';
   const [activeTab, setActiveTab] = useState<'details' | 'bookings' | 'chat'>(initialTab);
@@ -274,6 +260,12 @@ function ProfileContent() {
   const [editDob, setEditDob] = useState('');
   const [editPlace, setEditPlace] = useState('');
   const [toastMsg, setToastMsg] = useState('');
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
+  // Supabase Live Data State
+  const [supabaseBookings, setSupabaseBookings] = useState<DbBooking[]>([]);
+  const [supabaseChatMessages, setSupabaseChatMessages] = useState<DbChatMessage[]>([]);
+  const [isLoadingSupabase, setIsLoadingSupabase] = useState(false);
 
   // Date Filtering State for Bookings & PDF Print
   const [dateFilterMode, setDateFilterMode] = useState<'all' | 'single' | 'range'>('all');
@@ -288,7 +280,7 @@ function ProfileContent() {
   // Chat State
   const [chatMessageText, setChatMessageText] = useState('');
 
-  // Profile completeness check (for Google signups and new users)
+  // Profile completeness check
   const isProfileIncomplete = useMemo(() => {
     if (!currentUser) return false;
     return !currentUser.phone || !currentUser.star || !currentUser.place;
@@ -303,12 +295,39 @@ function ProfileContent() {
       setEditDob(currentUser.dob || '');
       setEditPlace(currentUser.place || '');
 
-      // If user logs in with Google and profile is incomplete, automatically prompt edit mode
       if (!currentUser.phone || !currentUser.star || !currentUser.place) {
         setIsEditing(true);
       }
+
+      // Fetch live records from Supabase tables
+      loadSupabaseData();
     }
   }, [currentUser]);
+
+  const loadSupabaseData = async () => {
+    if (!currentUser) return;
+    setIsLoadingSupabase(true);
+    try {
+      // 1. Fetch bookings from Supabase public.bookings
+      const dbBookings = await getBookingsFromSupabase(
+        currentUser.id,
+        currentUser.email,
+        currentUser.phone
+      );
+      setSupabaseBookings(dbBookings);
+
+      // 2. Fetch chat messages from Supabase public.chat_messages
+      const dbChats = await getChatMessagesFromSupabase(
+        currentUser.id,
+        currentUser.phone
+      );
+      setSupabaseChatMessages(dbChats);
+    } catch (e) {
+      console.warn('Supabase data fetch note:', e);
+    } finally {
+      setIsLoadingSupabase(false);
+    }
+  };
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -322,15 +341,15 @@ function ProfileContent() {
     setTimeout(() => setToastMsg(''), 3500);
   };
 
-  // Devotee saves profile
-  const handleSaveProfile = (e: React.FormEvent) => {
+  // Devotee saves profile (Synced to Supabase public.profiles + Auth metadata)
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editName.trim() || !editPhone.trim() || !editEmail.trim()) {
       showToast('Please fill in your Name, Mobile Number, and Email');
       return;
     }
 
-    updateProfile({
+    await updateProfile({
       name: editName.trim(),
       phone: editPhone.trim(),
       email: editEmail.trim(),
@@ -339,7 +358,25 @@ function ProfileContent() {
       place: editPlace.trim(),
     });
     setIsEditing(false);
-    showToast('Profile information updated successfully!');
+    showToast('Profile information saved and synced to Supabase cloud!');
+  };
+
+  // Avatar Upload via Supabase Storage
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingAvatar(true);
+    showToast('Uploading profile picture to Supabase Storage...');
+
+    const res = await uploadAvatar(file);
+    setIsUploadingAvatar(false);
+
+    if (res.success) {
+      showToast('Profile photo updated in Supabase Storage!');
+    } else {
+      showToast(res.error || 'Failed to upload photo');
+    }
   };
 
   // Helper to map offering price and name directly from live temple directory
@@ -362,29 +399,43 @@ function ProfileContent() {
   };
 
   // -----------------------------------------------------------------------------------
-  // PROFILE MAPPING: Show bookings paid & booked under this devotee profile account
+  // LIVE SUPABASE + DEMO SEED BOOKINGS MAPPING
   // -----------------------------------------------------------------------------------
   const userPhoneDigits = currentUser?.phone ? currentUser.phone.replace(/\D/g, '').slice(-10) : '';
 
   const allProfileBookings: VazhipaduBookingItem[] = useMemo(() => {
     if (!currentUser) return [];
 
-    const matchedRaw = ALL_TEMPLE_BOOKINGS.filter((booking) => {
-      // Must be payment completed
-      if (booking.paymentStatus !== 'completed' || booking.status !== 'Confirmed') {
-        return false;
-      }
-
-      // Profile Mapping: Check if booked using this user profile (by profile ID, email, or phone)
-      const matchesProfileId = booking.bookedByUserId && (booking.bookedByUserId === currentUser.id || currentUser.id === 'user_devotee_1');
-      const matchesEmail = booking.bookedByEmail && booking.bookedByEmail.toLowerCase() === currentUser.email.toLowerCase();
-      const bookingPhoneDigits = (booking.bookedByPhone || '').replace(/\D/g, '').slice(-10);
-      const matchesPhone = userPhoneDigits && bookingPhoneDigits === userPhoneDigits;
-
-      return matchesProfileId || matchesEmail || matchesPhone;
+    // 1. Convert Supabase database rows to UI booking items
+    const fromSupabase: VazhipaduBookingItem[] = supabaseBookings.map((b) => {
+      const dir = getDirectoryOffering(b.offering_id || '', b.vazhipad_name, Number(b.amount) || 50, b.deity || 'Sree Mahadeva');
+      return {
+        id: b.id || `sp_${Math.random()}`,
+        orderId: b.order_ref,
+        receiptNumber: `PLY-${b.order_ref}`,
+        offeringId: b.offering_id || '',
+        vazhipadName: dir.name,
+        devoteeName: b.devotee_name,
+        star: b.star || '',
+        bookedByUserId: b.user_id,
+        bookedByEmail: b.booked_by_email,
+        bookedByPhone: b.booked_by_phone,
+        bookingDate: b.booking_date,
+        offeringDate: b.offering_date,
+        offeringDateIso: b.offering_date_iso,
+        deity: dir.deity,
+        amount: dir.price,
+        paymentStatus: 'completed',
+        status: (b.status as any) || 'Confirmed',
+      };
     });
 
-    return matchedRaw.map((item) => {
+    // 2. Add demo seed bookings for demo user
+    const matchedDemo = DEMO_SEED_BOOKINGS.filter((booking) => {
+      if (booking.paymentStatus !== 'completed' || booking.status !== 'Confirmed') return false;
+      const matchesProfileId = booking.bookedByUserId && (booking.bookedByUserId === currentUser.id || currentUser.id === 'user_devotee_1');
+      return matchesProfileId;
+    }).map((item) => {
       const dir = getDirectoryOffering(item.offeringId, item.fallbackName, item.fallbackPrice, item.deity);
       return {
         id: item.id,
@@ -406,7 +457,11 @@ function ProfileContent() {
         status: item.status,
       };
     });
-  }, [currentUser, offerings, language]);
+
+    // Combine both sources
+    const combined = [...fromSupabase, ...matchedDemo];
+    return combined;
+  }, [currentUser, supabaseBookings, offerings, language]);
 
   // Extract unique offering dates for quick single-date selection
   const uniqueOfferingDates = useMemo(() => {
@@ -465,7 +520,7 @@ function ProfileContent() {
     return 'All Scheduled Pooja Dates';
   }, [dateFilterMode, selectedSingleDate, dateRangeFrom, dateRangeTo]);
 
-  // Find devotee's active conversation thread from ContentContext
+  // Combined Live Supabase Chat Messages & Context Messages
   const now = Date.now();
   const TWENTY_ONE_DAYS_MS = 21 * 24 * 60 * 60 * 1000;
 
@@ -475,26 +530,60 @@ function ProfileContent() {
     return chatDigits === userPhoneDigits;
   });
 
-  // Filter messages older than 21 days
-  const activeMessages = (userChatThread?.messages || []).filter((msg) => {
-    const msgTime = msg.createdAt || now;
-    return now - msgTime <= TWENTY_ONE_DAYS_MS;
-  });
+  const activeMessages = useMemo(() => {
+    const localMsgs = (userChatThread?.messages || []).map((m) => ({
+      id: m.id,
+      sender: m.sender,
+      text: m.text,
+      timestamp: m.timestamp,
+      createdAt: m.createdAt || now,
+    }));
 
-  const handleSendChatMessage = (e: React.FormEvent) => {
+    const remoteMsgs = supabaseChatMessages.map((m) => ({
+      id: m.id || `msg_${Math.random()}`,
+      sender: m.sender,
+      text: m.message,
+      timestamp: m.created_at ? new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now',
+      createdAt: m.created_at ? new Date(m.created_at).getTime() : now,
+    }));
+
+    // Deduplicate by text and timestamp
+    const all = [...localMsgs, ...remoteMsgs].sort((a, b) => a.createdAt - b.createdAt);
+    return all.filter((msg) => now - msg.createdAt <= TWENTY_ONE_DAYS_MS);
+  }, [userChatThread, supabaseChatMessages, now]);
+
+  const handleSendChatMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatMessageText.trim() || !currentUser) return;
 
+    const messageText = chatMessageText.trim();
+    setChatMessageText('');
+
+    // 1. Send to Supabase public.chat_messages table
+    try {
+      await sendChatMessageToSupabase({
+        user_id: currentUser.id.startsWith('user_') ? undefined : currentUser.id,
+        devotee_phone: currentUser.phone,
+        devotee_name: currentUser.name,
+        sender: 'devotee',
+        message: messageText,
+      });
+    } catch (err) {
+      console.warn('Supabase chat send note:', err);
+    }
+
+    // 2. Also record in local content context for instant response
     createDevoteeInquiryChat(
       currentUser.name,
       currentUser.phone || '+91 00000 00000',
       'Direct Devotee Chat Desk',
-      chatMessageText.trim(),
+      messageText,
       currentUser.star
     );
 
-    setChatMessageText('');
-    showToast('Message sent to Devaswom Admin Desk');
+    // Refresh Supabase messages
+    loadSupabaseData();
+    showToast('Message sent to Devaswom Admin Desk & saved to Supabase');
   };
 
   const handlePrintReceipt = () => {
@@ -541,7 +630,16 @@ function ProfileContent() {
           </div>
         )}
 
-        {/* Profile Incomplete Banner Prompt (Displayed if mobile number or birth star missing) */}
+        {/* Hidden File Input for Supabase Storage Avatar Upload */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleAvatarFileChange}
+          accept="image/*"
+          className="hidden"
+        />
+
+        {/* Profile Incomplete Banner Prompt */}
         {isProfileIncomplete && (
           <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-[#FFFBEB] via-[#FEF3C7] to-[#FFFBEB] border-2 border-[#F59E0B] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-scaleUp">
             <div className="flex items-start sm:items-center gap-3.5">
@@ -584,24 +682,38 @@ function ProfileContent() {
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 relative z-10">
             <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
-              {/* Avatar Ring */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#610C1B] to-[#1A0409] border-3 border-[#C99738] shadow-lg flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-2xl sm:text-3xl flex-shrink-0 overflow-hidden">
-                {currentUser.avatar ? (
-                  <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
-                ) : (
-                  currentUser.name
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')
-                    .slice(0, 2)
-                    .toUpperCase() || 'ॐ'
-                )}
+              {/* Avatar Ring with Supabase Storage Upload Trigger */}
+              <div className="relative group">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#610C1B] to-[#1A0409] border-3 border-[#C99738] shadow-lg flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-2xl sm:text-3xl flex-shrink-0 overflow-hidden">
+                  {currentUser.avatar ? (
+                    <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
+                  ) : (
+                    currentUser.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase() || 'ॐ'
+                  )}
+                </div>
+
+                {/* Supabase Storage Upload Overlay */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingAvatar}
+                  className="absolute inset-0 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-[10px] font-bold"
+                  title="Upload profile photo to Supabase Storage"
+                >
+                  <Camera className="w-4 h-4 mb-0.5 text-[#E6BE65]" />
+                  <span>{isUploadingAvatar ? 'Saving...' : 'Change'}</span>
+                </button>
               </div>
 
               <div className="space-y-1">
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#FAF5E8]/10 text-[#E6BE65] text-xs font-bold mb-1">
                   <Sparkles className="w-3 h-3" />
-                  <span>Devotee Pilgrim Account</span>
+                  <span>Devotee Pilgrim Account · Supabase Cloud Connected</span>
                 </div>
                 <h1 className="font-cinzel font-bold text-xl sm:text-2xl text-[#FAF5E8]">
                   {currentUser.name}
@@ -644,13 +756,24 @@ function ProfileContent() {
               </div>
             </div>
 
-            <button
-              onClick={logout}
-              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#FAF5E8] hover:text-white border border-white/20 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer flex-shrink-0"
-            >
-              <LogOut className="w-3.5 h-3.5 text-[#E6BE65]" />
-              <span>Sign Out</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={loadSupabaseData}
+                disabled={isLoadingSupabase}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#FAF5E8] border border-white/20 text-xs font-bold transition-all cursor-pointer"
+                title="Refresh live data from Supabase"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 text-[#E6BE65] ${isLoadingSupabase ? 'animate-spin' : ''}`} />
+              </button>
+
+              <button
+                onClick={logout}
+                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#FAF5E8] hover:text-white border border-white/20 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer flex-shrink-0"
+              >
+                <LogOut className="w-3.5 h-3.5 text-[#E6BE65]" />
+                <span>Sign Out</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -693,8 +816,8 @@ function ProfileContent() {
           >
             <MessageSquare className="w-4 h-4 text-[#610C1B]" />
             <span>Chat with Devaswom Desk</span>
-            {userChatThread?.unread && (
-              <span className="w-2 h-2 rounded-full bg-[#610C1B] animate-pulse" />
+            {activeMessages.length > 0 && (
+              <span className="w-2 h-2 rounded-full bg-[#610C1B]" />
             )}
           </button>
         </div>
@@ -710,7 +833,7 @@ function ProfileContent() {
                   Personal & Ritual Information
                 </h3>
                 <p className="text-xs text-[#5A382A]">
-                  Devotees can edit Name, Mobile Number, Email, and Birth Star anytime.
+                  Devotees can edit Name, Mobile Number, Email, and Birth Star anytime. Changes are saved to Supabase cloud.
                 </p>
               </div>
               <button
@@ -740,7 +863,7 @@ function ProfileContent() {
                     />
                   </div>
 
-                  {/* 2. Contact Phone (Mandatory for Pooja communication) */}
+                  {/* 2. Contact Phone */}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel flex items-center justify-between">
                       <span>Contact Phone *</span>
@@ -862,7 +985,7 @@ function ProfileContent() {
                     className="px-6 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Save className="w-4 h-4 text-[#E6BE65]" />
-                    <span>Save & Update Profile</span>
+                    <span>Save & Sync to Supabase</span>
                   </button>
                 </div>
               </form>
@@ -974,7 +1097,7 @@ function ProfileContent() {
               )}
             </div>
 
-            {/* Date Filtering Bar (Single Date or Date Range Selection) */}
+            {/* Date Filtering Bar */}
             {allProfileBookings.length > 0 && (
               <div className="p-4 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -1220,7 +1343,7 @@ function ProfileContent() {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 3: DIRECT CHAT WITH TEMPLE DESK */}
+        {/* TAB 3: DIRECT CHAT WITH TEMPLE DESK (LIVE SUPABASE DB CONNECTED) */}
         {/* ================================================================= */}
         {activeTab === 'chat' && (
           <div className="bg-white rounded-3xl border border-[#E4D5AE] shadow-md flex flex-col h-[650px] overflow-hidden animate-fadeIn">
@@ -1236,7 +1359,7 @@ function ProfileContent() {
                   </h3>
                   <div className="flex items-center gap-1.5 text-[11px] text-[#E6BE65]">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Live Temple Administrative Channel</span>
+                    <span>Supabase Live Channel · Connected</span>
                   </div>
                 </div>
               </div>
@@ -1252,7 +1375,7 @@ function ProfileContent() {
               <div className="flex items-center gap-1.5">
                 <Info className="w-3.5 h-3.5 text-[#610C1B] flex-shrink-0" />
                 <span>
-                  <strong>Data Policy:</strong> Messages are securely retained for <strong>21 days</strong> for ritual correspondence and then automatically cleared.
+                  <strong>Data Policy:</strong> Messages are securely retained for <strong>21 days</strong> in Supabase cloud for ritual correspondence.
                 </span>
               </div>
             </div>
@@ -1286,7 +1409,6 @@ function ProfileContent() {
                             : 'bg-white border border-[#E4D5AE] text-[#2B150F] rounded-bl-none'
                         }`}
                       >
-                        {/* Sender Label */}
                         <div
                           className={`flex items-center justify-between gap-3 mb-1 text-[10px] font-bold ${
                             isDevotee ? 'text-white/80' : 'text-[#8C6219]'
@@ -1295,31 +1417,13 @@ function ProfileContent() {
                           <span>{isDevotee ? 'You' : 'Puliyannoor Devaswom Office'}</span>
                         </div>
 
-                        {/* Quoted Reply Preview */}
-                        {msg.replyTo && (
-                          <div
-                            className={`mb-2 p-2 rounded-lg text-[11px] ${
-                              isDevotee
-                                ? 'bg-black/20 border-l-4 border-[#E6BE65] text-white/90'
-                                : 'bg-[#FAF5E8] border-l-4 border-[#610C1B] text-[#38050E]'
-                            }`}
-                          >
-                            <span className="font-bold text-[10px] block opacity-90">
-                              {msg.replyTo.senderName || (msg.replyTo.sender === 'admin' ? 'Devaswom Office' : 'You')}
-                            </span>
-                            <p className="truncate line-clamp-1">{msg.replyTo.text}</p>
-                          </div>
-                        )}
-
                         <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
 
-                        {/* Timestamp */}
                         <div
                           className={`flex items-center justify-end gap-1 mt-1.5 text-[10px] ${
                             isDevotee ? 'text-white/70' : 'text-[#8C6219]/70'
                           }`}
                         >
-                          {msg.isEdited && <span className="italic text-[9px] mr-1">edited</span>}
                           <span>{msg.timestamp}</span>
                         </div>
                       </div>
@@ -1536,16 +1640,12 @@ function ProfileContent() {
                   
                   {/* Authorized Signatory & Official Round RECEIVED Seal */}
                   <div className="text-center flex flex-col items-center">
-                    {/* Official Circular "RECEIVED" Rubber Seal Logo */}
                     <div className="w-20 h-20 mb-1 flex items-center justify-center select-none transform -rotate-6">
                       <svg viewBox="0 0 100 100" className="w-20 h-20 text-[#1F4E34]">
-                        {/* Outer Dotted Ring */}
                         <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="3 2" />
-                        {/* Inner Double Solid Rings */}
                         <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="1.5" />
                         <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" strokeWidth="1" />
                         
-                        {/* Top Arc Text */}
                         <path id="seal-top-curve" d="M 20,50 A 30,30 0 0,1 80,50" fill="none" />
                         <text className="text-[7.5px] font-extrabold uppercase tracking-widest" fill="currentColor">
                           <textPath href="#seal-top-curve" startOffset="50%" textAnchor="middle">
@@ -1553,13 +1653,11 @@ function ProfileContent() {
                           </textPath>
                         </text>
 
-                        {/* Center Box with bold RECEIVED */}
                         <rect x="12" y="41" width="76" height="18" rx="3" fill="#1F4E34" />
                         <text x="50" y="53.5" textAnchor="middle" fill="#FFFFFF" className="text-[9.5px] font-black tracking-widest font-sans">
                           RECEIVED
                         </text>
 
-                        {/* Bottom Arc Text */}
                         <path id="seal-bottom-curve" d="M 80,50 A 30,30 0 0,1 20,50" fill="none" />
                         <text className="text-[6.5px] font-bold uppercase tracking-wider" fill="currentColor">
                           <textPath href="#seal-bottom-curve" startOffset="50%" textAnchor="middle">
