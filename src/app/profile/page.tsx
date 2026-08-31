@@ -33,6 +33,7 @@ import {
   FileText,
   Lock,
   Users,
+  CreditCard,
 } from 'lucide-react';
 
 // 27 Malayalam Birth Stars (Nakshatrams)
@@ -46,6 +47,23 @@ const NAKSHATRAMS = [
   'Poororuttathi (പൂരുരുട്ടാതി)', 'Uthrattathi (ഉത്രട്ടാതി)', 'Revathi (രേവതി)',
 ];
 
+interface RawVazhipaduRecord {
+  id: string;
+  orderId: string;
+  receiptNumber: string;
+  offeringId: string;
+  fallbackName: string;
+  fallbackPrice: number;
+  devoteeName: string;
+  star: string;
+  bookingPhone: string; // Registered devotee mobile number who booked and paid
+  bookingDate: string;
+  offeringDate: string;
+  deity: string;
+  paymentStatus: 'completed' | 'pending' | 'failed'; // Strictly 'completed' only
+  status: 'Confirmed' | 'Performed' | 'Scheduled';
+}
+
 interface VazhipaduBookingItem {
   id: string;
   orderId: string;
@@ -54,10 +72,12 @@ interface VazhipaduBookingItem {
   vazhipadName: string;
   devoteeName: string;
   star: string;
+  bookingPhone: string;
   bookingDate: string;
   offeringDate: string;
   deity: string;
   amount: number;
+  paymentStatus: 'completed' | 'pending' | 'failed';
   status: 'Confirmed' | 'Performed' | 'Scheduled';
 }
 
@@ -84,6 +104,127 @@ function numberToWords(num: number): string {
 
   return convertLessThanThousand(num);
 }
+
+// Master Bookings Database in Virtual Store
+const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
+  // User 1 Bookings (Suresh Kumar - Phone: +91 98470 12345) - ALL PAYMENT COMPLETED
+  {
+    id: 'bk_1',
+    orderId: 'ORD-2026-0814',
+    receiptNumber: 'PLY-REC-2026-0814',
+    offeringId: 'dhara',
+    fallbackName: 'Dhara (ധാര)',
+    fallbackPrice: 50,
+    devoteeName: 'Suresh Kumar (സുരേഷ് കുമാർ)',
+    star: 'Thiruvathira (തിരുവാതിര)',
+    bookingPhone: '+91 98470 12345',
+    bookingDate: '24 Aug 2026',
+    offeringDate: '15 Sep 2026 (Pradosham)',
+    deity: 'Sree Mahadeva',
+    paymentStatus: 'completed',
+    status: 'Confirmed',
+  },
+  {
+    id: 'bk_2',
+    orderId: 'ORD-2026-0814',
+    receiptNumber: 'PLY-REC-2026-0814',
+    offeringId: 'mrithyunjaya_homam',
+    fallbackName: 'Mrithyunjaya Homam (മൃത്യുഞ്ജയ ഹോമം)',
+    fallbackPrice: 200,
+    devoteeName: 'Suresh Kumar (സുരേഷ് കുമാർ)',
+    star: 'Thiruvathira (തിരുവാതിര)',
+    bookingPhone: '+91 98470 12345',
+    bookingDate: '24 Aug 2026',
+    offeringDate: '15 Sep 2026 (Pradosham)',
+    deity: 'Sree Mahadeva',
+    paymentStatus: 'completed',
+    status: 'Confirmed',
+  },
+  {
+    id: 'bk_3',
+    orderId: 'ORD-2026-0814',
+    receiptNumber: 'PLY-REC-2026-0814',
+    offeringId: 'bhagya_sooktha_pushpanjali',
+    fallbackName: 'Bhagya Sooktha Pushpanjali (ഭാഗ്യസൂക്ത പുഷ്പാഞ്ജലി)',
+    fallbackPrice: 50,
+    devoteeName: 'Anjali Suresh (അഞ്ജലി സുരേഷ്)',
+    star: 'Rohini (രോഹിണി)',
+    bookingPhone: '+91 98470 12345',
+    bookingDate: '24 Aug 2026',
+    offeringDate: '15 Sep 2026 (Pradosham)',
+    deity: 'Sree Mahadeva',
+    paymentStatus: 'completed',
+    status: 'Confirmed',
+  },
+  {
+    id: 'bk_4',
+    orderId: 'ORD-2026-0814',
+    receiptNumber: 'PLY-REC-2026-0814',
+    offeringId: 'neyyvilakku',
+    fallbackName: 'Neyyvilakku (നെയ്യ്‌വിളക്ക്)',
+    fallbackPrice: 30,
+    devoteeName: 'Anjali Suresh (അഞ്ജലി സുരേഷ്)',
+    star: 'Rohini (രോഹിണി)',
+    bookingPhone: '+91 98470 12345',
+    bookingDate: '24 Aug 2026',
+    offeringDate: '15 Sep 2026 (Pradosham)',
+    deity: 'Sree Ganapathi',
+    paymentStatus: 'completed',
+    status: 'Confirmed',
+  },
+  {
+    id: 'bk_5',
+    orderId: 'ORD-2026-0814',
+    receiptNumber: 'PLY-REC-2026-0814',
+    offeringId: 'vidyagopala_manthraarchana',
+    fallbackName: 'Vidyagopala Manthraarchana (വിദ്യാഗോപാല മന്ത്രാർച്ചന)',
+    fallbackPrice: 40,
+    devoteeName: 'Abhinav Suresh (അഭിനവ് സുരേഷ്)',
+    star: 'Punartham (പുണർതം)',
+    bookingPhone: '+91 98470 12345',
+    bookingDate: '24 Aug 2026',
+    offeringDate: '15 Sep 2026 (Pradosham)',
+    deity: 'Sree Mahadeva',
+    paymentStatus: 'completed',
+    status: 'Confirmed',
+  },
+
+  // User 2 Bookings (Google Pilgrim - Phone: +91 94470 56789) - PAYMENT COMPLETED
+  {
+    id: 'bk_6',
+    orderId: 'ORD-2026-0820',
+    receiptNumber: 'PLY-REC-2026-0820',
+    offeringId: 'oru_nerathe_pooja',
+    fallbackName: 'Oru Nerathe Pooja (ഒരു നേരത്തെ പൂജ)',
+    fallbackPrice: 750,
+    devoteeName: 'Devotee Pilgrim (ഭക്തൻ)',
+    star: 'Rohini (രോഹിണി)',
+    bookingPhone: '+91 94470 56789',
+    bookingDate: '26 Aug 2026',
+    offeringDate: '18 Sep 2026',
+    deity: 'Sree Mahadeva',
+    paymentStatus: 'completed',
+    status: 'Confirmed',
+  },
+
+  // Other records that are PENDING or belonging to other numbers (Should NOT show unless matched and completed)
+  {
+    id: 'bk_7',
+    orderId: 'ORD-2026-0899',
+    receiptNumber: 'PLY-REC-2026-PENDING',
+    offeringId: 'udayasthamana_pooja',
+    fallbackName: 'Udayasthamana Pooja',
+    fallbackPrice: 60000,
+    devoteeName: 'Unpaid Inquirer',
+    star: 'Aswathi',
+    bookingPhone: '+91 98470 12345',
+    bookingDate: '28 Aug 2026',
+    offeringDate: '10 Jan 2027',
+    deity: 'Sree Mahadeva',
+    paymentStatus: 'pending', // NOT completed, will be filtered out
+    status: 'Scheduled',
+  },
+];
 
 function ProfileContent() {
   const { currentUser, isAuthenticated, logout, updateProfile, openAuthModal } = useAuth();
@@ -167,85 +308,24 @@ function ProfileContent() {
     };
   };
 
-  // Multi-Devotee Bookings List mapped directly to Offering Directory
-  const rawBookingsData = [
-    // Devotee 1: Primary Logged-in Devotee
-    {
-      id: 'bk_1',
-      orderId: 'ORD-2026-0814',
-      receiptNumber: 'PLY-REC-2026-0814',
-      offeringId: 'dhara',
-      fallbackName: 'Dhara (ധാര)',
-      fallbackPrice: 50,
-      devoteeName: currentUser?.name || 'Suresh Kumar',
-      star: currentUser?.star || 'Thiruvathira (തിരുവാതിര)',
-      bookingDate: '24 Aug 2026',
-      offeringDate: '15 Sep 2026 (Pradosham)',
-      deity: 'Sree Mahadeva',
-      status: 'Confirmed' as const,
-    },
-    {
-      id: 'bk_2',
-      orderId: 'ORD-2026-0814',
-      receiptNumber: 'PLY-REC-2026-0814',
-      offeringId: 'mrithyunjaya_homam',
-      fallbackName: 'Mrithyunjaya Homam (മൃത്യുഞ്ജയ ഹോമം)',
-      fallbackPrice: 200,
-      devoteeName: currentUser?.name || 'Suresh Kumar',
-      star: currentUser?.star || 'Thiruvathira (തിരുവാതിര)',
-      bookingDate: '24 Aug 2026',
-      offeringDate: '15 Sep 2026 (Pradosham)',
-      deity: 'Sree Mahadeva',
-      status: 'Confirmed' as const,
-    },
-    // Devotee 2: Family Member (Separate Devotee booked at the same time)
-    {
-      id: 'bk_3',
-      orderId: 'ORD-2026-0814',
-      receiptNumber: 'PLY-REC-2026-0814',
-      offeringId: 'bhagya_sooktha_pushpanjali',
-      fallbackName: 'Bhagya Sooktha Pushpanjali (ഭാഗ്യസൂക്ത പുഷ്പാഞ്ജലി)',
-      fallbackPrice: 50,
-      devoteeName: 'Anjali Suresh (അഞ്ജലി സുരേഷ്)',
-      star: 'Rohini (രോഹിണി)',
-      bookingDate: '24 Aug 2026',
-      offeringDate: '15 Sep 2026 (Pradosham)',
-      deity: 'Sree Mahadeva',
-      status: 'Confirmed' as const,
-    },
-    {
-      id: 'bk_4',
-      orderId: 'ORD-2026-0814',
-      receiptNumber: 'PLY-REC-2026-0814',
-      offeringId: 'neyyvilakku',
-      fallbackName: 'Neyyvilakku (നെയ്യ്‌വിളക്ക്)',
-      fallbackPrice: 30,
-      devoteeName: 'Anjali Suresh (അഞ്ജലി സുരേഷ്)',
-      star: 'Rohini (രോഹിണി)',
-      bookingDate: '24 Aug 2026',
-      offeringDate: '15 Sep 2026 (Pradosham)',
-      deity: 'Sree Ganapathi',
-      status: 'Confirmed' as const,
-    },
-    // Devotee 3: Family Member (Child)
-    {
-      id: 'bk_5',
-      orderId: 'ORD-2026-0814',
-      receiptNumber: 'PLY-REC-2026-0814',
-      offeringId: 'vidyagopala_manthraarchana',
-      fallbackName: 'Vidyagopala Manthraarchana (വിദ്യാഗോപാല മന്ത്രാർച്ചന)',
-      fallbackPrice: 40,
-      devoteeName: 'Abhinav Suresh (അഭിനവ് സുരേഷ്)',
-      star: 'Punartham (പുണർതം)',
-      bookingDate: '24 Aug 2026',
-      offeringDate: '15 Sep 2026 (Pradosham)',
-      deity: 'Sree Mahadeva',
-      status: 'Confirmed' as const,
-    },
-  ];
+  // -----------------------------------------------------------------------------------
+  // STRICT FILTERING: ONLY SHOW DETAILS THAT ARE PAYMENT COMPLETED AND BOOKED FROM HIS/HER NUMBER
+  // -----------------------------------------------------------------------------------
+  const userPhoneDigits = currentUser?.phone ? currentUser.phone.replace(/\D/g, '').slice(-10) : '';
+
+  const matchedRawBookings = ALL_TEMPLE_BOOKINGS.filter((booking) => {
+    // 1. Must be payment completed
+    if (booking.paymentStatus !== 'completed' || booking.status !== 'Confirmed') {
+      return false;
+    }
+
+    // 2. Must be booked from his/her registered mobile number
+    const bookingPhoneDigits = (booking.bookingPhone || '').replace(/\D/g, '').slice(-10);
+    return userPhoneDigits && bookingPhoneDigits === userPhoneDigits;
+  });
 
   // Dynamically map offerings with Directory Prices & Names
-  const devoteeBookings: VazhipaduBookingItem[] = rawBookingsData.map((item) => {
+  const devoteeBookings: VazhipaduBookingItem[] = matchedRawBookings.map((item) => {
     const dir = getDirectoryOffering(item.offeringId, item.fallbackName, item.fallbackPrice, item.deity);
     return {
       id: item.id,
@@ -255,10 +335,12 @@ function ProfileContent() {
       vazhipadName: dir.name,
       devoteeName: item.devoteeName,
       star: item.star,
+      bookingPhone: item.bookingPhone,
       bookingDate: item.bookingDate,
       offeringDate: item.offeringDate,
       deity: dir.deity,
       amount: dir.price,
+      paymentStatus: item.paymentStatus,
       status: item.status,
     };
   });
@@ -283,7 +365,6 @@ function ProfileContent() {
   const grandTotalAmount = devoteeBookings.reduce((sum, item) => sum + item.amount, 0);
 
   // Find devotee's active conversation thread from ContentContext
-  const userPhoneDigits = currentUser?.phone ? currentUser.phone.replace(/\D/g, '').slice(-10) : '';
   const now = Date.now();
   const TWENTY_ONE_DAYS_MS = 21 * 24 * 60 * 60 * 1000;
 
@@ -446,7 +527,7 @@ function ProfileContent() {
             }`}
           >
             <Flame className="w-4 h-4 text-[#C99738]" />
-            <span>My Vazhipadu Bookings</span>
+            <span>My Vazhipadu Bookings ({devoteeBookings.length})</span>
           </button>
 
           <button
@@ -654,160 +735,192 @@ function ProfileContent() {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 2: MY VAZHIPADU BOOKINGS & MULTI-DEVOTEE PRINT RECEIPT */}
+        {/* TAB 2: MY VAZHIPADU BOOKINGS (STRICTLY PAYMENT COMPLETED & FOR HIS/HER NUMBER) */}
         {/* ================================================================= */}
         {activeTab === 'bookings' && (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E4D5AE] shadow-sm space-y-6 animate-fadeIn">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E4D5AE] pb-4">
               <div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#1F4E34]/10 text-[#1F4E34] text-[10px] font-bold mb-1">
+                  <Shield className="w-3 h-3 text-[#1F4E34]" />
+                  <span>Filtered: Payment Completed & Registered Mobile Number</span>
+                </div>
                 <h3 className="font-cinzel font-bold text-base sm:text-lg text-[#38050E]">
-                  Pooja & Vazhipadu Bookings
+                  My Confirmed Vazhipadu Bookings
                 </h3>
                 <p className="text-xs text-[#5A382A]">
-                  All amounts and vazhipadu names map directly from the active Offering Directory. Separate devotees are itemized distinctly.
+                  Showing exclusively verified, payment-completed bookings made from your registered mobile number: <strong>{currentUser.phone}</strong>.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedDevoteeFilter('ALL');
-                    setIsPrintReceiptModalOpen(true);
-                  }}
-                  className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
-                >
-                  <Printer className="w-3.5 h-3.5 text-[#E6BE65]" />
-                  <span>Print Single Multi-Devotee PDF</span>
-                </button>
+              {devoteeBookings.length > 0 && (
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedDevoteeFilter('ALL');
+                      setIsPrintReceiptModalOpen(true);
+                    }}
+                    className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                  >
+                    <Printer className="w-3.5 h-3.5 text-[#E6BE65]" />
+                    <span>Print Single Multi-Devotee PDF</span>
+                  </button>
 
-                <Link
-                  href="/offerings"
-                  className="px-3.5 py-2 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold flex items-center gap-1 border border-[#E4D5AE] transition-all"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-[#C99738]" />
-                  <span>Book More</span>
-                </Link>
-              </div>
+                  <Link
+                    href="/offerings"
+                    className="px-3.5 py-2 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold flex items-center gap-1 border border-[#E4D5AE] transition-all"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-[#C99738]" />
+                    <span>Book More</span>
+                  </Link>
+                </div>
+              )}
             </div>
 
-            {/* Structured Multi-Devotee Sections in Portal */}
-            <div className="space-y-6">
-              {Object.entries(groupedByDevotee).map(([devotee, data], devIdx) => (
-                <div
-                  key={devotee}
-                  className="rounded-2xl border-2 border-[#E4D5AE] bg-[#FAF5E8]/20 overflow-hidden shadow-2xs"
-                >
-                  {/* Devotee Header Strip */}
-                  <div className="bg-[#FAF5E8] px-5 py-3 border-b border-[#E4D5AE] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-[#610C1B] text-[#E6BE65] font-bold text-xs flex items-center justify-center">
-                        {devIdx + 1}
+            {/* Empty State if No Completed Bookings for this Phone Number */}
+            {devoteeBookings.length === 0 ? (
+              <div className="text-center py-12 px-4 bg-[#FAF5E8]/30 rounded-3xl border-2 border-dashed border-[#E4D5AE] space-y-4">
+                <div className="w-16 h-16 rounded-3xl bg-[#610C1B]/10 text-[#610C1B] flex items-center justify-center mx-auto shadow-xs">
+                  <Flame className="w-8 h-8 text-[#C99738]" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-cinzel font-bold text-base text-[#38050E]">
+                    No Payment-Completed Bookings Found
+                  </h4>
+                  <p className="text-xs text-[#5A382A] max-w-md mx-auto leading-relaxed">
+                    No confirmed, payment-completed vazhipadu offerings were found under your registered mobile number (<strong>{currentUser.phone}</strong>). Only verified paid offerings appear in this desk.
+                  </p>
+                </div>
+                <div className="pt-2">
+                  <Link
+                    href="/offerings"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white text-xs font-bold shadow-md transition-all"
+                  >
+                    <Sparkles className="w-4 h-4 text-[#E6BE65]" />
+                    <span>Browse & Book Vazhipadu Offerings</span>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {Object.entries(groupedByDevotee).map(([devotee, data], devIdx) => (
+                  <div
+                    key={devotee}
+                    className="rounded-2xl border-2 border-[#E4D5AE] bg-[#FAF5E8]/20 overflow-hidden shadow-2xs"
+                  >
+                    {/* Devotee Header Strip */}
+                    <div className="bg-[#FAF5E8] px-5 py-3 border-b border-[#E4D5AE] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-full bg-[#610C1B] text-[#E6BE65] font-bold text-xs flex items-center justify-center">
+                          {devIdx + 1}
+                        </div>
+                        <div>
+                          <span className="font-bold text-sm text-[#38050E] block">{devotee}</span>
+                          <span className="text-[11px] text-[#610C1B] font-medium">Star: {data.star}</span>
+                        </div>
                       </div>
-                      <div>
-                        <span className="font-bold text-sm text-[#38050E] block">{devotee}</span>
-                        <span className="text-[11px] text-[#610C1B] font-medium">Star: {data.star}</span>
+
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs text-[#8C6219] font-bold">
+                          Devotee Subtotal: <span className="font-mono text-[#610C1B]">₹{data.subtotal}.00</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedDevoteeFilter(devotee);
+                            setIsPrintReceiptModalOpen(true);
+                          }}
+                          className="px-3 py-1 rounded-lg bg-white border border-[#E4D5AE] text-[11px] font-bold text-[#610C1B] hover:bg-[#FAF5E8] flex items-center gap-1 cursor-pointer"
+                        >
+                          <Printer className="w-3 h-3" />
+                          <span>Print</span>
+                        </button>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-[#8C6219] font-bold">
-                        Devotee Subtotal: <span className="font-mono text-[#610C1B]">₹{data.subtotal}.00</span>
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedDevoteeFilter(devotee);
-                          setIsPrintReceiptModalOpen(true);
-                        }}
-                        className="px-3 py-1 rounded-lg bg-white border border-[#E4D5AE] text-[11px] font-bold text-[#610C1B] hover:bg-[#FAF5E8] flex items-center gap-1 cursor-pointer"
-                      >
-                        <Printer className="w-3 h-3" />
-                        <span>Print</span>
-                      </button>
+                    {/* Devotee Offering Items */}
+                    <div className="p-4 divide-y divide-[#E4D5AE]/60 space-y-3">
+                      {data.items.map((booking) => (
+                        <div
+                          key={booking.id}
+                          className="pt-3 first:pt-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs"
+                        >
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
+                            {/* 1. Vazhipad */}
+                            <div>
+                              <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-0.5">
+                                Vazhipad (Directory Mapped)
+                              </span>
+                              <h4 className="font-cinzel font-bold text-xs sm:text-sm text-[#38050E]">
+                                {booking.vazhipadName}
+                              </h4>
+                              <span className="text-[11px] text-[#5A382A]">Deity: {booking.deity}</span>
+                            </div>
+
+                            {/* 2. Booking Date */}
+                            <div>
+                              <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-0.5">
+                                Booking Date
+                              </span>
+                              <span className="text-xs text-[#38050E] font-medium flex items-center gap-1">
+                                <Calendar className="w-3 h-3 text-[#8C6219]" />
+                                {booking.bookingDate}
+                              </span>
+                              <span className="text-[10px] text-gray-500 font-mono mt-0.5 block">{booking.receiptNumber}</span>
+                            </div>
+
+                            {/* 3. Offering Date */}
+                            <div>
+                              <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-0.5">
+                                Offering Date (പൂജാ തീയതി)
+                              </span>
+                              <span className="text-xs font-bold text-[#1F4E34] flex items-center gap-1">
+                                <Clock className="w-3 h-3 text-[#1F4E34]" />
+                                {booking.offeringDate}
+                              </span>
+                              <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-[#1F4E34]/15 text-[#1F4E34] text-[9px] font-bold">
+                                <CreditCard className="w-2.5 h-2.5" />
+                                <span>Paid & Confirmed</span>
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Amount */}
+                          <div className="text-right flex-shrink-0 pt-2 md:pt-0">
+                            <span className="text-[10px] text-[#8C6219] uppercase block font-semibold">Directory Rate</span>
+                            <span className="font-mono font-bold text-sm text-[#610C1B]">₹{booking.amount}.00</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
+                ))}
 
-                  {/* Devotee Offering Items */}
-                  <div className="p-4 divide-y divide-[#E4D5AE]/60 space-y-3">
-                    {data.items.map((booking) => (
-                      <div
-                        key={booking.id}
-                        className="pt-3 first:pt-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs"
-                      >
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-1">
-                          {/* 1. Vazhipad */}
-                          <div>
-                            <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-0.5">
-                              Vazhipad (Directory Mapped)
-                            </span>
-                            <h4 className="font-cinzel font-bold text-xs sm:text-sm text-[#38050E]">
-                              {booking.vazhipadName}
-                            </h4>
-                            <span className="text-[11px] text-[#5A382A]">Deity: {booking.deity}</span>
-                          </div>
-
-                          {/* 2. Booking Date */}
-                          <div>
-                            <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-0.5">
-                              Booking Date
-                            </span>
-                            <span className="text-xs text-[#38050E] font-medium flex items-center gap-1">
-                              <Calendar className="w-3 h-3 text-[#8C6219]" />
-                              {booking.bookingDate}
-                            </span>
-                            <span className="text-[10px] text-gray-500 font-mono mt-0.5 block">{booking.receiptNumber}</span>
-                          </div>
-
-                          {/* 3. Offering Date */}
-                          <div>
-                            <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-0.5">
-                              Offering Date (പൂജാ തീയതി)
-                            </span>
-                            <span className="text-xs font-bold text-[#1F4E34] flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-[#1F4E34]" />
-                              {booking.offeringDate}
-                            </span>
-                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-[#1F4E34]/15 text-[#1F4E34] text-[9px] font-bold">
-                              ✓ {booking.status}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Amount */}
-                        <div className="text-right flex-shrink-0 pt-2 md:pt-0">
-                          <span className="text-[10px] text-[#8C6219] uppercase block font-semibold">Directory Rate</span>
-                          <span className="font-mono font-bold text-sm text-[#610C1B]">₹{booking.amount}.00</span>
-                        </div>
-                      </div>
-                    ))}
+                {/* Consolidated Summary Strip */}
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-[#FAF5E8] to-[#F3EBD7] border-2 border-[#C99738]/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="text-xs text-[#5A382A]">
+                    Total <strong>{devoteeBookings.length} Paid Offerings</strong> across <strong>{Object.keys(groupedByDevotee).length} Devotees</strong> linked to <strong>{currentUser.phone}</strong>.
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs text-[#8C6219] font-bold">
+                      Order Grand Total: <span className="font-mono text-[#610C1B] text-base font-extrabold">₹{grandTotalAmount}.00</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedDevoteeFilter('ALL');
+                        setIsPrintReceiptModalOpen(true);
+                      }}
+                      className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-[#E6BE65]" />
+                      <span>Print Single Receipt PDF</span>
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Consolidated Summary Strip */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-[#FAF5E8] to-[#F3EBD7] border-2 border-[#C99738]/50 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="text-xs text-[#5A382A]">
-                Total <strong>{devoteeBookings.length} Offerings</strong> across <strong>{Object.keys(groupedByDevotee).length} Devotees</strong> in this order.
               </div>
-              <div className="flex items-center gap-4">
-                <span className="text-xs text-[#8C6219] font-bold">
-                  Order Grand Total: <span className="font-mono text-[#610C1B] text-base font-extrabold">₹{grandTotalAmount}.00</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedDevoteeFilter('ALL');
-                    setIsPrintReceiptModalOpen(true);
-                  }}
-                  className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
-                >
-                  <Printer className="w-3.5 h-3.5 text-[#E6BE65]" />
-                  <span>Print Single Receipt PDF</span>
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -944,7 +1057,7 @@ function ProfileContent() {
         {/* ================================================================= */}
         {/* MULTI-DEVOTEE CONSOLIDATED OFFICIAL RECEIPT PRINT MODAL (PDF) */}
         {/* ================================================================= */}
-        {isPrintReceiptModalOpen && (
+        {isPrintReceiptModalOpen && devoteeBookings.length > 0 && (
           <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-fadeIn">
             <div className="bg-white rounded-3xl max-w-3xl w-full border-2 border-[#C99738] shadow-2xl overflow-hidden my-auto animate-scaleUp">
               {/* Modal Top Action Bar (Hidden on Print) */}
@@ -956,7 +1069,7 @@ function ProfileContent() {
                       Official Devaswom Consolidated Vazhipadu Receipt
                     </span>
                     <span className="text-[11px] text-[#8C6219]">
-                      Structured printable PDF document with separate devotee sections
+                      Payment Completed · Verified Bookings for {currentUser.phone}
                     </span>
                   </div>
                 </div>
@@ -997,7 +1110,7 @@ function ProfileContent() {
                     Administered by Puliyannoor Ooranma Temple Devaswom · Mutholy, Pala, Kottayam, Kerala 686573
                   </p>
                   <div className="inline-block mt-2 px-3 py-0.5 rounded-full bg-[#FAF5E8] border border-[#C99738] text-[10px] font-bold uppercase tracking-widest text-[#610C1B]">
-                    OFFICIAL VAZHIPADU POOJA RECEIPT (CONSOLIDATED)
+                    OFFICIAL VAZHIPADU POOJA RECEIPT (PAYMENT COMPLETED)
                   </div>
                 </div>
 
@@ -1009,7 +1122,7 @@ function ProfileContent() {
                       <strong className="text-[#38050E]">{currentUser.name}</strong>
                     </p>
                     <p>
-                      <span className="text-[#8C6219] font-bold">Phone:</span> {currentUser.phone}
+                      <span className="text-[#8C6219] font-bold">Registered Phone:</span> {currentUser.phone}
                     </p>
                     <p>
                       <span className="text-[#8C6219] font-bold">Place / Address:</span> {currentUser.place || 'Pala, Kottayam'}
@@ -1019,17 +1132,19 @@ function ProfileContent() {
                   <div className="space-y-1 text-right">
                     <p>
                       <span className="text-[#8C6219] font-bold">Order Ref / Receipt:</span>{' '}
-                      <strong className="font-mono text-[#610C1B]">PLY-ORD-2026/0814</strong>
+                      <strong className="font-mono text-[#610C1B]">
+                        {devoteeBookings[0]?.receiptNumber || 'PLY-REC-2026-0814'}
+                      </strong>
                     </p>
                     <p>
-                      <span className="text-[#8C6219] font-bold">Booking Date:</span> 24 Aug 2026
+                      <span className="text-[#8C6219] font-bold">Booking Date:</span> {devoteeBookings[0]?.bookingDate || '24 Aug 2026'}
                     </p>
                     <p>
-                      <span className="text-[#8C6219] font-bold">Offering Date:</span> 15 Sep 2026 (Pradosham)
+                      <span className="text-[#8C6219] font-bold">Payment Status:</span>{' '}
+                      <strong className="text-[#1F4E34]">PAID & CONFIRMED (100%)</strong>
                     </p>
                     <p>
-                      <span className="text-[#8C6219] font-bold">Status:</span>{' '}
-                      <strong className="text-[#1F4E34]">Verified & Confirmed</strong>
+                      <span className="text-[#8C6219] font-bold">Devaswom Seal:</span> OORANMA TRUST CERTIFIED
                     </p>
                   </div>
                 </div>
@@ -1092,7 +1207,7 @@ function ProfileContent() {
                 <div className="p-4 rounded-xl bg-[#FAF5E8] border-2 border-[#C99738] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <div>
                     <span className="text-[11px] uppercase font-bold text-[#8C6219] block font-cinzel">
-                      Consolidated Grand Total
+                      Consolidated Grand Total Paid
                     </span>
                     <span className="text-xs text-[#5A382A] italic">
                       Amount in words: <strong>Rupees {numberToWords(selectedDevoteeFilter === 'ALL' ? grandTotalAmount : groupedByDevotee[selectedDevoteeFilter]?.subtotal || 0)} Only</strong>
@@ -1112,7 +1227,7 @@ function ProfileContent() {
                       Lord Puliyannoor Sree Mahadeva Blessings & Prasadam
                     </p>
                     <p className="text-[10px] text-gray-500 leading-tight">
-                      This is an official computer-generated receipt from Puliyannoor Ooranma Temple Devaswom portal. Prasadam may be collected directly from the temple counter upon presenting this receipt.
+                      This is an official computer-generated receipt from Puliyannoor Ooranma Temple Devaswom portal for registered number {currentUser.phone}. Prasadam may be collected directly from the temple counter upon presenting this receipt.
                     </p>
                   </div>
                   <div className="text-center">
