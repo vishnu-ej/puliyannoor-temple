@@ -151,8 +151,8 @@ export interface AnnualCalendarData {
   malayalamYear: string;        // e.g. "1202 -ാമാണ്ട്"
   gregorianYear: string;        // e.g. "(2026 – 2027)"
   title: string;                // e.g. "പ്രധാന വിശേഷ ദിവസങ്ങൾ"
-  templeName: string;           // e.g. "പുളിയന്നൂർ ശ്രീമഹാദേവ ക്ഷേത്രം"
-  templeAddress: string;        // e.g. "പുളിയന്നൂർ പി. ഒ. പാലാ 686 573, കോട്ടയം ജില്ല"
+  templeName: string;           // e.g. "പുലിയന്നൂർ ശ്രീമഹാദേവ ക്ഷേത്രം"
+  templeAddress: string;        // e.g. "പുലിയന്നൂർ പി. ഒ. പാലാ 686 573, കോട്ടയം ജില്ല"
   templePhones: string;         // e.g. "8891346001, 9605752642"
   visheshaDivasangal: VisheshaDivasam[];
   pradosham: PradoshamDate[];
@@ -172,7 +172,7 @@ export interface AnnualCalendarData {
     title: string;              // "തിരുവുത്സവം"
     gregorianDates: string;     // "2027 ഫെബ്രുവരി 28 ഞായർ മുതൽ മാർച്ച് 7 ഞായർ വരെ"
     malayalamDates: string;     // "(1202 കുംഭം 16 മുതൽ 23 വരെ)"
-    footerNote: string;         // "* പുളിയന്നൂർ ദേവസ്വം പ്രസിദ്ധീകരണം"
+    footerNote: string;         // "* പുലിയന്നൂർ ദേവസ്വം പ്രസിദ്ധീകരണം"
   };
 }
 

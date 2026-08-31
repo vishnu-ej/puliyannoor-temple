@@ -1,11 +1,11 @@
-﻿import { AnnualCalendarData } from '../types';
+import { AnnualCalendarData } from '../types';
 
 export const DEFAULT_ANNUAL_CALENDAR: AnnualCalendarData = {
   malayalamYear: '1202 -ാമാണ്ട്',
   gregorianYear: '(2026 – 2027)',
   title: 'പ്രധാന വിശേഷ ദിവസങ്ങൾ',
-  templeName: 'പുളിയന്നൂർ ശ്രീമഹാദേവ ക്ഷേത്രം',
-  templeAddress: 'പുളിയന്നൂർ പി. ഒ. പാലാ 686 573, കോട്ടയം ജില്ല',
+  templeName: 'പുലിയന്നൂർ ശ്രീമഹാദേവ ക്ഷേത്രം',
+  templeAddress: 'പുലിയന്നൂർ പി. ഒ. പാലാ 686 573, കോട്ടയം ജില്ല',
   templePhones: '8891346001, 9605752642',
   visheshaDivasangal: [
     { id: 'vd_1', malayalamMonthDate: '1202 ചിങ്ങം 1', englishMonthDate: '2026 ആഗസ്റ്റ് 17', dayOfWeek: 'തിങ്കൾ', vishesham: 'ആണ്ടുപിറപ്പ്' },
@@ -90,6 +90,6 @@ export const DEFAULT_ANNUAL_CALENDAR: AnnualCalendarData = {
     title: 'തിരുവുത്സവം',
     gregorianDates: '2027 ഫെബ്രുവരി 28 ഞായർ മുതൽ മാർച്ച് 7 ഞായർ വരെ',
     malayalamDates: '(1202 കുംഭം 16 മുതൽ 23 വരെ)',
-    footerNote: '* പുളിയന്നൂർ ദേവസ്വം പ്രസിദ്ധീകരണം',
+    footerNote: '* പുലിയന്നൂർ ദേവസ്വം പ്രസിദ്ധീകരണം',
   },
 };

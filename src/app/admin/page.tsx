@@ -115,8 +115,8 @@ export default function AdminPage() {
   const [isEditingCountdown, setIsEditingCountdown] = useState(false);
   const [countdownForm, setCountdownForm] = useState({
     targetDate: countdownConfig.targetDate || '2027-02-28T04:00',
-    eyebrowEn: countdownConfig.eyebrow?.en || 'Next Major Temple Festival',
-    eyebrowMl: countdownConfig.eyebrow?.ml || 'അടുത്ത പ്രധാന ക്ഷേത്ര ഉത്സവം',
+    eyebrowEn: countdownConfig.eyebrow?.en || 'Upcoming 2027 Festival: Feb 28 – Mar 07, 2027 (Kumbham 16 – 23)',
+    eyebrowMl: countdownConfig.eyebrow?.ml || 'അടുത്ത വാർഷിക തിരുവുത്സവം: 2027 ഫെബ്രുവരി 28 – മാർച്ച് 07 (കുംഭം 16 – 23)',
     titleEn: countdownConfig.title?.en || '2027 Annual Temple Festival',
     titleMl: countdownConfig.title?.ml || '2027 വാർഷിക തിരുവുത്സവം',
     subtitleEn: countdownConfig.subtitle?.en || 'Feb 28, 2027 (Sun) – Mar 07, 2027 (Sun) · 1202 Kumbham 16 – 23',
@@ -127,8 +127,8 @@ export default function AdminPage() {
   useEffect(() => {
     setCountdownForm({
       targetDate: countdownConfig.targetDate || '2027-02-28T04:00',
-      eyebrowEn: countdownConfig.eyebrow?.en || 'Next Major Temple Festival',
-      eyebrowMl: countdownConfig.eyebrow?.ml || 'അടുത്ത പ്രധാന ക്ഷേത്ര ഉത്സവം',
+      eyebrowEn: countdownConfig.eyebrow?.en || 'Upcoming 2027 Festival: Feb 28 – Mar 07, 2027 (Kumbham 16 – 23)',
+      eyebrowMl: countdownConfig.eyebrow?.ml || 'അടുത്ത വാർഷിക തിരുവുത്സവം: 2027 ഫെബ്രുവരി 28 – മാർച്ച് 07 (കുംഭം 16 – 23)',
       titleEn: countdownConfig.title?.en || '2027 Annual Temple Festival',
       titleMl: countdownConfig.title?.ml || '2027 വാർഷിക തിരുവുത്സവം',
       subtitleEn: countdownConfig.subtitle?.en || 'Feb 28, 2027 (Sun) – Mar 07, 2027 (Sun) · 1202 Kumbham 16 – 23',
@@ -1310,40 +1310,45 @@ export default function AdminPage() {
                       <span className="px-2.5 py-1 rounded-lg bg-white border border-[#C99738]/40 text-[#1F4E34] shadow-2xs">
                         ☀️ {annualCalendar.samkramam.length} Samkramam Dates (സംക്രമം)
                       </span>
-                      <span className="px-2.5 py-1 rounded-lg bg-[#610C1B] text-[#FAF5E8] shadow-2xs">
-                        🎪 Ulsavam: {annualCalendar.ulsavamBox.gregorianDates}
-                      </span>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 flex-shrink-0">
-                    {/* View Calendar Button */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAnnualCalendarInitialMode('poster');
-                        setIsViewingAnnualCalendar(true);
-                      }}
-                      className="px-4 py-2.5 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] text-xs font-bold border-2 border-[#C99738] flex items-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow"
-                    >
-                      <Eye className="w-4 h-4 text-[#8C6219]" />
-                      <span>📜 View Annual Calendar</span>
-                    </button>
-
-                    {/* Admin Level Direct Edit / Add / Remove Provision */}
-                    {activeRole === 'super_admin' && (
+                  <div className="flex flex-col gap-2.5 flex-shrink-0">
+                    <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+                      {/* View Calendar Button */}
                       <button
                         type="button"
                         onClick={() => {
-                          setAnnualCalendarInitialMode('edit');
+                          setAnnualCalendarInitialMode('poster');
                           setIsViewingAnnualCalendar(true);
                         }}
-                        className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:from-[#8B1428] hover:to-[#610C1B] text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer border border-[#E6BE65]/40"
+                        className="px-4 py-2.5 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] text-xs font-bold border-2 border-[#C99738] flex items-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow"
                       >
-                        <Edit3 className="w-4 h-4 text-[#E6BE65]" />
-                        <span>✏️ Manage Calendar Entries</span>
+                        <Eye className="w-4 h-4 text-[#8C6219]" />
+                        <span>📜 View Annual Calendar</span>
                       </button>
-                    )}
+
+                      {/* Admin Level Direct Edit / Add / Remove Provision */}
+                      {activeRole === 'super_admin' && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAnnualCalendarInitialMode('edit');
+                            setIsViewingAnnualCalendar(true);
+                          }}
+                          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:from-[#8B1428] hover:to-[#610C1B] text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer border border-[#E6BE65]/40"
+                        >
+                          <Edit3 className="w-4 h-4 text-[#E6BE65]" />
+                          <span>✏️ Manage Calendar Entries</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Ulsavam Highlight Banner under the View & Edit Options */}
+                    <div className="px-3.5 py-2 rounded-xl bg-[#610C1B] text-[#FAF5E8] text-xs font-bold shadow-xs border border-[#C99738]/50 flex items-center gap-2">
+                      <span>🎪</span>
+                      <span>Ulsavam: {annualCalendar.ulsavamBox.gregorianDates}</span>
+                    </div>
                   </div>
                 </div>
               </div>

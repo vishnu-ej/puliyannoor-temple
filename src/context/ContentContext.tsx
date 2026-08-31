@@ -17,8 +17,8 @@ import { DEFAULT_ANNUAL_CALENDAR } from '../data/annualCalendar';
 export const DEFAULT_COUNTDOWN_CONFIG: FestivalCountdownConfig = {
   targetDate: '2027-02-28T04:00',
   eyebrow: {
-    en: 'Next Major Festival Countdown',
-    ml: 'അടുത്ത പ്രധാന ക്ഷേത്ര ഉത്സവം',
+    en: 'Upcoming 2027 Festival: Feb 28 – Mar 07, 2027 (Kumbham 16 – 23)',
+    ml: 'അടുത്ത വാർഷിക തിരുവുത്സവം: 2027 ഫെബ്രുവരി 28 – മാർച്ച് 07 (കുംഭം 16 – 23)',
   },
   title: {
     en: '2027 Annual Temple Festival',
