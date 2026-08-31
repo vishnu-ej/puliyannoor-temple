@@ -186,9 +186,14 @@ export const Header: React.FC = () => {
             {/* Profile / Admin Button (Desktop) */}
             {isAdminSession || pathname.startsWith('/admin') ? (
               <Link
-                href="/admin"
+                href="/admin?tab=profile"
+                onClick={() => {
+                  if (pathname.startsWith('/admin')) {
+                    window.dispatchEvent(new CustomEvent('admin-switch-tab', { detail: 'profile' }));
+                  }
+                }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-br from-[#610C1B] to-[#38050E] border-2 border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-xs shadow-md hover:scale-105 transition-transform flex-shrink-0 cursor-pointer"
-                title={`Puliyannoor Devaswom Admin: ${adminData?.name || 'Managing Trustee'}`}
+                title={`Puliyannoor Devaswom Admin: ${adminData?.name || 'Managing Trustee'} - Click to view Trustee Profile & System`}
               >
                 <div className="w-4 h-4 rounded-full bg-[#C99738]/30 flex items-center justify-center text-[9px] font-bold text-[#E6BE65]">
                   PT
@@ -244,8 +249,13 @@ export const Header: React.FC = () => {
               {/* Profile Link in Mobile Menu */}
               {isAdminSession || pathname.startsWith('/admin') ? (
                 <Link
-                  href="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
+                  href="/admin?tab=profile"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (pathname.startsWith('/admin')) {
+                      window.dispatchEvent(new CustomEvent('admin-switch-tab', { detail: 'profile' }));
+                    }
+                  }}
                   className="flex items-center justify-between p-3.5 rounded-2xl bg-[#610C1B]/10 border border-[#610C1B]/20 mb-3"
                 >
                   <div className="flex items-center gap-3">
@@ -256,7 +266,7 @@ export const Header: React.FC = () => {
                       <span className="font-bold text-xs text-[#38050E] block">
                         Admin Portal ({adminData?.username || 'PDTemple'})
                       </span>
-                      <span className="text-[10px] text-[#8C6219]">Devaswom Management Active</span>
+                      <span className="text-[10px] text-[#8C6219]">Trustee Profile & System Settings</span>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-[#610C1B]" />

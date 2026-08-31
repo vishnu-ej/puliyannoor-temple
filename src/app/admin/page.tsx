@@ -386,6 +386,36 @@ export default function AdminPage() {
         } catch {}
       }
     }
+
+    const handleCheckTab = () => {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const tabParam = params.get('tab');
+        if (
+          tabParam === 'profile' ||
+          tabParam === 'chats' ||
+          tabParam === 'offerings' ||
+          tabParam === 'festivals' ||
+          tabParam === 'contacts'
+        ) {
+          setActiveTab(tabParam as any);
+        }
+      }
+    };
+
+    handleCheckTab();
+
+    const handleSwitchTab = (e: any) => {
+      if (e.detail) {
+        setActiveTab(e.detail);
+      }
+    };
+    window.addEventListener('admin-switch-tab', handleSwitchTab);
+    window.addEventListener('popstate', handleCheckTab);
+    return () => {
+      window.removeEventListener('admin-switch-tab', handleSwitchTab);
+      window.removeEventListener('popstate', handleCheckTab);
+    };
   }, []);
 
   useEffect(() => {
@@ -838,14 +868,6 @@ export default function AdminPage() {
                 ({activeRole === 'super_admin' ? 'Simulate Staff' : 'Switch Super Admin'})
               </button>
             </div>
-
-            <button
-              onClick={() => setActiveTab('profile')}
-              className="w-8 h-8 rounded-full bg-[#610C1B] text-[#E6BE65] font-bold text-xs flex items-center justify-center shadow cursor-pointer border border-[#C99738]"
-              title="Admin Profile"
-            >
-              PT
-            </button>
           </div>
         </header>
 
