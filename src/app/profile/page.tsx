@@ -13,6 +13,9 @@ import {
   sendChatMessageToSupabase,
   resetDevoteePasswordViaSupabase,
   sendPasswordResetEmailViaSupabase,
+  generateAndSendOtp,
+  verifyOtpCode,
+  resetPasswordWithVerifiedOtp,
   DbBooking,
   DbChatMessage,
 } from '../../lib/supabaseDb';
@@ -336,6 +339,83 @@ function ProfileContent() {
       showToast('Reset email sent! Check your inbox.');
     } else {
       setPasswordStatusMsg({ text: result.message, isError: true });
+    }
+  };
+
+  // Devotee OTP Reset Modal State
+  const [isOtpResetModalOpen, setIsOtpResetModalOpen] = useState(false);
+  const [profileOtpCode, setProfileOtpCode] = useState('');
+  const [profileOtpNewPass, setProfileOtpNewPass] = useState('');
+  const [profileOtpConfirmPass, setProfileOtpConfirmPass] = useState('');
+  const [profileOtpStep, setProfileOtpStep] = useState<'request' | 'verify'>('request');
+  const [profileOtpError, setProfileOtpError] = useState('');
+  const [profileOtpSuccess, setProfileOtpSuccess] = useState('');
+  const [isSendingProfileOtp, setIsSendingProfileOtp] = useState(false);
+  const [profileOtpTimer, setProfileOtpTimer] = useState(0);
+
+  useEffect(() => {
+    if (profileOtpTimer > 0) {
+      const t = setTimeout(() => setProfileOtpTimer(profileOtpTimer - 1), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [profileOtpTimer]);
+
+  const handleSendProfileOtp = async () => {
+    if (!currentUser?.email) return;
+    setProfileOtpError('');
+    setProfileOtpSuccess('');
+    setIsSendingProfileOtp(true);
+    const res = generateAndSendOtp(currentUser.email);
+    setIsSendingProfileOtp(false);
+    if (res.success) {
+      setProfileOtpSuccess(res.message);
+      setProfileOtpStep('verify');
+      setProfileOtpTimer(60);
+    } else {
+      setProfileOtpError('Failed to send OTP code.');
+    }
+  };
+
+  const handleVerifyAndResetDevoteePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser?.email) return;
+    setProfileOtpError('');
+    setProfileOtpSuccess('');
+
+    if (!profileOtpCode.trim() || profileOtpCode.trim().length !== 6) {
+      setProfileOtpError('Please enter the 6-digit OTP code');
+      return;
+    }
+
+    if (profileOtpNewPass !== profileOtpConfirmPass) {
+      setProfileOtpError('New password and confirm password do not match');
+      return;
+    }
+
+    if (profileOtpNewPass.length < 6) {
+      setProfileOtpError('Password must be at least 6 characters long');
+      return;
+    }
+
+    const verifyRes = verifyOtpCode(currentUser.email, profileOtpCode);
+    if (!verifyRes.success) {
+      setProfileOtpError(verifyRes.message || 'Invalid OTP code');
+      return;
+    }
+
+    const resetRes = await resetPasswordWithVerifiedOtp(currentUser.email, profileOtpNewPass, false);
+    if (resetRes.success) {
+      setProfileOtpSuccess(resetRes.message);
+      showToast('Password reset successfully via OTP!');
+      setTimeout(() => {
+        setIsOtpResetModalOpen(false);
+        setProfileOtpStep('request');
+        setProfileOtpCode('');
+        setProfileOtpNewPass('');
+        setProfileOtpConfirmPass('');
+      }, 2000);
+    } else {
+      setProfileOtpError(resetRes.message);
     }
   };
 
@@ -1231,24 +1311,40 @@ function ProfileContent() {
                   <p className="text-xs text-[#5A382A] leading-relaxed">
                     Prefer to reset via a secure one-time link sent to <strong>{currentUser.email}</strong>?
                   </p>
-                  <button
-                    type="button"
-                    onClick={handleSendResetEmail}
-                    disabled={isSendingResetEmail}
-                    className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] font-bold text-xs border border-[#C99738] shadow-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                  >
-                    {isSendingResetEmail ? (
-                      <>
-                        <Clock className="w-3.5 h-3.5 animate-spin text-[#610C1B]" />
-                        <span>Sending Link...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-3.5 h-3.5 text-[#610C1B]" />
-                        <span>Send Reset Link to Email</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="space-y-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsOtpResetModalOpen(true);
+                        setProfileOtpStep('request');
+                        setProfileOtpError('');
+                        setProfileOtpSuccess('');
+                      }}
+                      className="w-full py-2.5 px-4 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white font-bold text-xs shadow-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <Key className="w-3.5 h-3.5 text-[#E6BE65]" />
+                      <span>Forgot Current Password? Reset via OTP</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleSendResetEmail}
+                      disabled={isSendingResetEmail}
+                      className="w-full py-2 px-4 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] font-bold text-xs border border-[#C99738] shadow-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    >
+                      {isSendingResetEmail ? (
+                        <>
+                          <Clock className="w-3.5 h-3.5 animate-spin text-[#610C1B]" />
+                          <span>Sending Link...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5 text-[#610C1B]" />
+                          <span>Send Reset Link to Email</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1873,6 +1969,159 @@ function ProfileContent() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ----------------------------------------------------------------- */}
+        {/* MODAL: DEVOTEE PASSWORD RESET WITH OTP VERIFICATION */}
+        {/* ----------------------------------------------------------------- */}
+        {isOtpResetModalOpen && (
+          <div
+            onClick={() => setIsOtpResetModalOpen(false)}
+            className="fixed inset-0 z-50 bg-[#1A0409]/80 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-[#C99738] space-y-4 animate-scaleUp text-left"
+            >
+              <div className="flex items-center justify-between border-b border-[#E4D5AE] pb-3">
+                <div className="flex items-center gap-2">
+                  <Key className="w-5 h-5 text-[#610C1B]" />
+                  <h3 className="font-cinzel font-bold text-base text-[#38050E]">
+                    Password Recovery (OTP)
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setIsOtpResetModalOpen(false)}
+                  className="text-[#8C6219] hover:text-[#610C1B] cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {profileOtpError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-semibold">
+                  {profileOtpError}
+                </div>
+              )}
+
+              {profileOtpSuccess && (
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-semibold">
+                  {profileOtpSuccess}
+                </div>
+              )}
+
+              {profileOtpStep === 'request' ? (
+                <div className="space-y-4 text-xs">
+                  <p className="text-[#5A382A] leading-relaxed">
+                    We will send a 6-digit verification OTP code to your registered email address <strong>{currentUser.email}</strong>.
+                  </p>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsOtpResetModalOpen(false)}
+                      className="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSendProfileOtp}
+                      disabled={isSendingProfileOtp}
+                      className="flex-1 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] disabled:opacity-75 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                    >
+                      {isSendingProfileOtp ? (
+                        <>
+                          <Clock className="w-3.5 h-3.5 animate-spin text-[#E6BE65]" />
+                          <span>Sending OTP...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5 text-[#E6BE65]" />
+                          <span>Send 6-Digit OTP</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleVerifyAndResetDevoteePassword} className="space-y-3.5 text-xs">
+                  <div>
+                    <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
+                      Enter 6-Digit OTP Code *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      maxLength={6}
+                      placeholder="Enter 6-digit OTP"
+                      value={profileOtpCode}
+                      onChange={(e) => setProfileOtpCode(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border-2 border-[#C99738] bg-white text-center font-mono font-bold text-lg tracking-widest text-[#610C1B] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                    />
+                    <div className="flex items-center justify-between mt-1 text-[11px]">
+                      <span className="text-[#8C6219]">Sent to {currentUser.email}</span>
+                      <button
+                        type="button"
+                        disabled={profileOtpTimer > 0}
+                        onClick={handleSendProfileOtp}
+                        className="text-[#610C1B] font-bold hover:underline disabled:opacity-50 cursor-pointer"
+                      >
+                        {profileOtpTimer > 0 ? `Resend OTP in ${profileOtpTimer}s` : 'Resend OTP'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
+                      New Password *
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      placeholder="Enter new password"
+                      value={profileOtpNewPass}
+                      onChange={(e) => setProfileOtpNewPass(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-[#8C6219] mb-1 font-cinzel uppercase">
+                      Confirm New Password *
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      placeholder="Confirm new password"
+                      value={profileOtpConfirmPass}
+                      onChange={(e) => setProfileOtpConfirmPass(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setProfileOtpStep('request')}
+                      className="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold cursor-pointer"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#E6BE65]" />
+                      <span>Verify & Update Password</span>
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         )}

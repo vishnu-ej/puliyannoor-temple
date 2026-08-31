@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { MuralDivider } from './MuralDivider';
 import { LiveStatusBadge } from './LiveStatusBadge';
 import { AudioPlayer } from './AudioPlayer';
-import { Menu, X, Sparkles, ChevronRight, PhoneCall, User, LogOut } from 'lucide-react';
+import { Menu, X, Sparkles, ChevronRight, PhoneCall, User, LogOut, ShieldCheck } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
@@ -16,6 +16,22 @@ export const Header: React.FC = () => {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAdminSession, setIsAdminSession] = useState(false);
+  const [adminData, setAdminData] = useState<{ username?: string; name?: string; role?: string } | null>(null);
+
+  useEffect(() => {
+    const updateAdminStatus = () => {
+      const isAuth = sessionStorage.getItem('puliyannoor_admin_session') === 'true';
+      const user = sessionStorage.getItem('puliyannoor_admin_user');
+      setIsAdminSession(isAuth);
+      if (user) {
+        try {
+          setAdminData(JSON.parse(user));
+        } catch {}
+      }
+    };
+    updateAdminStatus();
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -167,8 +183,19 @@ export const Header: React.FC = () => {
               </button>
             </div>
 
-            {/* Devotee Profile Round Icon / Sign In CTA (Desktop) */}
-            {isAuthenticated && currentUser ? (
+            {/* Profile / Admin Button (Desktop) */}
+            {isAdminSession || pathname.startsWith('/admin') ? (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-br from-[#610C1B] to-[#38050E] border-2 border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-xs shadow-md hover:scale-105 transition-transform flex-shrink-0 cursor-pointer"
+                title={`Puliyannoor Devaswom Admin: ${adminData?.name || 'Managing Trustee'}`}
+              >
+                <div className="w-4 h-4 rounded-full bg-[#C99738]/30 flex items-center justify-center text-[9px] font-bold text-[#E6BE65]">
+                  PT
+                </div>
+                <span className="hidden sm:inline text-[11px] font-bold">Admin ({adminData?.username || 'PDTemple'})</span>
+              </Link>
+            ) : isAuthenticated && currentUser ? (
               <Link
                 href="/profile"
                 className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-[#610C1B] to-[#38050E] border-2 border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-xs flex items-center justify-center shadow-md hover:scale-105 transition-transform flex-shrink-0 cursor-pointer"
@@ -214,8 +241,27 @@ export const Header: React.FC = () => {
         <div className="lg:hidden fixed inset-0 top-[88px] sm:top-[94px] bg-[#1A0409]/60 backdrop-blur-sm z-40 animate-fadeIn">
           <div className="bg-[#FAF5E8] border-b border-[#C99738]/40 shadow-2xl p-4 sm:p-6 max-h-[calc(100vh-94px)] overflow-y-auto animate-slideDown">
             <div className="space-y-1">
-              {/* Devotee Profile Link in Mobile Menu */}
-              {isAuthenticated && currentUser ? (
+              {/* Profile Link in Mobile Menu */}
+              {isAdminSession || pathname.startsWith('/admin') ? (
+                <Link
+                  href="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between p-3.5 rounded-2xl bg-[#610C1B]/10 border border-[#610C1B]/20 mb-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-[#610C1B] text-[#E6BE65] font-cinzel font-bold text-xs flex items-center justify-center border border-[#C99738]">
+                      PT
+                    </div>
+                    <div>
+                      <span className="font-bold text-xs text-[#38050E] block">
+                        Admin Portal ({adminData?.username || 'PDTemple'})
+                      </span>
+                      <span className="text-[10px] text-[#8C6219]">Devaswom Management Active</span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-[#610C1B]" />
+                </Link>
+              ) : isAuthenticated && currentUser ? (
                 <Link
                   href="/profile"
                   onClick={() => setMobileMenuOpen(false)}

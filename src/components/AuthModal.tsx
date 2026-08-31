@@ -20,7 +20,14 @@ import {
   ArrowLeft,
   KeyRound,
   ShieldCheck,
+  Send,
+  Clock,
 } from 'lucide-react';
+import {
+  generateAndSendOtp,
+  verifyOtpCode,
+  resetPasswordWithVerifiedOtp,
+} from '../lib/supabaseDb';
 
 export const AuthModal: React.FC = () => {
   const {
@@ -68,13 +75,100 @@ export const AuthModal: React.FC = () => {
   const [signupStep2Error, setSignupStep2Error] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
 
+  // Devotee Forgot Password State
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [forgotNewPass, setForgotNewPass] = useState('');
+  const [forgotConfirmPass, setForgotConfirmPass] = useState('');
+  const [forgotShowPass, setForgotShowPass] = useState(false);
+  const [forgotStep, setForgotStep] = useState<'email' | 'otp_pass'>('email');
+  const [forgotError, setForgotError] = useState('');
+  const [forgotSuccess, setForgotSuccess] = useState('');
+  const [isSendingDevoteeOtp, setIsSendingDevoteeOtp] = useState(false);
+  const [forgotDevoteeTimer, setForgotDevoteeTimer] = useState(0);
+
   // Reset errors when modal opens or tab changes
   useEffect(() => {
     setLoginEmailError('');
     setLoginGeneralError('');
     setSignupStep1Error('');
     setSignupStep2Error('');
+    setForgotError('');
+    setForgotSuccess('');
   }, [authModalTab, isAuthModalOpen]);
+
+  // Handle countdown for devotee forgot password resend OTP
+  useEffect(() => {
+    if (forgotDevoteeTimer > 0) {
+      const timer = setTimeout(() => setForgotDevoteeTimer(forgotDevoteeTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [forgotDevoteeTimer]);
+
+  const handleSendDevoteeForgotOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotError('');
+    setForgotSuccess('');
+
+    if (!isValidEmail(forgotEmail)) {
+      setForgotError('Please enter a valid registered email address');
+      return;
+    }
+
+    setIsSendingDevoteeOtp(true);
+    const res = generateAndSendOtp(forgotEmail);
+    setIsSendingDevoteeOtp(false);
+
+    if (res.success) {
+      setForgotSuccess(res.message);
+      setForgotStep('otp_pass');
+      setForgotDevoteeTimer(60);
+    } else {
+      setForgotError('Failed to send OTP code. Please try again.');
+    }
+  };
+
+  const handleResetDevoteePasswordWithOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotError('');
+    setForgotSuccess('');
+
+    if (!forgotOtp.trim() || forgotOtp.trim().length !== 6) {
+      setForgotError('Please enter the 6-digit OTP code sent to your email');
+      return;
+    }
+
+    if (forgotNewPass !== forgotConfirmPass) {
+      setForgotError('New password and confirm password do not match');
+      return;
+    }
+
+    if (forgotNewPass.length < 6) {
+      setForgotError('Password must be at least 6 characters long');
+      return;
+    }
+
+    const verifyRes = verifyOtpCode(forgotEmail, forgotOtp);
+    if (!verifyRes.success) {
+      setForgotError(verifyRes.message || 'Invalid OTP code');
+      return;
+    }
+
+    const resetRes = await resetPasswordWithVerifiedOtp(forgotEmail, forgotNewPass, false);
+    if (resetRes.success) {
+      setForgotSuccess(resetRes.message + ' You can now sign in with your new password.');
+      setTimeout(() => {
+        setAuthModalTab('login');
+        setLoginEmail(forgotEmail);
+        setForgotStep('email');
+        setForgotOtp('');
+        setForgotNewPass('');
+        setForgotConfirmPass('');
+      }, 2500);
+    } else {
+      setForgotError(resetRes.message);
+    }
+  };
 
   // Handle countdown for resend OTP
   useEffect(() => {
@@ -250,11 +344,13 @@ export const AuthModal: React.FC = () => {
             {authModalTab === 'login' && 'Devotee Sign In'}
             {authModalTab === 'signup_step1' && 'Create Devotee Account'}
             {authModalTab === 'signup_step2' && 'Complete Profile & Verify'}
+            {authModalTab === 'forgot_password' && 'Password Recovery (OTP)'}
           </h2>
           <p className="text-xs text-[#5A382A] mt-0.5">
             {authModalTab === 'login' && 'Access Vazhipadu bookings, history & direct temple chat'}
             {authModalTab === 'signup_step1' && 'Step 1 of 2: Set your login credentials'}
             {authModalTab === 'signup_step2' && 'Step 2 of 2: Personal details & email OTP confirmation'}
+            {authModalTab === 'forgot_password' && 'Verify your registered email with a 6-digit OTP code to set a new password'}
           </p>
         </div>
 
@@ -335,6 +431,19 @@ export const AuthModal: React.FC = () => {
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] font-cinzel">
                     Password *
                   </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotEmail(loginEmail);
+                      setForgotStep('email');
+                      setForgotError('');
+                      setForgotSuccess('');
+                      setAuthModalTab('forgot_password');
+                    }}
+                    className="text-[11px] font-bold text-[#610C1B] hover:text-[#8B1428] hover:underline cursor-pointer"
+                  >
+                    Forgot Password?
+                  </button>
                 </div>
                 <div className="relative">
                   <Lock className="w-4 h-4 text-[#8C6219] absolute left-3 top-3 pointer-events-none" />
@@ -736,6 +845,175 @@ export const AuthModal: React.FC = () => {
               </button>
             </div>
           </form>
+        )}
+
+        {/* ================================================================= */}
+        {/* 4. FORGOT PASSWORD (OTP VERIFICATION & RESET) INTERFACE */}
+        {/* ================================================================= */}
+        {authModalTab === 'forgot_password' && (
+          <div className="space-y-4">
+            {forgotError && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2 font-medium">
+                <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                <span>{forgotError}</span>
+              </div>
+            )}
+
+            {forgotSuccess && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <span>{forgotSuccess}</span>
+              </div>
+            )}
+
+            {forgotStep === 'email' ? (
+              <form onSubmit={handleSendDevoteeForgotOtp} className="space-y-3.5">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
+                    Registered Email Address *
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-[#8C6219] absolute left-3 top-3 pointer-events-none" />
+                    <input
+                      type="email"
+                      required
+                      placeholder="devotee@example.com"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setAuthModalTab('login')}
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-white hover:bg-[#FAF5E8] border border-[#E4D5AE] text-xs font-bold text-[#5A382A] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Back to Login</span>
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSendingDevoteeOtp}
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 disabled:opacity-75 text-white text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    {isSendingDevoteeOtp ? (
+                      <>
+                        <Clock className="w-3.5 h-3.5 animate-spin text-[#E6BE65]" />
+                        <span>Sending OTP...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5 text-[#E6BE65]" />
+                        <span>Send 6-Digit OTP</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleResetDevoteePasswordWithOtp} className="space-y-3.5">
+                {/* OTP Input */}
+                <div className="p-3 bg-white rounded-2xl border border-[#E4D5AE] space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] font-cinzel">
+                      Enter 6-Digit OTP *
+                    </label>
+                    {forgotDevoteeTimer > 0 ? (
+                      <span className="text-[10px] text-gray-500 font-medium">Resend in {forgotDevoteeTimer}s</span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleSendDevoteeForgotOtp}
+                        className="text-[10px] font-bold text-[#610C1B] hover:underline cursor-pointer"
+                      >
+                        Resend OTP
+                      </button>
+                    )}
+                  </div>
+
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    placeholder="Enter 6-digit code"
+                    value={forgotOtp}
+                    onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className="w-full px-3.5 py-2 rounded-xl border border-[#E4D5AE] bg-[#FAF5E8]/40 text-center font-mono font-bold text-base tracking-widest text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                  />
+                  <span className="text-[10px] text-[#8C6219] block text-center">
+                    Sent to: <strong>{forgotEmail}</strong>
+                  </span>
+                </div>
+
+                {/* New Password */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
+                    New Password *
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-[#8C6219] absolute left-3 top-3 pointer-events-none" />
+                    <input
+                      type={forgotShowPass ? 'text' : 'password'}
+                      required
+                      minLength={6}
+                      placeholder="Min 6 characters"
+                      value={forgotNewPass}
+                      onChange={(e) => setForgotNewPass(e.target.value)}
+                      className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setForgotShowPass(!forgotShowPass)}
+                      className="absolute right-3 top-3 text-[#8C6219] hover:text-[#610C1B]"
+                    >
+                      {forgotShowPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Confirm New Password */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
+                    Confirm New Password *
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-[#8C6219] absolute left-3 top-3 pointer-events-none" />
+                    <input
+                      type={forgotShowPass ? 'text' : 'password'}
+                      required
+                      minLength={6}
+                      placeholder="Re-enter new password"
+                      value={forgotConfirmPass}
+                      onChange={(e) => setForgotConfirmPass(e.target.value)}
+                      className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                    />
+                  </div>
+                </div>
+
+                {/* Bottom Actions */}
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep('email')}
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-white hover:bg-[#FAF5E8] border border-[#E4D5AE] text-xs font-bold text-[#5A382A] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Change Email</span>
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#E6BE65]" />
+                    <span>Reset Password</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
         )}
       </div>
     </div>

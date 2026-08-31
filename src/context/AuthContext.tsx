@@ -34,11 +34,11 @@ interface AuthContextType {
   currentUser: UserProfile | null;
   isAuthenticated: boolean;
   isAuthModalOpen: boolean;
-  authModalTab: 'login' | 'signup_step1' | 'signup_step2' | 'signup_otp';
+  authModalTab: 'login' | 'signup_step1' | 'signup_step2' | 'signup_otp' | 'forgot_password';
   redirectAfterAuth: string | null;
-  openAuthModal: (tab?: 'login' | 'signup_step1', redirectUrl?: string) => void;
+  openAuthModal: (tab?: 'login' | 'signup_step1' | 'forgot_password', redirectUrl?: string) => void;
   closeAuthModal: () => void;
-  setAuthModalTab: (tab: 'login' | 'signup_step1' | 'signup_step2' | 'signup_otp') => void;
+  setAuthModalTab: (tab: 'login' | 'signup_step1' | 'signup_step2' | 'signup_otp' | 'forgot_password') => void;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   startSignupStep1: (email: string, password: string) => void;
@@ -72,7 +72,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState<'login' | 'signup_step1' | 'signup_step2' | 'signup_otp'>('login');
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'signup_step1' | 'signup_step2' | 'signup_otp' | 'forgot_password'>('login');
   const [redirectAfterAuth, setRedirectAfterAuth] = useState<string | null>(null);
   const [pendingSignupData, setPendingSignupData] = useState<PendingSignupData | null>(null);
   const [generatedOtp, setGeneratedOtp] = useState<string>('123456');
@@ -160,7 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const openAuthModal = (tab: 'login' | 'signup_step1' = 'login', redirectUrl?: string) => {
+  const openAuthModal = (tab: 'login' | 'signup_step1' | 'forgot_password' = 'login', redirectUrl?: string) => {
     setAuthModalTab(tab);
     if (redirectUrl) {
       setRedirectAfterAuth(redirectUrl);
