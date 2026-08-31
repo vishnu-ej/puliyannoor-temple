@@ -199,8 +199,8 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
           .grid-columns {
             display: grid;
             grid-template-columns: 42% 31% 27%;
-            gap: 4px;
-            align-items: start;
+            gap: 4.5px;
+            align-items: stretch;
           }
           .col-card {
             background: #ffffff;
@@ -208,19 +208,26 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             border-radius: 5px;
             overflow: hidden;
           }
+          .col-3-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+          }
           .col-header {
             background: #002244;
             color: #ffffff;
             text-align: center;
             font-size: 10.5px;
             font-weight: 800;
-            padding: 2.5px 2px;
+            padding: 3px 2px;
             font-family: 'Gayathri', sans-serif;
           }
           table {
             width: 100%;
             border-collapse: collapse;
             font-size: 8px;
+            table-layout: fixed;
           }
           thead tr {
             background: #E60000;
@@ -229,14 +236,16 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             font-size: 7.5px;
           }
           th {
-            padding: 1px 1.5px;
+            padding: 2px 1.5px;
             text-align: center;
+            vertical-align: middle;
             border: 0.5px solid rgba(255,255,255,0.3);
           }
           td {
-            padding: 1px 1.5px;
+            padding: 1.5px 2px;
             border-bottom: 0.5px solid #E4D5AE;
-            line-height: 1.1;
+            vertical-align: middle;
+            line-height: 1.15;
           }
           tr:nth-child(even) {
             background: #FFF9EE;
@@ -252,7 +261,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             background: #1F4E34;
             color: #ffffff;
             border-radius: 5px;
-            padding: 3px 4px;
+            padding: 3.5px 4px;
             text-align: center;
             border: 1.5px solid #C99738;
             margin-top: 3px;
@@ -260,7 +269,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
           .pooja-title {
             color: #E6BE65;
             font-weight: 800;
-            font-size: 9px;
+            font-size: 9.5px;
             margin-bottom: 1px;
             font-family: 'Gayathri', sans-serif;
           }
@@ -272,24 +281,30 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
           }
           .bank-card {
             background: #E8F4FD;
-            border: 1px solid #003366;
+            border: 1.5px solid #003366;
             border-radius: 5px;
-            padding: 2.5px 3px;
-            margin-top: 3px;
-            font-size: 7px;
+            padding: 5px 6px;
+            margin-top: 3.5px;
+            font-size: 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
           }
           .bank-flex {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 2px;
+            gap: 4px;
           }
           .bank-qr {
-            width: 26px;
-            height: 26px;
-            border: 0.5px solid #003366;
+            width: 48px;
+            height: 48px;
+            border: 1px solid #003366;
             background: #fff;
-            padding: 1px;
+            padding: 1.5px;
+            border-radius: 4px;
+            flex-shrink: 0;
           }
           .ulsavam-banner {
             margin-top: 4px;
@@ -346,12 +361,18 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             <div class="col-card">
               <div class="col-header">പ്രധാന വിശേഷ ദിവസങ്ങൾ</div>
               <table>
+                <colgroup>
+                  <col style="width: 22%;" />
+                  <col style="width: 23%;" />
+                  <col style="width: 17%;" />
+                  <col style="width: 38%;" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>മലയാളം</th>
                     <th>ഇംഗ്ലീഷ്</th>
                     <th>ദിവസം</th>
-                    <th class="text-left">വിശേഷം</th>
+                    <th class="text-left" style="padding-left: 3px;">വിശേഷം</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -359,8 +380,8 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                     <tr>
                       <td class="text-center nowrap font-bold text-navy">${r.malayalamMonthDate}</td>
                       <td class="text-center nowrap font-bold text-maroon">${r.englishMonthDate}</td>
-                      <td class="text-center nowrap">${r.dayOfWeek}</td>
-                      <td class="text-left font-bold text-red">${r.vishesham}</td>
+                      <td class="text-center nowrap">${(r.id === 'vd_1' && (r.dayOfWeek === 'ത' || r.dayOfWeek === 'തി')) ? 'തിങ്കൾ' : r.dayOfWeek}</td>
+                      <td class="text-left font-bold text-red" style="padding-left: 3px;">${r.vishesham}</td>
                     </tr>
                   `).join('')}
                 </tbody>
@@ -371,6 +392,11 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
             <div class="col-card">
               <div class="col-header">പ്രദോഷം</div>
               <table>
+                <colgroup>
+                  <col style="width: 36%;" />
+                  <col style="width: 38%;" />
+                  <col style="width: 26%;" />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>മലയാളം</th>
@@ -390,11 +416,16 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
               </table>
             </div>
 
-            <!-- Col 3: Samkramam + Pooja + Bank -->
-            <div>
+            <!-- Col 3: Samkramam + Pooja + Bank (Stretched till bottom) -->
+            <div class="col-3-container">
               <div class="col-card">
                 <div class="col-header">സംക്രമം</div>
                 <table>
+                  <colgroup>
+                    <col style="width: 34%;" />
+                    <col style="width: 34%;" />
+                    <col style="width: 32%;" />
+                  </colgroup>
                   <thead>
                     <tr>
                       <th>മാസം</th>
@@ -421,18 +452,19 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                 <p class="pooja-text">${annualCalendar.poojaTimings.evening}</p>
               </div>
 
-              <!-- Bank Info -->
+              <!-- Bank Info (Enlarged & Stretched till bottom) -->
               <div class="bank-card">
                 <div class="bank-flex">
-                  <div>
-                    <strong style="color:#002244; font-size:7.5px; text-transform:uppercase;">${annualCalendar.bankInfo.bankName}</strong><br/>
-                    <span style="color:#5A382A; font-size:6.5px;">${annualCalendar.bankInfo.branch}</span>
+                  <div style="line-height: 1.25;">
+                    <strong style="color:#002244; font-size:9.5px; text-transform:uppercase; font-family:'Cinzel', serif; letter-spacing:0.5px; display:block;">${annualCalendar.bankInfo.bankName}</strong>
+                    <span style="color:#5A382A; font-size:8px; font-weight:700; display:block;">${annualCalendar.bankInfo.branch}</span>
+                    <span style="color:#38050E; font-size:7px; opacity:0.85; display:block; margin-top:1px;">Managing Trustee & Treasurer<br/>Puliyannoor Devaswom</span>
                   </div>
-                  <img src="/temple-qr-code.png" class="bank-qr" alt="QR" />
+                  <img src="/temple-qr-code.png" class="bank-qr" alt="Devaswom UPI QR" />
                 </div>
-                <div style="margin-top:2px; padding-top:2px; border-top:0.5px solid rgba(0,51,102,0.2); line-height: 1.1;">
-                  <span><strong>A/c:</strong> ${annualCalendar.bankInfo.accountNo}</span><br/>
-                  <span><strong>IFSC:</strong> ${annualCalendar.bankInfo.ifsc}</span>
+                <div style="margin-top:4px; padding-top:3px; border-top:1px solid rgba(0,51,102,0.25); line-height: 1.3; font-family:monospace; font-size:8px; color:#002244;">
+                  <div><strong style="font-family:'Manjari', sans-serif; color:#610C1B;">A/c No:</strong> <span style="font-weight:700; letter-spacing:0.5px;">${annualCalendar.bankInfo.accountNo}</span></div>
+                  <div><strong style="font-family:'Manjari', sans-serif; color:#610C1B;">IFSC:</strong> <span style="font-weight:700; letter-spacing:0.5px;">${annualCalendar.bankInfo.ifsc}</span></div>
                 </div>
               </div>
             </div>
@@ -578,23 +610,23 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
               </div>
 
               {/* 3 Parallel Columns Grid with Semantic Tables */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
                 {/* --------------------------------------------------------- */}
                 {/* COLUMN 1: പ്രധാന വിശേഷ ദിവസങ്ങൾ (Vishesha Divasangal)     */}
                 {/* --------------------------------------------------------- */}
-                <div className="lg:col-span-5 bg-white rounded-xl border border-[#003366]/40 shadow-xs overflow-hidden">
-                  <div className="bg-[#002244] text-white text-center py-2 px-3 font-malayalam-heading font-bold text-xs sm:text-sm tracking-wide">
+                <div className="lg:col-span-5 bg-white rounded-xl border-2 border-[#003366]/40 shadow-xs overflow-hidden flex flex-col">
+                  <div className="bg-[#002244] text-white text-center py-2.5 px-3 font-malayalam-heading font-bold text-xs sm:text-sm tracking-wide flex-shrink-0">
                     പ്രധാന വിശേഷ ദിവസങ്ങൾ
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-[10px] sm:text-[11px] border-collapse">
+                  <div className="overflow-x-auto flex-1">
+                    <table className="w-full text-[10px] sm:text-[11px] border-collapse h-full">
                       <thead>
                         <tr className="bg-[#E60000] text-white text-[10px] sm:text-[11px] font-bold">
-                          <th className="py-1 px-1.5 text-center font-bold">മലയാളം</th>
-                          <th className="py-1 px-1.5 text-center font-bold">ഇംഗ്ലീഷ്</th>
-                          <th className="py-1 px-1 text-center font-bold">ദിവസം</th>
-                          <th className="py-1 px-2 text-left font-bold">വിശേഷം</th>
+                          <th className="py-1.5 px-1.5 text-center align-middle font-bold w-[22%]">മലയാളം</th>
+                          <th className="py-1.5 px-1.5 text-center align-middle font-bold w-[23%]">ഇംഗ്ലീഷ്</th>
+                          <th className="py-1.5 px-1 text-center align-middle font-bold w-[17%]">ദിവസം</th>
+                          <th className="py-1.5 px-2 text-left align-middle font-bold w-[38%]">വിശേഷം</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#E4D5AE]/70 font-medium">
@@ -603,16 +635,16 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                             key={row.id || idx}
                             className={idx % 2 === 0 ? 'bg-white' : 'bg-[#FFF9EE]'}
                           >
-                            <td className="py-1.5 px-1.5 font-bold text-[#002244] font-malayalam-sans text-center whitespace-nowrap">
+                            <td className="py-1.5 px-1.5 font-bold text-[#002244] font-malayalam-sans text-center align-middle whitespace-nowrap">
                               {row.malayalamMonthDate}
                             </td>
-                            <td className="py-1.5 px-1.5 font-semibold text-[#610C1B] text-center whitespace-nowrap">
+                            <td className="py-1.5 px-1.5 font-semibold text-[#610C1B] text-center align-middle whitespace-nowrap">
                               {row.englishMonthDate}
                             </td>
-                            <td className="py-1.5 px-1 text-center text-[#1A0409] whitespace-nowrap">
-                              {row.dayOfWeek}
+                            <td className="py-1.5 px-1 text-center align-middle text-[#1A0409] whitespace-nowrap">
+                              {(row.id === 'vd_1' && (row.dayOfWeek === 'ത' || row.dayOfWeek === 'തി')) ? 'തിങ്കൾ' : row.dayOfWeek}
                             </td>
-                            <td className="py-1.5 px-2 font-bold text-[#990000] leading-tight text-left">
+                            <td className="py-1.5 px-2 font-bold text-[#990000] leading-snug text-left align-middle">
                               {row.vishesham}
                             </td>
                           </tr>
@@ -625,18 +657,18 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                 {/* --------------------------------------------------------- */}
                 {/* COLUMN 2: പ്രദോഷം (Pradosham)                            */}
                 {/* --------------------------------------------------------- */}
-                <div className="lg:col-span-4 bg-white rounded-xl border border-[#003366]/40 shadow-xs overflow-hidden">
-                  <div className="bg-[#002244] text-white text-center py-2 px-3 font-malayalam-heading font-bold text-xs sm:text-sm tracking-wide">
+                <div className="lg:col-span-4 bg-white rounded-xl border-2 border-[#003366]/40 shadow-xs overflow-hidden flex flex-col">
+                  <div className="bg-[#002244] text-white text-center py-2.5 px-3 font-malayalam-heading font-bold text-xs sm:text-sm tracking-wide flex-shrink-0">
                     പ്രദോഷം
                   </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-[10px] sm:text-[11px] border-collapse">
+                  <div className="overflow-x-auto flex-1">
+                    <table className="w-full text-[10px] sm:text-[11px] border-collapse h-full">
                       <thead>
                         <tr className="bg-[#E60000] text-white text-[10px] sm:text-[11px] font-bold">
-                          <th className="py-1 px-1.5 text-center font-bold">മലയാളം</th>
-                          <th className="py-1 px-1.5 text-center font-bold">ഇംഗ്ലീഷ്</th>
-                          <th className="py-1 px-1.5 text-center font-bold">ദിവസം</th>
+                          <th className="py-1.5 px-1.5 text-center align-middle font-bold w-[36%]">മലയാളം</th>
+                          <th className="py-1.5 px-1.5 text-center align-middle font-bold w-[38%]">ഇംഗ്ലീഷ്</th>
+                          <th className="py-1.5 px-1.5 text-center align-middle font-bold w-[26%]">ദിവസം</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#E4D5AE]/70 font-medium">
@@ -645,13 +677,13 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                             key={row.id || idx}
                             className={idx % 2 === 0 ? 'bg-white' : 'bg-[#FFF9EE]'}
                           >
-                            <td className="py-1.5 px-1.5 font-bold text-[#002244] font-malayalam-sans text-center whitespace-nowrap">
+                            <td className="py-1.5 px-1.5 font-bold text-[#002244] font-malayalam-sans text-center align-middle whitespace-nowrap">
                               {row.malayalamMonthDate}
                             </td>
-                            <td className="py-1.5 px-1.5 font-semibold text-[#610C1B] text-center whitespace-nowrap">
+                            <td className="py-1.5 px-1.5 font-semibold text-[#610C1B] text-center align-middle whitespace-nowrap">
                               {row.englishMonthDate}
                             </td>
-                            <td className="py-1.5 px-1.5 text-center text-[#1A0409] whitespace-nowrap">
+                            <td className="py-1.5 px-1.5 text-center align-middle text-[#1A0409] whitespace-nowrap">
                               {row.dayOfWeek}
                             </td>
                           </tr>
@@ -664,10 +696,10 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                 {/* --------------------------------------------------------- */}
                 {/* COLUMN 3: സംക്രമം (Samkramam) + Timings & Bank Info      */}
                 {/* --------------------------------------------------------- */}
-                <div className="lg:col-span-3 space-y-3">
+                <div className="lg:col-span-3 flex flex-col justify-between gap-3 h-full">
                   {/* Samkramam Semantic Table Card */}
-                  <div className="bg-white rounded-xl border border-[#003366]/40 shadow-xs overflow-hidden">
-                    <div className="bg-[#002244] text-white text-center py-2 px-3 font-malayalam-heading font-bold text-xs sm:text-sm tracking-wide">
+                  <div className="bg-white rounded-xl border-2 border-[#003366]/40 shadow-xs overflow-hidden">
+                    <div className="bg-[#002244] text-white text-center py-2.5 px-3 font-malayalam-heading font-bold text-xs sm:text-sm tracking-wide">
                       സംക്രമം
                     </div>
 
@@ -675,9 +707,9 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                       <table className="w-full text-[10px] sm:text-[11px] border-collapse">
                         <thead>
                           <tr className="bg-[#E60000] text-white text-[10px] font-bold">
-                            <th className="py-1 px-1.5 text-center font-bold">മാസം</th>
-                            <th className="py-1 px-1.5 text-center font-bold">തീയതി</th>
-                            <th className="py-1 px-1.5 text-center font-bold">ദിവസം</th>
+                            <th className="py-1.5 px-1.5 text-center align-middle font-bold w-[34%]">മാസം</th>
+                            <th className="py-1.5 px-1.5 text-center align-middle font-bold w-[34%]">തീയതി</th>
+                            <th className="py-1.5 px-1.5 text-center align-middle font-bold w-[32%]">ദിവസം</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[#E4D5AE]/70 font-medium">
@@ -686,13 +718,13 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                               key={row.id || idx}
                               className={idx % 2 === 0 ? 'bg-white' : 'bg-[#FFF9EE]'}
                             >
-                              <td className="py-1.5 px-1.5 font-bold text-[#002244] text-center whitespace-nowrap">
+                              <td className="py-1.5 px-1.5 font-bold text-[#002244] text-center align-middle whitespace-nowrap">
                                 {row.malayalamMonth}
                               </td>
-                              <td className="py-1.5 px-1.5 text-center font-semibold text-[#610C1B] whitespace-nowrap">
+                              <td className="py-1.5 px-1.5 text-center align-middle font-semibold text-[#610C1B] whitespace-nowrap">
                                 {row.occurringMonthDate}
                               </td>
-                              <td className="py-1.5 px-1.5 text-center text-[#1A0409] whitespace-nowrap">
+                              <td className="py-1.5 px-1.5 text-center align-middle text-[#1A0409] whitespace-nowrap">
                                 {row.dayOfWeek}
                               </td>
                             </tr>
@@ -703,32 +735,44 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                   </div>
 
                   {/* Pooja Timings Box */}
-                  <div className="bg-[#1F4E34] text-white rounded-xl p-3 text-center border-2 border-[#C99738] shadow-sm">
-                    <h4 className="font-malayalam-heading font-bold text-xs text-[#E6BE65] mb-1">
+                  <div className="bg-[#1F4E34] text-white rounded-xl p-3 text-center border-2 border-[#C99738] shadow-sm flex-shrink-0">
+                    <h4 className="font-malayalam-heading font-bold text-xs sm:text-sm text-[#E6BE65] mb-1">
                       പൂജാസമയം
                     </h4>
-                    <p className="text-[11px] font-semibold">{annualCalendar.poojaTimings.morning}</p>
-                    <p className="text-[11px] font-semibold mt-0.5">{annualCalendar.poojaTimings.evening}</p>
+                    <p className="text-xs font-semibold">{annualCalendar.poojaTimings.morning}</p>
+                    <p className="text-xs font-semibold mt-0.5">{annualCalendar.poojaTimings.evening}</p>
                   </div>
 
-                  {/* Canara Bank Info Card with QR */}
-                  <div className="bg-[#E8F4FD] rounded-xl p-2.5 border border-[#003366]/40 text-center shadow-xs">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <div className="text-left">
-                        <span className="font-bold text-[10px] text-[#002244] uppercase block">
-                          {annualCalendar.bankInfo.bankName}
-                        </span>
-                        <span className="text-[9px] text-[#5A382A] font-medium block">
-                          {annualCalendar.bankInfo.branch}
-                        </span>
-                      </div>
-                      <div className="w-8 h-8 bg-white p-0.5 rounded border border-[#003366] flex-shrink-0">
-                        <img src="/temple-qr-code.png" alt="UPI QR" className="w-full h-full object-contain" />
+                  {/* Canara Bank Info Card with Large QR - Expanded till bottom */}
+                  <div className="bg-[#E8F4FD] rounded-xl p-3.5 sm:p-4 border-2 border-[#003366]/50 shadow-sm flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between gap-3 mb-2.5">
+                        <div className="text-left space-y-0.5">
+                          <span className="font-extrabold text-xs sm:text-sm text-[#002244] uppercase tracking-wider block font-cinzel">
+                            {annualCalendar.bankInfo.bankName}
+                          </span>
+                          <span className="text-[11px] sm:text-xs text-[#5A382A] font-bold block">
+                            {annualCalendar.bankInfo.branch}
+                          </span>
+                          <span className="text-[10px] text-[#38050E]/80 font-medium block leading-tight">
+                            {annualCalendar.bankInfo.accountHolder}
+                          </span>
+                        </div>
+                        <div className="w-18 h-18 sm:w-20 sm:h-20 bg-white p-1 rounded-xl border-2 border-[#003366] shadow-sm flex-shrink-0 flex items-center justify-center">
+                          <img src="/temple-qr-code.png" alt="Devaswom UPI QR" className="w-full h-full object-contain" />
+                        </div>
                       </div>
                     </div>
-                    <div className="text-[9px] text-left text-[#002244] border-t border-[#003366]/20 pt-1">
-                      <p><strong>A/c:</strong> {annualCalendar.bankInfo.accountNo}</p>
-                      <p><strong>IFSC:</strong> {annualCalendar.bankInfo.ifsc}</p>
+
+                    <div className="text-xs text-left text-[#002244] border-t border-[#003366]/30 pt-2 space-y-1 font-mono">
+                      <p className="flex items-center justify-between">
+                        <strong className="text-[11px] font-sans font-bold text-[#610C1B]">Account No:</strong>
+                        <span className="font-bold tracking-wider">{annualCalendar.bankInfo.accountNo}</span>
+                      </p>
+                      <p className="flex items-center justify-between">
+                        <strong className="text-[11px] font-sans font-bold text-[#610C1B]">IFSC Code:</strong>
+                        <span className="font-bold tracking-wider">{annualCalendar.bankInfo.ifsc}</span>
+                      </p>
                     </div>
                   </div>
                 </div>

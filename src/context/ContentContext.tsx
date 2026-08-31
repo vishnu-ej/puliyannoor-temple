@@ -272,7 +272,15 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const savedCalendar = localStorage.getItem('puliyannoor_annual_calendar');
       if (savedCalendar) {
         const sanitized = savedCalendar.replaceAll('പുളിയ', 'പുലിയ');
-        setAnnualCalendar(JSON.parse(sanitized));
+        const parsed = JSON.parse(sanitized);
+        if (parsed.visheshaDivasangal && parsed.visheshaDivasangal.length > 0) {
+          parsed.visheshaDivasangal.forEach((vd: any) => {
+            if (vd.id === 'vd_1' && (vd.dayOfWeek === 'ത' || vd.dayOfWeek === 'തി')) {
+              vd.dayOfWeek = 'തിങ്കൾ';
+            }
+          });
+        }
+        setAnnualCalendar(parsed);
       } else {
         setAnnualCalendar(DEFAULT_ANNUAL_CALENDAR);
       }
