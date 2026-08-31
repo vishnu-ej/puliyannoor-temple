@@ -97,7 +97,370 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
   if (!isOpen) return null;
 
   const handlePrint = () => {
-    window.print();
+    const printWindow = window.open('', '_blank', 'width=900,height=1100');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="ml">
+      <head>
+        <meta charset="UTF-8">
+        <title>${annualCalendar.templeName} - ${annualCalendar.malayalamYear} ${annualCalendar.gregorianYear}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Gayathri:wght@700;900&family=Manjari:wght@400;700&display=swap" rel="stylesheet">
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 3.5mm 4.5mm;
+          }
+          * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          html, body {
+            font-family: 'Manjari', sans-serif;
+            background: #FAF5E8;
+            color: #1A0409;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            -webkit-font-smoothing: antialiased;
+          }
+          .poster-container {
+            width: 100%;
+            background: #FAF5E8;
+            border: 2px solid #1A365D;
+            border-radius: 6px;
+            padding: 5px 6px;
+          }
+          .poster-header {
+            text-align: center;
+            border-bottom: 2px solid #1A365D;
+            padding-bottom: 3px;
+            margin-bottom: 4px;
+            background: linear-gradient(to right, rgba(0,51,102,0.08), rgba(250,245,232,1), rgba(0,51,102,0.08));
+            border-radius: 4px;
+          }
+          .sacred-emblem {
+            font-size: 10px;
+            font-weight: 800;
+            color: #8C6219;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1.5px;
+            margin-bottom: 1px;
+          }
+          .temple-title {
+            font-family: 'Gayathri', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            color: #990000;
+            margin: 0;
+            line-height: 1.05;
+          }
+          .temple-sub {
+            font-size: 10.5px;
+            font-weight: 700;
+            margin: 1px 0 0 0;
+            color: #1A0409;
+          }
+          .temple-phone {
+            font-size: 10px;
+            font-weight: 800;
+            font-family: monospace;
+            color: #003366;
+            margin: 1px 0 0 0;
+          }
+          .year-banner {
+            margin-top: 3px;
+            padding-top: 2px;
+            border-top: 1px solid rgba(0,51,102,0.2);
+          }
+          .year-title {
+            font-family: 'Gayathri', sans-serif;
+            font-size: 18px;
+            font-weight: 900;
+            color: #CC0000;
+            margin: 0;
+            line-height: 1.05;
+          }
+          .section-title {
+            font-family: 'Gayathri', sans-serif;
+            font-size: 14px;
+            font-weight: 900;
+            color: #990000;
+            margin: 1px 0 0 0;
+          }
+          .grid-columns {
+            display: grid;
+            grid-template-columns: 42% 31% 27%;
+            gap: 4px;
+            align-items: start;
+          }
+          .col-card {
+            background: #ffffff;
+            border: 1px solid #003366;
+            border-radius: 5px;
+            overflow: hidden;
+          }
+          .col-header {
+            background: #002244;
+            color: #ffffff;
+            text-align: center;
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 2.5px 2px;
+            font-family: 'Gayathri', sans-serif;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+          }
+          thead tr {
+            background: #E60000;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 7.5px;
+          }
+          th {
+            padding: 1px 1.5px;
+            text-align: center;
+            border: 0.5px solid rgba(255,255,255,0.3);
+          }
+          td {
+            padding: 1px 1.5px;
+            border-bottom: 0.5px solid #E4D5AE;
+            line-height: 1.1;
+          }
+          tr:nth-child(even) {
+            background: #FFF9EE;
+          }
+          .text-center { text-align: center; }
+          .text-left { text-align: left; }
+          .nowrap { white-space: nowrap; }
+          .font-bold { font-weight: 700; }
+          .text-navy { color: #002244; }
+          .text-maroon { color: #610C1B; }
+          .text-red { color: #990000; }
+          .pooja-card {
+            background: #1F4E34;
+            color: #ffffff;
+            border-radius: 5px;
+            padding: 3px 4px;
+            text-align: center;
+            border: 1.5px solid #C99738;
+            margin-top: 3px;
+          }
+          .pooja-title {
+            color: #E6BE65;
+            font-weight: 800;
+            font-size: 9px;
+            margin-bottom: 1px;
+            font-family: 'Gayathri', sans-serif;
+          }
+          .pooja-text {
+            font-size: 7.5px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.15;
+          }
+          .bank-card {
+            background: #E8F4FD;
+            border: 1px solid #003366;
+            border-radius: 5px;
+            padding: 2.5px 3px;
+            margin-top: 3px;
+            font-size: 7px;
+          }
+          .bank-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2px;
+          }
+          .bank-qr {
+            width: 26px;
+            height: 26px;
+            border: 0.5px solid #003366;
+            background: #fff;
+            padding: 1px;
+          }
+          .ulsavam-banner {
+            margin-top: 4px;
+            background: linear-gradient(to right, #800000, #A00000, #800000);
+            color: #ffffff;
+            border-radius: 5px;
+            padding: 4px 6px;
+            text-align: center;
+            border: 1.5px solid #E6BE65;
+          }
+          .ulsavam-title {
+            font-family: 'Gayathri', sans-serif;
+            font-size: 15px;
+            font-weight: 900;
+            color: #FFD700;
+            margin: 0;
+            line-height: 1.05;
+          }
+          .ulsavam-dates {
+            font-size: 10px;
+            font-weight: 800;
+            margin: 1px 0 0 0;
+            color: #ffffff;
+          }
+          .ulsavam-mal {
+            font-size: 9.5px;
+            font-weight: 800;
+            margin: 1px 0 0 0;
+            color: #FFD700;
+          }
+          .ulsavam-footer {
+            font-size: 7.5px;
+            color: rgba(255,255,255,0.8);
+            font-style: italic;
+            margin: 2px 0 0 0;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="poster-container">
+          <div class="poster-header">
+            <div class="sacred-emblem">ॐ SREE MAHADEVA TEMPLE · PULIYANNOOR ॐ</div>
+            <h1 class="temple-title">${annualCalendar.templeName}</h1>
+            <p class="temple-sub">${annualCalendar.templeAddress}</p>
+            <p class="temple-phone">മൊബൈൽ : ${annualCalendar.templePhones}</p>
+            <div class="year-banner">
+              <h2 class="year-title">${annualCalendar.malayalamYear} ${annualCalendar.gregorianYear}</h2>
+              <h3 class="section-title">${annualCalendar.title}</h3>
+            </div>
+          </div>
+
+          <div class="grid-columns">
+            <!-- Col 1: Vishesham -->
+            <div class="col-card">
+              <div class="col-header">പ്രധാന വിശേഷ ദിവസങ്ങൾ</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>മലയാളം</th>
+                    <th>ഇംഗ്ലീഷ്</th>
+                    <th>ദിവസം</th>
+                    <th class="text-left">വിശേഷം</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${annualCalendar.visheshaDivasangal.map(r => `
+                    <tr>
+                      <td class="text-center nowrap font-bold text-navy">${r.malayalamMonthDate}</td>
+                      <td class="text-center nowrap font-bold text-maroon">${r.englishMonthDate}</td>
+                      <td class="text-center nowrap">${r.dayOfWeek}</td>
+                      <td class="text-left font-bold text-red">${r.vishesham}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Col 2: Pradosham -->
+            <div class="col-card">
+              <div class="col-header">പ്രദോഷം</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>മലയാളം</th>
+                    <th>ഇംഗ്ലീഷ്</th>
+                    <th>ദിവസം</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${annualCalendar.pradosham.map(r => `
+                    <tr>
+                      <td class="text-center nowrap font-bold text-navy">${r.malayalamMonthDate}</td>
+                      <td class="text-center nowrap font-bold text-maroon">${r.englishMonthDate}</td>
+                      <td class="text-center nowrap">${r.dayOfWeek}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Col 3: Samkramam + Pooja + Bank -->
+            <div>
+              <div class="col-card">
+                <div class="col-header">സംക്രമം</div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>മാസം</th>
+                      <th>തീയതി</th>
+                      <th>ദിവസം</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${annualCalendar.samkramam.map(r => `
+                      <tr>
+                        <td class="text-center nowrap font-bold text-navy">${r.malayalamMonth}</td>
+                        <td class="text-center nowrap font-bold text-maroon">${r.occurringMonthDate}</td>
+                        <td class="text-center nowrap">${r.dayOfWeek}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pooja Timings -->
+              <div class="pooja-card">
+                <div class="pooja-title">പൂജാസമയം</div>
+                <p class="pooja-text">${annualCalendar.poojaTimings.morning}</p>
+                <p class="pooja-text">${annualCalendar.poojaTimings.evening}</p>
+              </div>
+
+              <!-- Bank Info -->
+              <div class="bank-card">
+                <div class="bank-flex">
+                  <div>
+                    <strong style="color:#002244; font-size:7.5px; text-transform:uppercase;">${annualCalendar.bankInfo.bankName}</strong><br/>
+                    <span style="color:#5A382A; font-size:6.5px;">${annualCalendar.bankInfo.branch}</span>
+                  </div>
+                  <img src="/temple-qr-code.png" class="bank-qr" alt="QR" />
+                </div>
+                <div style="margin-top:2px; padding-top:2px; border-top:0.5px solid rgba(0,51,102,0.2); line-height: 1.1;">
+                  <span><strong>A/c:</strong> ${annualCalendar.bankInfo.accountNo}</span><br/>
+                  <span><strong>IFSC:</strong> ${annualCalendar.bankInfo.ifsc}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Ulsavam Banner -->
+          <div class="ulsavam-banner">
+            <h3 class="ulsavam-title">${annualCalendar.ulsavamBox.title}</h3>
+            <p class="ulsavam-dates">${annualCalendar.ulsavamBox.gregorianDates}</p>
+            <p class="ulsavam-mal">${annualCalendar.ulsavamBox.malayalamDates}</p>
+            <p class="ulsavam-footer">${annualCalendar.ulsavamBox.footerNote}</p>
+          </div>
+        </div>
+
+        <script>
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 250);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
 
   const handleSaveGeneral = (e: React.FormEvent) => {
