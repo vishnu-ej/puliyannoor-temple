@@ -182,7 +182,123 @@ export async function sendChatMessageToSupabase(chatMsg: DbChatMessage): Promise
 }
 
 // -----------------------------------------------------------------------------------
-// 4. SUPABASE STORAGE (Avatars, Receipts, Uploads)
+// 4. ADMIN PORTAL CONTENT SYNCHRONIZATION (Offerings, Festivals, Settings)
+// -----------------------------------------------------------------------------------
+export async function syncOfferingToSupabase(offering: any): Promise<boolean> {
+  try {
+    const payload = {
+      id: offering.id,
+      sl_no: offering.slNo,
+      name_en: offering.name?.en || '',
+      name_ml: offering.name?.ml || '',
+      price: offering.price,
+      category: offering.category,
+      description_en: offering.description?.en || '',
+      description_ml: offering.description?.ml || '',
+      significance_en: offering.significance?.en || '',
+      significance_ml: offering.significance?.ml || '',
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase.from('offerings').upsert(payload);
+    if (error) {
+      console.warn('Supabase syncOffering note:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Supabase syncOffering exception:', e);
+    return false;
+  }
+}
+
+export async function deleteOfferingFromSupabase(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('offerings').delete().eq('id', id);
+    if (error) {
+      console.warn('Supabase deleteOffering note:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Supabase deleteOffering exception:', e);
+    return false;
+  }
+}
+
+export async function syncFestivalToSupabase(festival: any): Promise<boolean> {
+  try {
+    const payload = {
+      id: festival.id,
+      name_en: festival.name?.en || '',
+      name_ml: festival.name?.ml || '',
+      date_en: festival.date?.en || '',
+      date_ml: festival.date?.ml || '',
+      malayalam_month_en: festival.malayalamMonth?.en || '',
+      malayalam_month_ml: festival.malayalamMonth?.ml || '',
+      description_en: festival.description?.en || '',
+      description_ml: festival.description?.ml || '',
+      highlight: festival.highlight || false,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase.from('festivals').upsert(payload);
+    if (error) {
+      console.warn('Supabase syncFestival note:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Supabase syncFestival exception:', e);
+    return false;
+  }
+}
+
+export async function deleteFestivalFromSupabase(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase.from('festivals').delete().eq('id', id);
+    if (error) {
+      console.warn('Supabase deleteFestival note:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Supabase deleteFestival exception:', e);
+    return false;
+  }
+}
+
+export async function syncTempleSettingsToSupabase(key: string, value: any): Promise<boolean> {
+  try {
+    const payload = {
+      key,
+      data: value,
+      updated_at: new Date().toISOString(),
+    };
+    const { error } = await supabase.from('temple_settings').upsert(payload);
+    if (error) {
+      console.warn('Supabase syncTempleSettings note:', error.message);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn('Supabase syncTempleSettings exception:', e);
+    return false;
+  }
+}
+
+export async function getTempleSettingsFromSupabase<T>(key: string): Promise<T | null> {
+  try {
+    const { data, error } = await supabase.from('temple_settings').select('data').eq('key', key).single();
+    if (error || !data) return null;
+    return data.data as T;
+  } catch {
+    return null;
+  }
+}
+
+// -----------------------------------------------------------------------------------
+// 5. SUPABASE STORAGE (Avatars, Receipts, Uploads)
 // -----------------------------------------------------------------------------------
 export const STORAGE_BUCKET_MEDIA = 'temple-media';
 

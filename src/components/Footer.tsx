@@ -156,7 +156,7 @@ export const Footer: React.FC = () => {
           <div className="flex flex-col items-center md:items-end gap-1.5 text-center md:text-right flex-shrink-0">
             <p>© {currentYear} {t('footer_rights')}</p>
             <span className="text-[10px] text-[#E6BE65]/80 font-mono tracking-wide">
-              Current Website Version: v2.0.0
+              Current Website Version: v2.1.0
             </span>
           </div>
         </div>

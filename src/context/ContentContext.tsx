@@ -13,6 +13,14 @@ import {
 import { OFFERINGS as DEFAULT_OFFERINGS } from '../data/offerings';
 import { FESTIVALS as DEFAULT_FESTIVALS } from '../data/festivals';
 import { DEFAULT_ANNUAL_CALENDAR } from '../data/annualCalendar';
+import {
+  syncOfferingToSupabase,
+  deleteOfferingFromSupabase,
+  syncFestivalToSupabase,
+  deleteFestivalFromSupabase,
+  syncTempleSettingsToSupabase,
+  sendChatMessageToSupabase,
+} from '../lib/supabaseDb';
 
 export const DEFAULT_COUNTDOWN_CONFIG: FestivalCountdownConfig = {
   targetDate: '2027-02-28T20:00',
@@ -429,7 +437,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } catch (e) {}
   }, [countdownConfig, isInitialized]);
 
-  // Offering actions
+  // Offering actions (Synced to Supabase public.offerings table)
   const addOffering = (newOff: Omit<OfferingItem, 'slNo'> & { slNo?: number }) => {
     const nextSlNo = newOff.slNo || offerings.length + 1;
     const item: OfferingItem = {
@@ -438,44 +446,66 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       id: newOff.id || `offering_${Date.now()}`,
     };
     setOfferings((prev) => [...prev, item]);
+    syncOfferingToSupabase(item);
   };
 
   const updateOffering = (id: string, updatedFields: Partial<OfferingItem>) => {
     setOfferings((prev) =>
-      prev.map((off) => (off.id === id ? { ...off, ...updatedFields } : off))
+      prev.map((off) => {
+        if (off.id === id) {
+          const updated = { ...off, ...updatedFields };
+          syncOfferingToSupabase(updated);
+          return updated;
+        }
+        return off;
+      })
     );
   };
 
   const deleteOffering = (id: string) => {
     setOfferings((prev) => {
       const filtered = prev.filter((off) => off.id !== id);
-      // Renumber sequentially
       return filtered.map((item, idx) => ({ ...item, slNo: idx + 1 }));
     });
+    deleteOfferingFromSupabase(id);
   };
 
-  // Festival actions
+  // Festival actions (Synced to Supabase public.festivals table)
   const addFestival = (newFest: FestivalEvent) => {
     setFestivals((prev) => [...prev, newFest]);
+    syncFestivalToSupabase(newFest);
   };
 
   const updateFestival = (id: string, updatedFields: Partial<FestivalEvent>) => {
     setFestivals((prev) =>
-      prev.map((fest) => (fest.id === id ? { ...fest, ...updatedFields } : fest))
+      prev.map((fest) => {
+        if (fest.id === id) {
+          const updated = { ...fest, ...updatedFields };
+          syncFestivalToSupabase(updated);
+          return updated;
+        }
+        return fest;
+      })
     );
   };
 
   const deleteFestival = (id: string) => {
     setFestivals((prev) => prev.filter((fest) => fest.id !== id));
+    deleteFestivalFromSupabase(id);
   };
 
   const deleteMultipleFestivals = (ids: string[]) => {
     setFestivals((prev) => prev.filter((fest) => !ids.includes(fest.id)));
+    ids.forEach((id) => deleteFestivalFromSupabase(id));
   };
 
-  // Contact actions
+  // Contact actions (Synced to Supabase public.temple_settings table)
   const updateContactInfo = (updatedFields: Partial<TempleContactInfo>) => {
-    setContactInfo((prev) => ({ ...prev, ...updatedFields }));
+    setContactInfo((prev) => {
+      const updated = { ...prev, ...updatedFields };
+      syncTempleSettingsToSupabase('contact_info', updated);
+      return updated;
+    });
   };
 
   // Annual Calendar actions
@@ -616,6 +646,14 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       deliveryStatus: 'sent',
       replyTo,
     };
+
+    const targetChat = chats.find((c) => c.id === conversationId);
+    sendChatMessageToSupabase({
+      devotee_phone: targetChat?.devoteePhone,
+      devotee_name: targetChat?.devoteeName,
+      sender: 'admin',
+      message: text.trim(),
+    });
 
     setChats((prev) =>
       prev.map((chat) => {
