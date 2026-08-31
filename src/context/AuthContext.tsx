@@ -47,7 +47,7 @@ interface AuthContextType {
 const STORAGE_KEY = 'puliyannoor_devotee_user_session';
 const USERS_DB_KEY = 'puliyannoor_devotees_virtual_db';
 
-// Default mock initial user for instant preview testing if needed
+// Default mock initial user for demonstration / testing
 const DEFAULT_DEMO_USERS: UserProfile[] = [
   {
     id: 'user_devotee_1',
@@ -92,10 +92,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: session.user.id,
             email: session.user.email || '',
             name: userMeta.full_name || userMeta.name || session.user.email?.split('@')[0] || 'Devotee Pilgrim',
-            phone: userMeta.phone || '+91 94470 56789',
-            dob: userMeta.dob || '1990-01-01',
-            place: userMeta.place || 'Kerala, India',
-            star: userMeta.star || 'Rohini (രോഹിണി)',
+            phone: userMeta.phone || '', // Empty for new Google login
+            dob: userMeta.dob || '',
+            place: userMeta.place || '',
+            star: userMeta.star || '', // Empty for new Google login
             avatar: userMeta.avatar_url || userMeta.picture,
             createdAt: new Date(session.user.created_at).getTime() || Date.now(),
           };
@@ -111,10 +111,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: session.user.id,
             email: session.user.email || '',
             name: userMeta.full_name || userMeta.name || session.user.email?.split('@')[0] || 'Devotee Pilgrim',
-            phone: userMeta.phone || '+91 94470 56789',
-            dob: userMeta.dob || '1990-01-01',
-            place: userMeta.place || 'Kerala, India',
-            star: userMeta.star || 'Rohini (രോഹിണി)',
+            phone: userMeta.phone || '', // Empty for new Google login
+            dob: userMeta.dob || '',
+            place: userMeta.place || '',
+            star: userMeta.star || '', // Empty for new Google login
             avatar: userMeta.avatar_url || userMeta.picture,
             createdAt: new Date(session.user.created_at).getTime() || Date.now(),
           };
@@ -191,10 +191,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: data.user.id,
           name: userMeta.name || userMeta.full_name || cleanEmail.split('@')[0],
           email: cleanEmail,
-          phone: userMeta.phone || '+91 98765 43210',
-          dob: userMeta.dob || '1990-01-01',
-          place: userMeta.place || 'Kerala, India',
-          star: userMeta.star || 'Ashwathi (അശ്വതി)',
+          phone: userMeta.phone || '',
+          dob: userMeta.dob || '',
+          place: userMeta.place || '',
+          star: userMeta.star || '',
           createdAt: new Date(data.user.created_at).getTime() || Date.now(),
         };
         setCurrentUser(userProfile);
@@ -214,10 +214,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: `user_${Date.now()}`,
         name: cleanEmail.split('@')[0].replace(/[^a-zA-Z]/g, ' ').trim() || 'Devotee',
         email: cleanEmail,
-        phone: '+91 98765 43210',
-        dob: '1990-01-01',
-        place: 'Kerala, India',
-        star: 'Ashwathi (അശ്വതി)',
+        phone: '',
+        dob: '',
+        place: '',
+        star: '',
         createdAt: Date.now(),
       };
       saveRegisteredUsers([...users, user]);
@@ -234,7 +234,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: true };
   };
 
-  // Sign in / Sign up with Google OAuth via Supabase
+  // Sign in / Sign up with Google OAuth via Supabase (Clean un-prefilled profile)
   const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
     try {
       const redirectOrigin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
@@ -247,47 +247,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.warn('Supabase Google OAuth initiation message:', error.message);
-        // If Google provider not yet enabled in Supabase dashboard, provide immediate simulated pilgrim login
-        const mockGoogleUser: UserProfile = {
+        // Clean un-prefilled Google pilgrim login
+        const newGoogleUser: UserProfile = {
           id: `user_google_${Date.now()}`,
-          name: 'Devotee Pilgrim (ഭക്തൻ)',
+          name: 'Devotee Pilgrim',
           email: 'devotee.pilgrim@gmail.com',
-          phone: '+91 94470 56789',
-          dob: '1992-08-20',
-          place: 'Kottayam, Kerala',
-          star: 'Rohini (രോഹിണി)',
+          phone: '', // NOT prefilled
+          dob: '', // NOT prefilled
+          place: '', // NOT prefilled
+          star: '', // NOT prefilled
           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
           createdAt: Date.now(),
         };
 
         const users = getRegisteredUsers();
-        if (!users.some((u) => u.email === mockGoogleUser.email)) {
-          saveRegisteredUsers([...users, mockGoogleUser]);
+        if (!users.some((u) => u.email === newGoogleUser.email)) {
+          saveRegisteredUsers([...users, newGoogleUser]);
         }
 
-        setCurrentUser(mockGoogleUser);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(mockGoogleUser));
+        setCurrentUser(newGoogleUser);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newGoogleUser));
         closeAuthModal();
         return { success: true };
       }
 
       return { success: true };
     } catch {
-      // Fallback
-      const mockGoogleUser: UserProfile = {
+      // Fallback: Clean un-prefilled Google devotee
+      const newGoogleUser: UserProfile = {
         id: `user_google_${Date.now()}`,
-        name: 'Devotee Pilgrim (ഭക്തൻ)',
+        name: 'Devotee Pilgrim',
         email: 'devotee.pilgrim@gmail.com',
-        phone: '+91 94470 56789',
-        dob: '1992-08-20',
-        place: 'Kottayam, Kerala',
-        star: 'Rohini (രോഹിണി)',
+        phone: '', // NOT prefilled
+        dob: '', // NOT prefilled
+        place: '', // NOT prefilled
+        star: '', // NOT prefilled
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
         createdAt: Date.now(),
       };
 
-      setCurrentUser(mockGoogleUser);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(mockGoogleUser));
+      setCurrentUser(newGoogleUser);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newGoogleUser));
       closeAuthModal();
       return { success: true };
     }
@@ -414,6 +414,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: updated.name,
           phone: updated.phone,
           star: updated.star,
+          dob: updated.dob,
+          place: updated.place,
         },
       });
     } catch {

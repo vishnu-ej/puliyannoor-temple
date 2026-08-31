@@ -35,6 +35,7 @@ import {
   Users,
   CreditCard,
   Filter,
+  AlertTriangle,
 } from 'lucide-react';
 
 // 27 Malayalam Birth Stars (Nakshatrams)
@@ -114,7 +115,7 @@ function numberToWords(num: number): string {
 
 // Master Bookings Database in Virtual Store (Profile-mapped)
 const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
-  // User Profile 1 (Suresh Kumar - id: user_devotee_1 / suresh.kumar@gmail.com / +91 98470 12345)
+  // User Profile 1 (Demo Account: Suresh Kumar - id: user_devotee_1 / suresh.kumar@gmail.com / +91 98470 12345)
   // Devotee 1: Self
   {
     id: 'bk_1',
@@ -234,26 +235,6 @@ const ALL_TEMPLE_BOOKINGS: RawVazhipaduRecord[] = [
     status: 'Confirmed',
   },
 
-  // User Profile 2 (Google Pilgrim - Phone: +91 94470 56789)
-  {
-    id: 'bk_6',
-    orderId: 'ORD-2026-0820',
-    receiptNumber: 'PLY-REC-2026-0820',
-    offeringId: 'oru_divasathe_pooja',
-    fallbackName: 'Oru Divasathe Pooja (ഒരു ദിവസത്തെ പൂജ)',
-    fallbackPrice: 1500,
-    devoteeName: 'Devotee Pilgrim (ഭക്തൻ)',
-    star: 'Rohini (രോഹിണി)',
-    bookedByEmail: 'devotee.pilgrim@gmail.com',
-    bookedByPhone: '+91 94470 56789',
-    bookingDate: '26 Aug 2026',
-    offeringDate: '18 Sep 2026',
-    offeringDateIso: '2026-09-18',
-    deity: 'Sree Mahadeva',
-    paymentStatus: 'completed',
-    status: 'Confirmed',
-  },
-
   // Unpaid record (Should NOT show as payment is pending)
   {
     id: 'bk_7',
@@ -284,12 +265,14 @@ function ProfileContent() {
   const initialTab = (searchParams.get('tab') as 'details' | 'bookings' | 'chat') || 'details';
   const [activeTab, setActiveTab] = useState<'details' | 'bookings' | 'chat'>(initialTab);
 
-  // Edit Profile State (Name, Mob, Email, and Birth Star are editable)
+  // Edit Profile State
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editPhone, setEditPhone] = useState('');
   const [editEmail, setEditEmail] = useState('');
-  const [editStar, setEditStar] = useState('Ashwathi (അശ്വതി)');
+  const [editStar, setEditStar] = useState('');
+  const [editDob, setEditDob] = useState('');
+  const [editPlace, setEditPlace] = useState('');
   const [toastMsg, setToastMsg] = useState('');
 
   // Date Filtering State for Bookings & PDF Print
@@ -305,12 +288,25 @@ function ProfileContent() {
   // Chat State
   const [chatMessageText, setChatMessageText] = useState('');
 
+  // Profile completeness check (for Google signups and new users)
+  const isProfileIncomplete = useMemo(() => {
+    if (!currentUser) return false;
+    return !currentUser.phone || !currentUser.star || !currentUser.place;
+  }, [currentUser]);
+
   useEffect(() => {
     if (currentUser) {
-      setEditName(currentUser.name);
-      setEditPhone(currentUser.phone);
-      setEditEmail(currentUser.email);
-      setEditStar(currentUser.star || 'Ashwathi (അശ്വതി)');
+      setEditName(currentUser.name || '');
+      setEditPhone(currentUser.phone || '');
+      setEditEmail(currentUser.email || '');
+      setEditStar(currentUser.star || '');
+      setEditDob(currentUser.dob || '');
+      setEditPlace(currentUser.place || '');
+
+      // If user logs in with Google and profile is incomplete, automatically prompt edit mode
+      if (!currentUser.phone || !currentUser.star || !currentUser.place) {
+        setIsEditing(true);
+      }
     }
   }, [currentUser]);
 
@@ -326,11 +322,11 @@ function ProfileContent() {
     setTimeout(() => setToastMsg(''), 3500);
   };
 
-  // Devotee can edit: Name, Mobile, Email, and Birth Star (DOB & Place remain locked)
+  // Devotee saves profile
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editName.trim() || !editPhone.trim() || !editEmail.trim()) {
-      showToast('Please fill in Name, Phone, and Email');
+      showToast('Please fill in your Name, Mobile Number, and Email');
       return;
     }
 
@@ -339,6 +335,8 @@ function ProfileContent() {
       phone: editPhone.trim(),
       email: editEmail.trim(),
       star: editStar,
+      dob: editDob,
+      place: editPlace.trim(),
     });
     setIsEditing(false);
     showToast('Profile information updated successfully!');
@@ -489,7 +487,7 @@ function ProfileContent() {
 
     createDevoteeInquiryChat(
       currentUser.name,
-      currentUser.phone,
+      currentUser.phone || '+91 00000 00000',
       'Direct Devotee Chat Desk',
       chatMessageText.trim(),
       currentUser.star
@@ -543,6 +541,41 @@ function ProfileContent() {
           </div>
         )}
 
+        {/* Profile Incomplete Banner Prompt (Displayed if mobile number or birth star missing) */}
+        {isProfileIncomplete && (
+          <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-[#FFFBEB] via-[#FEF3C7] to-[#FFFBEB] border-2 border-[#F59E0B] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-scaleUp">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="w-10 h-10 rounded-2xl bg-[#F59E0B]/20 text-[#B45309] flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-[#B45309]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="font-cinzel font-bold text-sm text-[#92400E]">
+                    Profile Incomplete (പ്രൊഫൈൽ അപൂർണ്ണമാണ്)
+                  </h4>
+                  <span className="px-2 py-0.5 rounded-full bg-[#B45309] text-white text-[9px] font-bold uppercase tracking-wider">
+                    Action Required
+                  </span>
+                </div>
+                <p className="text-xs text-[#78350F] mt-0.5 leading-relaxed">
+                  You have signed in using Google. Please complete your profile details (Mobile Number, Birth Star & Residence) to enable pooja bookings and receive official receipts.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('details');
+                setIsEditing(true);
+              }}
+              className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center gap-1.5"
+            >
+              <Edit3 className="w-3.5 h-3.5 text-[#E6BE65]" />
+              <span>Complete Profile</span>
+            </button>
+          </div>
+        )}
+
         {/* Profile Top Banner Card */}
         <div className="bg-gradient-to-r from-[#1A0409] via-[#38050E] to-[#610C1B] rounded-3xl p-6 sm:p-8 text-[#FAF5E8] shadow-xl border border-[#C99738]/40 mb-8 relative overflow-hidden">
           <div className="absolute right-0 top-0 bottom-0 opacity-10 flex items-center pr-6 pointer-events-none text-9xl font-cinzel text-[#E6BE65]">
@@ -552,13 +585,17 @@ function ProfileContent() {
           <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 relative z-10">
             <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
               {/* Avatar Ring */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#610C1B] to-[#1A0409] border-3 border-[#C99738] shadow-lg flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-2xl sm:text-3xl flex-shrink-0">
-                {currentUser.name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')
-                  .slice(0, 2)
-                  .toUpperCase() || 'ॐ'}
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#610C1B] to-[#1A0409] border-3 border-[#C99738] shadow-lg flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-2xl sm:text-3xl flex-shrink-0 overflow-hidden">
+                {currentUser.avatar ? (
+                  <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
+                ) : (
+                  currentUser.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')
+                    .slice(0, 2)
+                    .toUpperCase() || 'ॐ'
+                )}
               </div>
 
               <div className="space-y-1">
@@ -577,21 +614,31 @@ function ProfileContent() {
                   <span>•</span>
                   <span className="flex items-center gap-1">
                     <Phone className="w-3.5 h-3.5 text-[#C99738]" />
-                    {currentUser.phone}
+                    {currentUser.phone ? currentUser.phone : <span className="text-amber-300 italic">No mobile added</span>}
                   </span>
-                  {currentUser.star && (
+                  {currentUser.star ? (
                     <>
                       <span>•</span>
                       <span className="text-[#E6BE65] font-semibold">
                         ★ {currentUser.star}
                       </span>
                     </>
+                  ) : (
+                    <>
+                      <span>•</span>
+                      <span className="text-amber-300 italic">★ Star not set</span>
+                    </>
                   )}
                 </p>
-                {currentUser.place && (
+                {currentUser.place ? (
                   <p className="text-xs text-[#FAF5E8]/70 flex items-center justify-center sm:justify-start gap-1">
                     <MapPin className="w-3 h-3 text-[#C99738]" />
                     {currentUser.place}
+                  </p>
+                ) : (
+                  <p className="text-xs text-amber-200/80 flex items-center justify-center sm:justify-start gap-1 italic">
+                    <MapPin className="w-3 h-3 text-[#C99738]" />
+                    Residence not specified
                   </p>
                 )}
               </div>
@@ -619,6 +666,9 @@ function ProfileContent() {
           >
             <User className="w-4 h-4" />
             <span>Profile Details</span>
+            {isProfileIncomplete && (
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+            )}
           </button>
 
           <button
@@ -650,7 +700,7 @@ function ProfileContent() {
         </div>
 
         {/* ================================================================= */}
-        {/* TAB 1: PROFILE DETAILS (Name, Mob, Email, and Star are Editable) */}
+        {/* TAB 1: PROFILE DETAILS */}
         {/* ================================================================= */}
         {activeTab === 'details' && (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E4D5AE] shadow-sm space-y-6 animate-fadeIn">
@@ -660,7 +710,7 @@ function ProfileContent() {
                   Personal & Ritual Information
                 </h3>
                 <p className="text-xs text-[#5A382A]">
-                  Devotees can edit Name, Mobile Number, Email, and Birth Star. DOB and Place are locked for temple records.
+                  Devotees can edit Name, Mobile Number, Email, and Birth Star anytime.
                 </p>
               </div>
               <button
@@ -675,7 +725,7 @@ function ProfileContent() {
             {isEditing ? (
               <form onSubmit={handleSaveProfile} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* 1. Full Name (EDITABLE) */}
+                  {/* 1. Full Name */}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel">
                       Full Name * <span className="text-[10px] text-emerald-700 font-normal lowercase">(editable)</span>
@@ -684,26 +734,33 @@ function ProfileContent() {
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
+                      placeholder="Enter your full name"
                       className="w-full px-3.5 py-2.5 rounded-xl border border-[#C99738] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] font-medium"
                       required
                     />
                   </div>
 
-                  {/* 2. Contact Phone (EDITABLE) */}
+                  {/* 2. Contact Phone (Mandatory for Pooja communication) */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel">
-                      Contact Phone * <span className="text-[10px] text-emerald-700 font-normal lowercase">(editable)</span>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel flex items-center justify-between">
+                      <span>Contact Phone *</span>
+                      {!currentUser.phone && (
+                        <span className="text-[10px] text-amber-700 font-bold">Required</span>
+                      )}
                     </label>
                     <input
                       type="text"
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#C99738] bg-white text-sm text-[#2B150F] font-mono focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                      placeholder="e.g. +91 98470 12345"
+                      className={`w-full px-3.5 py-2.5 rounded-xl border bg-white text-sm text-[#2B150F] font-mono focus:outline-none focus:ring-2 ${
+                        !editPhone ? 'border-amber-500 focus:ring-amber-500 bg-amber-50/20' : 'border-[#C99738] focus:ring-[#C99738]'
+                      }`}
                       required
                     />
                   </div>
 
-                  {/* 3. Primary Email (EDITABLE) */}
+                  {/* 3. Primary Email */}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel">
                       Primary Email Address * <span className="text-[10px] text-emerald-700 font-normal lowercase">(editable)</span>
@@ -717,16 +774,17 @@ function ProfileContent() {
                     />
                   </div>
 
-                  {/* 4. Birth Star (EDITABLE) */}
+                  {/* 4. Birth Star */}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel">
-                      Birth Star (ജന്മനക്ഷത്രം) * <span className="text-[10px] text-emerald-700 font-normal lowercase">(editable)</span>
+                      Birth Star (ജന്മനക്ഷത്രം)
                     </label>
                     <select
                       value={editStar}
                       onChange={(e) => setEditStar(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl border border-[#C99738] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] cursor-pointer font-medium"
                     >
+                      <option value="">-- Select Birth Star (ഓപ്ഷണൽ) --</option>
                       {NAKSHATRAMS.map((star) => (
                         <option key={star} value={star}>
                           {star}
@@ -735,39 +793,58 @@ function ProfileContent() {
                     </select>
                   </div>
 
-                  {/* 5. Date of Birth (FADED OUT & NON-EDITABLE) */}
+                  {/* 5. Date of Birth */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 font-cinzel">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 font-cinzel">
                         Date of Birth (DOB)
                       </label>
-                      <span className="text-[10px] text-gray-400 flex items-center gap-1">
-                        <Lock className="w-2.5 h-2.5" /> Non-editable
-                      </span>
+                      {currentUser.dob ? (
+                        <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                          <Lock className="w-2.5 h-2.5" /> Locked
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-emerald-700 font-normal lowercase">(initial setup)</span>
+                      )}
                     </div>
                     <input
-                      type="text"
-                      value={currentUser.dob || 'Not provided'}
-                      disabled
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-100/70 text-sm text-gray-400 cursor-not-allowed select-none opacity-50"
+                      type="date"
+                      value={editDob}
+                      onChange={(e) => setEditDob(e.target.value)}
+                      disabled={!!currentUser.dob}
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#2B150F] ${
+                        currentUser.dob
+                          ? 'border-gray-200 bg-gray-100/70 text-gray-400 cursor-not-allowed select-none opacity-60'
+                          : 'border-[#C99738] bg-white focus:outline-none focus:ring-2 focus:ring-[#C99738]'
+                      }`}
                     />
                   </div>
 
-                  {/* 6. Place / City (FADED OUT & NON-EDITABLE) */}
+                  {/* 6. Place / City */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 font-cinzel">
-                        Place / City
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 font-cinzel">
+                        Place / Residence
                       </label>
-                      <span className="text-[10px] text-gray-400 flex items-center gap-1">
-                        <Lock className="w-2.5 h-2.5" /> Non-editable
-                      </span>
+                      {currentUser.place ? (
+                        <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                          <Lock className="w-2.5 h-2.5" /> Locked
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-emerald-700 font-normal lowercase">(initial setup)</span>
+                      )}
                     </div>
                     <input
                       type="text"
-                      value={currentUser.place || 'Kerala, India'}
-                      disabled
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-100/70 text-sm text-gray-400 cursor-not-allowed select-none opacity-50"
+                      value={editPlace}
+                      onChange={(e) => setEditPlace(e.target.value)}
+                      placeholder="e.g. Pala, Kottayam"
+                      disabled={!!currentUser.place}
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#2B150F] ${
+                        currentUser.place
+                          ? 'border-gray-200 bg-gray-100/70 text-gray-400 cursor-not-allowed select-none opacity-60'
+                          : 'border-[#C99738] bg-white focus:outline-none focus:ring-2 focus:ring-[#C99738]'
+                      }`}
                     />
                   </div>
                 </div>
@@ -785,7 +862,7 @@ function ProfileContent() {
                     className="px-6 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Save className="w-4 h-4 text-[#E6BE65]" />
-                    <span>Save Changes</span>
+                    <span>Save & Update Profile</span>
                   </button>
                 </div>
               </form>
@@ -809,28 +886,47 @@ function ProfileContent() {
                   <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-1">
                     Contact Phone
                   </span>
-                  <span className="font-mono font-bold text-[#38050E]">{currentUser.phone}</span>
+                  {currentUser.phone ? (
+                    <span className="font-mono font-bold text-[#38050E]">{currentUser.phone}</span>
+                  ) : (
+                    <span className="text-amber-700 font-bold italic flex items-center gap-1">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      Not provided (Click Edit Details to complete)
+                    </span>
+                  )}
                 </div>
 
                 <div className="p-4 rounded-2xl bg-[#FAF5E8]/40 border border-[#E4D5AE]">
                   <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-1">
                     Birth Star (നക്ഷത്രം)
                   </span>
-                  <span className="font-bold text-[#610C1B]">{currentUser.star || 'Not specified'}</span>
+                  {currentUser.star ? (
+                    <span className="font-bold text-[#610C1B]">{currentUser.star}</span>
+                  ) : (
+                    <span className="text-amber-700 font-bold italic">Not selected</span>
+                  )}
                 </div>
 
                 <div className="p-4 rounded-2xl bg-[#FAF5E8]/40 border border-[#E4D5AE]">
                   <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-1">
                     Place / Residence
                   </span>
-                  <span className="font-medium text-[#38050E]">{currentUser.place || 'Kerala, India'}</span>
+                  {currentUser.place ? (
+                    <span className="font-medium text-[#38050E]">{currentUser.place}</span>
+                  ) : (
+                    <span className="text-amber-700 font-bold italic">Not provided</span>
+                  )}
                 </div>
 
                 <div className="p-4 rounded-2xl bg-[#FAF5E8]/40 border border-[#E4D5AE]">
                   <span className="block text-[10px] uppercase font-bold text-[#8C6219] mb-1">
                     Date of Birth
                   </span>
-                  <span className="font-medium text-[#38050E]">{currentUser.dob || 'Not provided'}</span>
+                  {currentUser.dob ? (
+                    <span className="font-medium text-[#38050E]">{currentUser.dob}</span>
+                  ) : (
+                    <span className="text-amber-700 font-bold italic">Not provided</span>
+                  )}
                 </div>
               </div>
             )}
@@ -838,7 +934,7 @@ function ProfileContent() {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 2: MY VAZHIPADU BOOKINGS (PROFILE MAPPED + SINGLE/RANGE DATE PDF) */}
+        {/* TAB 2: MY VAZHIPADU BOOKINGS */}
         {/* ================================================================= */}
         {activeTab === 'bookings' && (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E4D5AE] shadow-sm space-y-6 animate-fadeIn">
@@ -879,101 +975,103 @@ function ProfileContent() {
             </div>
 
             {/* Date Filtering Bar (Single Date or Date Range Selection) */}
-            <div className="p-4 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#610C1B]">
-                  <Filter className="w-3.5 h-3.5" />
-                  <span>Filter by Pooja Date / Date Range:</span>
-                </div>
-
-                <div className="inline-flex rounded-xl p-0.5 bg-white border border-[#E4D5AE] text-xs font-bold">
-                  <button
-                    onClick={() => setDateFilterMode('all')}
-                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                      dateFilterMode === 'all'
-                        ? 'bg-[#610C1B] text-white shadow-xs'
-                        : 'text-[#5A382A] hover:text-[#2B150F]'
-                    }`}
-                  >
-                    All Dates
-                  </button>
-                  <button
-                    onClick={() => setDateFilterMode('single')}
-                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                      dateFilterMode === 'single'
-                        ? 'bg-[#610C1B] text-white shadow-xs'
-                        : 'text-[#5A382A] hover:text-[#2B150F]'
-                    }`}
-                  >
-                    Single Date
-                  </button>
-                  <button
-                    onClick={() => setDateFilterMode('range')}
-                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                      dateFilterMode === 'range'
-                        ? 'bg-[#610C1B] text-white shadow-xs'
-                        : 'text-[#5A382A] hover:text-[#2B150F]'
-                    }`}
-                  >
-                    Date Range
-                  </button>
-                </div>
-              </div>
-
-              {/* Single Date Select Controls */}
-              {dateFilterMode === 'single' && (
-                <div className="flex flex-wrap items-center gap-3 pt-1 animate-fadeIn">
-                  <label className="text-xs text-[#5A382A] font-semibold">Select Offering Date:</label>
-                  <select
-                    value={selectedSingleDate}
-                    onChange={(e) => setSelectedSingleDate(e.target.value)}
-                    className="px-3 py-1.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#38050E] font-medium focus:outline-none focus:ring-2 focus:ring-[#C99738] cursor-pointer"
-                  >
-                    <option value="ALL">All Available Dates</option>
-                    {uniqueOfferingDates.map((dateStr) => (
-                      <option key={dateStr} value={dateStr}>
-                        {dateStr}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* Date Range Controls */}
-              {dateFilterMode === 'range' && (
-                <div className="flex flex-wrap items-center gap-3 pt-1 animate-fadeIn text-xs">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#5A382A] font-semibold">From:</span>
-                    <input
-                      type="date"
-                      value={dateRangeFrom}
-                      onChange={(e) => setDateRangeFrom(e.target.value)}
-                      className="px-2.5 py-1.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-                    />
+            {allProfileBookings.length > 0 && (
+              <div className="p-4 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#610C1B]">
+                    <Filter className="w-3.5 h-3.5" />
+                    <span>Filter by Pooja Date / Date Range:</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#5A382A] font-semibold">To:</span>
-                    <input
-                      type="date"
-                      value={dateRangeTo}
-                      onChange={(e) => setDateRangeTo(e.target.value)}
-                      className="px-2.5 py-1.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-                    />
-                  </div>
-                  {(dateRangeFrom || dateRangeTo) && (
+
+                  <div className="inline-flex rounded-xl p-0.5 bg-white border border-[#E4D5AE] text-xs font-bold">
                     <button
-                      onClick={() => {
-                        setDateRangeFrom('');
-                        setDateRangeTo('');
-                      }}
-                      className="text-[11px] font-bold text-[#610C1B] hover:underline cursor-pointer"
+                      onClick={() => setDateFilterMode('all')}
+                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                        dateFilterMode === 'all'
+                          ? 'bg-[#610C1B] text-white shadow-xs'
+                          : 'text-[#5A382A] hover:text-[#2B150F]'
+                      }`}
                     >
-                      Clear Range
+                      All Dates
                     </button>
-                  )}
+                    <button
+                      onClick={() => setDateFilterMode('single')}
+                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                        dateFilterMode === 'single'
+                          ? 'bg-[#610C1B] text-white shadow-xs'
+                          : 'text-[#5A382A] hover:text-[#2B150F]'
+                      }`}
+                    >
+                      Single Date
+                    </button>
+                    <button
+                      onClick={() => setDateFilterMode('range')}
+                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                        dateFilterMode === 'range'
+                          ? 'bg-[#610C1B] text-white shadow-xs'
+                          : 'text-[#5A382A] hover:text-[#2B150F]'
+                      }`}
+                    >
+                      Date Range
+                    </button>
+                  </div>
                 </div>
-              )}
-            </div>
+
+                {/* Single Date Select Controls */}
+                {dateFilterMode === 'single' && (
+                  <div className="flex flex-wrap items-center gap-3 pt-1 animate-fadeIn">
+                    <label className="text-xs text-[#5A382A] font-semibold">Select Offering Date:</label>
+                    <select
+                      value={selectedSingleDate}
+                      onChange={(e) => setSelectedSingleDate(e.target.value)}
+                      className="px-3 py-1.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#38050E] font-medium focus:outline-none focus:ring-2 focus:ring-[#C99738] cursor-pointer"
+                    >
+                      <option value="ALL">All Available Dates</option>
+                      {uniqueOfferingDates.map((dateStr) => (
+                        <option key={dateStr} value={dateStr}>
+                          {dateStr}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Date Range Controls */}
+                {dateFilterMode === 'range' && (
+                  <div className="flex flex-wrap items-center gap-3 pt-1 animate-fadeIn text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#5A382A] font-semibold">From:</span>
+                      <input
+                        type="date"
+                        value={dateRangeFrom}
+                        onChange={(e) => setDateRangeFrom(e.target.value)}
+                        className="px-2.5 py-1.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#5A382A] font-semibold">To:</span>
+                      <input
+                        type="date"
+                        value={dateRangeTo}
+                        onChange={(e) => setDateRangeTo(e.target.value)}
+                        className="px-2.5 py-1.5 rounded-xl border border-[#E4D5AE] bg-white text-xs text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                      />
+                    </div>
+                    {(dateRangeFrom || dateRangeTo) && (
+                      <button
+                        onClick={() => {
+                          setDateRangeFrom('');
+                          setDateRangeTo('');
+                        }}
+                        className="text-[11px] font-bold text-[#610C1B] hover:underline cursor-pointer"
+                      >
+                        Clear Range
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Empty State if No Bookings Found */}
             {filteredBookings.length === 0 ? (
@@ -983,30 +1081,19 @@ function ProfileContent() {
                 </div>
                 <div className="space-y-1">
                   <h4 className="font-cinzel font-bold text-base text-[#38050E]">
-                    No Bookings Found for Selected Date Criteria
+                    No Bookings Found
                   </h4>
                   <p className="text-xs text-[#5A382A] max-w-md mx-auto leading-relaxed">
-                    No confirmed vazhipadu offerings match your current date selection. You can reset date filters or explore new offerings.
+                    You have no confirmed vazhipadu bookings under this profile account yet. You can explore temple offerings and book rituals online.
                   </p>
                 </div>
                 <div className="pt-2 flex justify-center gap-3">
-                  <button
-                    onClick={() => {
-                      setDateFilterMode('all');
-                      setSelectedSingleDate('ALL');
-                      setDateRangeFrom('');
-                      setDateRangeTo('');
-                    }}
-                    className="px-4 py-2 rounded-xl bg-white border border-[#E4D5AE] text-xs font-bold text-[#5A382A] hover:bg-[#FAF5E8] cursor-pointer"
-                  >
-                    Reset Date Filters
-                  </button>
                   <Link
                     href="/offerings"
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white text-xs font-bold shadow-md transition-all"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white text-xs font-bold shadow-md transition-all"
                   >
                     <Sparkles className="w-4 h-4 text-[#E6BE65]" />
-                    <span>Browse Offerings</span>
+                    <span>Browse & Book Offerings</span>
                   </Link>
                 </div>
               </div>
@@ -1025,7 +1112,7 @@ function ProfileContent() {
                         </div>
                         <div>
                           <span className="font-bold text-sm text-[#38050E] block">{devotee}</span>
-                          <span className="text-[11px] text-[#610C1B] font-medium">Star: {data.star}</span>
+                          <span className="text-[11px] text-[#610C1B] font-medium">Star: {data.star || 'Not specified'}</span>
                         </div>
                       </div>
 
@@ -1133,7 +1220,7 @@ function ProfileContent() {
         )}
 
         {/* ================================================================= */}
-        {/* TAB 3: DIRECT CHAT WITH TEMPLE DESK (1-on-1 Connected to Admin) */}
+        {/* TAB 3: DIRECT CHAT WITH TEMPLE DESK */}
         {/* ================================================================= */}
         {activeTab === 'chat' && (
           <div className="bg-white rounded-3xl border border-[#E4D5AE] shadow-md flex flex-col h-[650px] overflow-hidden animate-fadeIn">
@@ -1341,10 +1428,10 @@ function ProfileContent() {
                       <strong className="text-[#38050E]">{currentUser.name}</strong>
                     </p>
                     <p>
-                      <span className="text-[#8C6219] font-bold">Contact Phone:</span> {currentUser.phone}
+                      <span className="text-[#8C6219] font-bold">Contact Phone:</span> {currentUser.phone || 'Not provided'}
                     </p>
                     <p>
-                      <span className="text-[#8C6219] font-bold">Place / Address:</span> {currentUser.place || 'Pala, Kottayam'}
+                      <span className="text-[#8C6219] font-bold">Place / Address:</span> {currentUser.place || 'Kerala, India'}
                     </p>
                   </div>
 
@@ -1382,7 +1469,7 @@ function ProfileContent() {
                             </span>
                             <span className="text-gray-400">•</span>
                             <span className="text-[11px] text-[#610C1B] font-semibold print:text-black">
-                              Birth Star: {data.star}
+                              Birth Star: {data.star || 'Not specified'}
                             </span>
                           </div>
                           <span className="text-[11px] text-[#8C6219] font-bold print:text-black">
