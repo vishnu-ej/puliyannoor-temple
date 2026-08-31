@@ -555,7 +555,7 @@ export const AnnualCalendarModal: React.FC<AnnualCalendarModalProps> = ({
                 {annualCalendar.templeName} — {annualCalendar.malayalamYear} {annualCalendar.gregorianYear}
               </h3>
               <p className="text-[11px] text-[#E6BE65] font-medium hidden sm:block">
-                Annual Malayalam Temple Calendar & Special Days Publication
+                Official Annual Temple Calendar & Special Days Publication
               </p>
             </div>
           </div>

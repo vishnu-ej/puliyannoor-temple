@@ -1293,7 +1293,7 @@ export default function AdminPage() {
                     </div>
 
                     <h3 className="font-cinzel font-bold text-lg sm:text-xl text-[#38050E] mb-1 flex items-center gap-2">
-                      <span>📜 {annualCalendar.templeName} — Official Malayalam Annual Calendar</span>
+                      <span>{annualCalendar.templeName} — Official Annual Temple Calendar</span>
                     </h3>
                     <p className="text-xs text-[#5A382A] max-w-2xl leading-relaxed">
                       Official Devaswom publication poster containing {annualCalendar.visheshaDivasangal.length} Special Days (പ്രധാന വിശേഷങ്ങൾ), {annualCalendar.pradosham.length} Pradosham Dates (പ്രദോഷം), {annualCalendar.samkramam.length} Samkramam Dates (സംക്രമം), Pooja Timings, and Ulsavam schedule.

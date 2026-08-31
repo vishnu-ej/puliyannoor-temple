@@ -156,7 +156,7 @@ export const EventsSection: React.FC = () => {
                 <Calendar className="w-4 h-4 text-[#38050E]" />
                 <span>
                   {language === 'en'
-                    ? 'View Official Malayalam Calendar 1202 (2026–2027)'
+                    ? 'View Official Annual Temple Calendar 1202 (2026–2027)'
                     : '1202 -ാമാണ്ടിലെ പ്രധാന വിശേഷ ദിവസങ്ങൾ കാണുക'}
                 </span>
               </button>
