@@ -272,15 +272,6 @@ export default function AdminPage() {
     }
   };
 
-  // Logout any active devotee session on opening admin panel
-  const { logout: logoutDevotee, isAuthenticated: isDevoteeAuthenticated } = useAuth();
-
-  useEffect(() => {
-    if (isDevoteeAuthenticated) {
-      logoutDevotee();
-    }
-  }, [isDevoteeAuthenticated]);
-
   // Admin Forgot Password Modal State (OTP flow)
   const [isForgotPassModalOpen, setIsForgotPassModalOpen] = useState(false);
   const [forgotEmailOrUser, setForgotEmailOrUser] = useState('puliyannoordevaswom@gmail.com');

@@ -184,7 +184,7 @@ export const Header: React.FC = () => {
             </div>
 
             {/* Profile / Admin Button (Desktop) */}
-            {isAdminSession || pathname.startsWith('/admin') ? (
+            {pathname.startsWith('/admin') && isAdminSession ? (
               <Link
                 href="/admin?tab=profile"
                 onClick={() => {
@@ -247,7 +247,7 @@ export const Header: React.FC = () => {
           <div className="bg-[#FAF5E8] border-b border-[#C99738]/40 shadow-2xl p-4 sm:p-6 max-h-[calc(100vh-94px)] overflow-y-auto animate-slideDown">
             <div className="space-y-1">
               {/* Profile Link in Mobile Menu */}
-              {isAdminSession || pathname.startsWith('/admin') ? (
+              {pathname.startsWith('/admin') && isAdminSession ? (
                 <Link
                   href="/admin?tab=profile"
                   onClick={() => {
