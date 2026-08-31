@@ -1308,6 +1308,9 @@ function ProfileContent() {
               <div id="printable-single-receipt" className="p-6 sm:p-8 space-y-6 text-[#2B150F] bg-white print:p-4 print:space-y-4">
                 {/* Receipt Temple Header */}
                 <div className="text-center border-b-2 border-[#C99738] pb-4 space-y-1">
+                  <div className="w-12 h-12 rounded-full bg-[#610C1B] text-[#E6BE65] font-cinzel font-bold text-xl flex items-center justify-center mx-auto mb-1 border-2 border-[#C99738]">
+                    ॐ
+                  </div>
                   <h2 className="font-cinzel font-bold text-lg sm:text-xl text-[#38050E] tracking-wide">
                     PULIYANNOOR SREE MAHADEVA TEMPLE
                   </h2>
@@ -1443,7 +1446,42 @@ function ProfileContent() {
                       This is an official computer-generated receipt from Puliyannoor Ooranma Temple Devaswom portal for registered account {currentUser.email}. Prasadam may be collected directly from the temple counter upon presenting this receipt.
                     </p>
                   </div>
-                  <div className="text-center">
+                  
+                  {/* Authorized Signatory & Official Round RECEIVED Seal */}
+                  <div className="text-center flex flex-col items-center">
+                    {/* Official Circular "RECEIVED" Rubber Seal Logo */}
+                    <div className="w-20 h-20 mb-1 flex items-center justify-center select-none transform -rotate-6">
+                      <svg viewBox="0 0 100 100" className="w-20 h-20 text-[#1F4E34]">
+                        {/* Outer Dotted Ring */}
+                        <circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="3 2" />
+                        {/* Inner Double Solid Rings */}
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                        <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" strokeWidth="1" />
+                        
+                        {/* Top Arc Text */}
+                        <path id="seal-top-curve" d="M 20,50 A 30,30 0 0,1 80,50" fill="none" />
+                        <text className="text-[7.5px] font-extrabold uppercase tracking-widest" fill="currentColor">
+                          <textPath href="#seal-top-curve" startOffset="50%" textAnchor="middle">
+                            PULIYANNOOR
+                          </textPath>
+                        </text>
+
+                        {/* Center Box with bold RECEIVED */}
+                        <rect x="12" y="41" width="76" height="18" rx="3" fill="#1F4E34" />
+                        <text x="50" y="53.5" textAnchor="middle" fill="#FFFFFF" className="text-[9.5px] font-black tracking-widest font-sans">
+                          RECEIVED
+                        </text>
+
+                        {/* Bottom Arc Text */}
+                        <path id="seal-bottom-curve" d="M 80,50 A 30,30 0 0,1 20,50" fill="none" />
+                        <text className="text-[6.5px] font-bold uppercase tracking-wider" fill="currentColor">
+                          <textPath href="#seal-bottom-curve" startOffset="50%" textAnchor="middle">
+                            ★ DEVASWOM PALA ★
+                          </textPath>
+                        </text>
+                      </svg>
+                    </div>
+
                     <span className="text-[10px] font-bold text-[#8C6219] uppercase tracking-wider block print:text-black">
                       Authorized Signatory
                     </span>
