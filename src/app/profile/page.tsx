@@ -1193,159 +1193,44 @@ function ProfileContent() {
               </div>
             )}
 
-            {/* Account Security & Password Reset Section */}
-            <div className="pt-6 border-t border-[#E4D5AE] space-y-5">
-              <div className="flex items-center justify-between border-b border-[#E4D5AE] pb-3">
+            {/* Account Security & Password Management Action Buttons */}
+            <div className="pt-6 border-t border-[#E4D5AE] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E4D5AE] pb-3">
                 <div className="flex items-center gap-2.5">
-                  <Key className="w-5 h-5 text-[#610C1B]" />
+                  <div className="w-8 h-8 rounded-xl bg-[#610C1B]/10 border border-[#C99738]/40 flex items-center justify-center text-[#610C1B]">
+                    <Key className="w-4 h-4 text-[#610C1B]" />
+                  </div>
                   <div>
                     <h4 className="font-cinzel font-bold text-sm text-[#38050E] uppercase tracking-wider">
-                      Account Security & Password Reset (പാസ്‌വേഡ് മാറ്റുക / സുരക്ഷ)
+                      Account Security & Password (പാസ്‌വേഡ് സുരക്ഷ)
                     </h4>
                     <p className="text-xs text-[#5A382A]">
-                      For devotees registered via email and password. Reset or update your login credentials securely.
+                      Update your password directly or verify via an email OTP to reset your login credentials.
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] bg-[#FAF5E8] text-[#8C6219] font-mono px-2.5 py-1 rounded-full border border-[#E4D5AE] hidden sm:inline-block">
+                <span className="text-[10px] bg-[#FAF5E8] text-[#8C6219] font-mono px-2.5 py-1 rounded-full border border-[#E4D5AE] self-start sm:self-center">
                   Supabase Auth Protected
                 </span>
               </div>
 
-              {passwordStatusMsg && (
-                <div
-                  className={`p-3.5 rounded-2xl border text-xs font-semibold flex items-center gap-2 ${
-                    passwordStatusMsg.isError
-                      ? 'bg-rose-50 border-rose-200 text-rose-700'
-                      : 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                  }`}
+              {/* 2 Dedicated Action Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <Link
+                  href="/profile/change-password?mode=update"
+                  className="p-4 rounded-2xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2.5 transition-all active:scale-98 cursor-pointer group"
                 >
-                  <Info className="w-4 h-4 flex-shrink-0" />
-                  <span>{passwordStatusMsg.text}</span>
-                </div>
-              )}
+                  <Key className="w-4 h-4 text-[#E6BE65] group-hover:rotate-12 transition-transform" />
+                  <span>Update Password (പാസ്‌വേഡ് മാറ്റുക)</span>
+                </Link>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* Direct Password Update Form */}
-                <div className="lg:col-span-7 space-y-3">
-                  <h5 className="font-cinzel font-bold text-xs uppercase tracking-wider text-[#8C6219]">
-                    Set New Password Directly
-                  </h5>
-
-                  <form onSubmit={handleUpdateDevoteePassword} className="space-y-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel">
-                          New Password *
-                        </label>
-                        <div className="relative">
-                          <Lock className="w-4 h-4 text-[#8C6219] absolute left-3.5 top-3" />
-                          <input
-                            type={showPasswordFields ? 'text' : 'password'}
-                            required
-                            minLength={6}
-                            placeholder="Min 6 characters"
-                            value={newPasswordInput}
-                            onChange={(e) => setNewPasswordInput(e.target.value)}
-                            className="w-full pl-10 pr-3.5 py-2 rounded-xl border border-[#C99738] bg-white text-xs text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel">
-                          Confirm Password *
-                        </label>
-                        <div className="relative">
-                          <Lock className="w-4 h-4 text-[#8C6219] absolute left-3.5 top-3" />
-                          <input
-                            type={showPasswordFields ? 'text' : 'password'}
-                            required
-                            minLength={6}
-                            placeholder="Re-enter password"
-                            value={confirmPasswordInput}
-                            onChange={(e) => setConfirmPasswordInput(e.target.value)}
-                            className="w-full pl-10 pr-3.5 py-2 rounded-xl border border-[#C99738] bg-white text-xs text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setShowPasswordFields(!showPasswordFields)}
-                        className="text-xs text-[#8C6219] hover:text-[#610C1B] flex items-center gap-1.5 cursor-pointer font-medium"
-                      >
-                        {showPasswordFields ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                        <span>{showPasswordFields ? 'Hide password' : 'Show password'}</span>
-                      </button>
-
-                      <button
-                        type="submit"
-                        disabled={isUpdatingPassword}
-                        className="py-2 px-4 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] disabled:opacity-75 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
-                      >
-                        {isUpdatingPassword ? (
-                          <>
-                            <Clock className="w-3.5 h-3.5 animate-spin text-[#E6BE65]" />
-                            <span>Updating...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Key className="w-3.5 h-3.5 text-[#E6BE65]" />
-                            <span>Update Password</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-
-                {/* Email Reset Link Option */}
-                <div className="lg:col-span-5 p-4 rounded-2xl bg-[#FAF5E8] border border-[#E4D5AE] space-y-2.5">
-                  <div className="flex items-center gap-2 text-[#38050E] font-bold text-xs font-cinzel">
-                    <Mail className="w-4 h-4 text-[#610C1B]" />
-                    <span>Email Password Reset Link</span>
-                  </div>
-                  <p className="text-xs text-[#5A382A] leading-relaxed">
-                    Prefer to reset via a secure one-time link sent to <strong>{currentUser.email}</strong>?
-                  </p>
-                  <div className="space-y-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsOtpResetModalOpen(true);
-                        setProfileOtpStep('request');
-                        setProfileOtpError('');
-                        setProfileOtpSuccess('');
-                      }}
-                      className="w-full py-2.5 px-4 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white font-bold text-xs shadow-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                    >
-                      <Key className="w-3.5 h-3.5 text-[#E6BE65]" />
-                      <span>Forgot Current Password? Reset via OTP</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleSendResetEmail}
-                      disabled={isSendingResetEmail}
-                      className="w-full py-2 px-4 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] font-bold text-xs border border-[#C99738] shadow-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                    >
-                      {isSendingResetEmail ? (
-                        <>
-                          <Clock className="w-3.5 h-3.5 animate-spin text-[#610C1B]" />
-                          <span>Sending Link...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-3.5 h-3.5 text-[#610C1B]" />
-                          <span>Send Reset Link to Email</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
+                <Link
+                  href="/profile/change-password?mode=reset"
+                  className="p-4 rounded-2xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] font-bold text-xs sm:text-sm border-2 border-[#C99738] shadow-xs flex items-center justify-center gap-2.5 transition-all active:scale-98 cursor-pointer group"
+                >
+                  <Mail className="w-4 h-4 text-[#610C1B] group-hover:scale-110 transition-transform" />
+                  <span>Reset Password via OTP (OTP വഴി റീസെറ്റ് ചെയ്യുക)</span>
+                </Link>
               </div>
             </div>
           </div>
