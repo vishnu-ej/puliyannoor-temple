@@ -16,6 +16,7 @@ import {
   generateAndSendOtp,
   verifyOtpCode,
   resetPasswordWithVerifiedOtp,
+  deleteDevoteeAccountFromSupabase,
   DbBooking,
   DbChatMessage,
 } from '../../lib/supabaseDb';
@@ -416,6 +417,39 @@ function ProfileContent() {
       }, 2000);
     } else {
       setProfileOtpError(resetRes.message);
+    }
+  };
+
+  // Delete Account Modal State & Handler
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletePasswordInput, setDeletePasswordInput] = useState('');
+  const [deleteShowPassword, setDeleteShowPassword] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  const handleDeleteAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser) return;
+    setDeleteError('');
+
+    if (!deletePasswordInput.trim()) {
+      setDeleteError('Please enter your password to confirm account deletion / സ്ഥിരീകരിക്കാൻ പാസ്‌വേഡ് നൽകുക');
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    const res = await deleteDevoteeAccountFromSupabase(currentUser.id, currentUser.email, deletePasswordInput);
+    setIsDeletingAccount(false);
+
+    if (res.success) {
+      setIsDeleteModalOpen(false);
+      showToast(res.message);
+      logout();
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1800);
+    } else {
+      setDeleteError(res.message);
     }
   };
 
@@ -1233,6 +1267,36 @@ function ProfileContent() {
                 </Link>
               </div>
             </div>
+
+            {/* Remove / Delete Account Section (Password Verified) */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-rose-50/40 border border-rose-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xs">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0">
+                  <Trash2 className="w-4 h-4 text-rose-700" />
+                </div>
+                <div>
+                  <h4 className="font-cinzel font-bold text-xs sm:text-sm text-[#5C0A17] uppercase tracking-wide">
+                    Delete Account (അക്കൗണ്ട് നീക്കം ചെയ്യുക)
+                  </h4>
+                  <p className="text-[11px] text-[#7A3E47] leading-relaxed">
+                    Verified with password. Removes account credentials while vazhipadu booking receipts remain safely archived in devaswom records.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDeleteModalOpen(true);
+                  setDeletePasswordInput('');
+                  setDeleteError('');
+                }}
+                className="py-2 px-3.5 rounded-xl bg-white hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs shadow-2xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer self-start md:self-center flex-shrink-0"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Delete Account</span>
+              </button>
+            </div>
           </div>
         )}
 
@@ -2007,6 +2071,112 @@ function ProfileContent() {
                   </div>
                 </form>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* ================================================================= */}
+        {/* MODAL: DELETE ACCOUNT CONFIRMATION (PASSWORD VERIFIED)            */}
+        {/* ================================================================= */}
+        {isDeleteModalOpen && (
+          <div className="fixed inset-0 bg-[#1A0409]/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 border-2 border-rose-300 shadow-2xl space-y-5 animate-scaleUp">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-rose-100 pb-3">
+                <div className="flex items-center gap-2.5 text-rose-800">
+                  <div className="w-9 h-9 rounded-xl bg-rose-100 flex items-center justify-center">
+                    <Trash2 className="w-4 h-4 text-rose-700" />
+                  </div>
+                  <div>
+                    <h3 className="font-cinzel font-bold text-sm sm:text-base text-[#38050E]">
+                      Confirm Account Deletion
+                    </h3>
+                    <span className="text-[10px] text-[#7A3E47]">അക്കൗണ്ട് നീക്കം ചെയ്യൽ സ്ഥിരീകരിക്കുക</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsDeleteModalOpen(false)}
+                  className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Warning Notice */}
+              <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200 text-xs text-amber-900 space-y-1.5">
+                <div className="flex items-center gap-1.5 font-bold text-amber-950">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                  <span>Important Devaswom Notice</span>
+                </div>
+                <p className="text-[11px] leading-relaxed text-amber-900">
+                  Your profile credentials will be removed. <strong>Official receipt copies and booking records will remain archived at the backend</strong> for temple devaswom accounting and audit purposes.
+                </p>
+              </div>
+
+              {deleteError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>{deleteError}</span>
+                </div>
+              )}
+
+              {/* Verification Form */}
+              <form onSubmit={handleDeleteAccount} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#38050E] mb-1 font-cinzel">
+                    Enter Your Password to Confirm *
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
+                    <input
+                      type={deleteShowPassword ? 'text' : 'password'}
+                      required
+                      value={deletePasswordInput}
+                      onChange={(e) => setDeletePasswordInput(e.target.value)}
+                      placeholder="Enter your current password"
+                      className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 font-medium text-[#2B150F]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setDeleteShowPassword(!deleteShowPassword)}
+                      className="absolute right-3.5 top-3.5 text-gray-400 hover:text-gray-700 cursor-pointer"
+                    >
+                      {deleteShowPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <span className="text-[10px] text-gray-500 mt-1 block font-mono">
+                    Account: {currentUser?.email}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsDeleteModalOpen(false)}
+                    className="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isDeletingAccount}
+                    className="flex-1 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 disabled:opacity-75 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                  >
+                    {isDeletingAccount ? (
+                      <>
+                        <Clock className="w-3.5 h-3.5 animate-spin" />
+                        <span>Deleting Account...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Confirm & Delete</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

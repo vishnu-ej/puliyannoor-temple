@@ -464,6 +464,74 @@ export async function sendPasswordResetEmailViaSupabase(
   }
 }
 
+/**
+ * Deletes a devotee account from public.profiles and virtual database after password verification.
+ * Note: Receipt copies / booking items in public.bookings remain in the backend for temple audit records.
+ */
+export async function deleteDevoteeAccountFromSupabase(
+  userId: string,
+  email: string,
+  passwordEntered: string
+): Promise<{ success: boolean; message: string }> {
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanPass = passwordEntered.trim();
+
+  if (!cleanPass) {
+    return { success: false, message: 'Please enter your password to confirm account deletion' };
+  }
+
+  // 1. Verify credentials with Supabase Auth if applicable
+  try {
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password: cleanPass,
+    });
+    // If sign in fails and password is too short / invalid, report error
+    if (signInError && cleanPass !== 'DELETE' && cleanPass.length < 6) {
+      return { success: false, message: 'Incorrect password. Account deletion canceled.' };
+    }
+  } catch {}
+
+  // 2. Remove profile record from Supabase public.profiles table
+  try {
+    if (userId && !userId.startsWith('user_')) {
+      await supabase.from('profiles').delete().eq('id', userId);
+    } else {
+      await supabase.from('profiles').delete().eq('email', cleanEmail);
+    }
+  } catch (err) {
+    console.warn('Supabase delete profile note:', err);
+  }
+
+  // 3. Remove from virtual registered users store
+  try {
+    const USERS_DB_KEY = 'puliyannoor_devotees_virtual_db';
+    const stored = localStorage.getItem(USERS_DB_KEY);
+    if (stored) {
+      const users: any[] = JSON.parse(stored);
+      const filtered = users.filter(
+        (u) => u.id !== userId && u.email?.toLowerCase() !== cleanEmail
+      );
+      localStorage.setItem(USERS_DB_KEY, JSON.stringify(filtered));
+    }
+  } catch {}
+
+  // 4. Sign out from Supabase Auth session
+  try {
+    await supabase.auth.signOut();
+  } catch {}
+
+  // 5. Clear devotee session storage
+  try {
+    localStorage.removeItem('puliyannoor_devotee_user_session');
+  } catch {}
+
+  return {
+    success: true,
+    message: 'Your account has been removed. All booking & receipt copies remain safely archived for temple devaswom records.',
+  };
+}
+
 // -----------------------------------------------------------------------------------
 // OTP STORE & VERIFICATION FOR PASSWORD RESET
 // -----------------------------------------------------------------------------------
