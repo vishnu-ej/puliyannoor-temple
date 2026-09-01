@@ -468,10 +468,6 @@ function ProfileContent() {
       setEditDob(currentUser.dob || '');
       setEditPlace(currentUser.place || '');
 
-      if (!currentUser.phone || !currentUser.star || !currentUser.place) {
-        setIsEditing(true);
-      }
-
       // Fetch live records from Supabase tables
       loadSupabaseData();
     }
@@ -838,8 +834,14 @@ function ProfileContent() {
               onClick={() => {
                 setActiveTab('details');
                 setIsEditing(true);
+                setTimeout(() => {
+                  const el = document.getElementById('profile-details-section');
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }, 100);
               }}
-              className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center gap-1.5"
+              className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 active:scale-95"
             >
               <Edit3 className="w-3.5 h-3.5 text-[#E6BE65]" />
               <span>Complete Profile</span>
@@ -999,7 +1001,7 @@ function ProfileContent() {
         {/* TAB 1: PROFILE DETAILS */}
         {/* ================================================================= */}
         {activeTab === 'details' && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E4D5AE] shadow-sm space-y-6 animate-fadeIn">
+          <div id="profile-details-section" className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E4D5AE] shadow-sm space-y-6 animate-fadeIn scroll-mt-24">
             <div className="flex items-center justify-between border-b border-[#E4D5AE] pb-4">
               <div>
                 <h3 className="font-cinzel font-bold text-base sm:text-lg text-[#38050E]">
