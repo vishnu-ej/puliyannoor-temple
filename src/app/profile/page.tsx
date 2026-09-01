@@ -1193,43 +1193,43 @@ function ProfileContent() {
               </div>
             )}
 
-            {/* Account Security & Password Management Action Buttons */}
-            <div className="pt-6 border-t border-[#E4D5AE] space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E4D5AE] pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-[#610C1B]/10 border border-[#C99738]/40 flex items-center justify-center text-[#610C1B]">
-                    <Key className="w-4 h-4 text-[#610C1B]" />
-                  </div>
-                  <div>
-                    <h4 className="font-cinzel font-bold text-sm text-[#38050E] uppercase tracking-wider">
-                      Account Security & Password (പാസ്‌വേഡ് സുരക്ഷ)
-                    </h4>
-                    <p className="text-xs text-[#5A382A]">
-                      Update your password directly or verify via an email OTP to reset your login credentials.
-                    </p>
-                  </div>
+            {/* Account Security & Password Management (Compact Sleek Sub-Box) */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#610C1B] text-[#E6BE65] flex items-center justify-center shadow-xs flex-shrink-0">
+                  <Key className="w-4 h-4 text-[#E6BE65]" />
                 </div>
-                <span className="text-[10px] bg-[#FAF5E8] text-[#8C6219] font-mono px-2.5 py-1 rounded-full border border-[#E4D5AE] self-start sm:self-center">
-                  Supabase Auth Protected
-                </span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-cinzel font-bold text-xs sm:text-sm text-[#38050E] uppercase tracking-wide">
+                      Account Security (പാസ്‌വേഡ് സുരക്ഷ)
+                    </h4>
+                    <span className="text-[9px] bg-white text-[#8C6219] font-mono px-2 py-0.5 rounded-full border border-[#E4D5AE] hidden sm:inline-block">
+                      Protected
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#5A382A]">
+                    Update your password directly or verify via an email OTP code.
+                  </p>
+                </div>
               </div>
 
-              {/* 2 Dedicated Action Buttons */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              {/* Small, Compact Action Buttons Aligned Neatly */}
+              <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-start md:justify-end">
                 <Link
                   href="/profile/change-password?mode=update"
-                  className="p-4 rounded-2xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2.5 transition-all active:scale-98 cursor-pointer group"
+                  className="py-2 px-3.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
                 >
-                  <Key className="w-4 h-4 text-[#E6BE65] group-hover:rotate-12 transition-transform" />
-                  <span>Update Password (പാസ്‌വേഡ് മാറ്റുക)</span>
+                  <Key className="w-3.5 h-3.5 text-[#E6BE65]" />
+                  <span>Update Password</span>
                 </Link>
 
                 <Link
                   href="/profile/change-password?mode=reset"
-                  className="p-4 rounded-2xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] font-bold text-xs sm:text-sm border-2 border-[#C99738] shadow-xs flex items-center justify-center gap-2.5 transition-all active:scale-98 cursor-pointer group"
+                  className="py-2 px-3.5 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] font-bold text-xs border border-[#C99738] shadow-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
                 >
-                  <Mail className="w-4 h-4 text-[#610C1B] group-hover:scale-110 transition-transform" />
-                  <span>Reset Password via OTP (OTP വഴി റീസെറ്റ് ചെയ്യുക)</span>
+                  <Mail className="w-3.5 h-3.5 text-[#610C1B]" />
+                  <span>Reset via OTP</span>
                 </Link>
               </div>
             </div>

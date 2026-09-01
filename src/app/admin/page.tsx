@@ -3427,7 +3427,7 @@ export default function AdminPage() {
                     <span>•</span>
                     <span>Source: <strong className="text-[#1F4E34]">Supabase Database (Live)</strong></span>
                     <span>•</span>
-                    <span>Version: <strong className="font-mono text-[#610C1B] bg-[#FAF5E8] px-2 py-0.5 rounded border border-[#E4D5AE]">v2.1.0</strong></span>
+                    <span>Version: <strong className="font-mono text-[#610C1B] bg-[#FAF5E8] px-2 py-0.5 rounded border border-[#E4D5AE]">v2.0.0</strong></span>
                   </div>
                 </div>
               </div>
