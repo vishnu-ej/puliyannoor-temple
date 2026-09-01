@@ -476,9 +476,13 @@ interface StoredOtp {
 }
 
 /**
- * Generates a 6-digit secure OTP, sends it to the user email, and caches it
+ * Generates a 6-digit secure OTP, sends it to the user email via Resend API, and caches it
  */
-export function generateAndSendOtp(email: string): { success: boolean; otp: string; message: string } {
+export async function generateAndSendOtp(
+  email: string,
+  purpose: 'forgot_password' | 'admin_reset' | 'signup' = 'forgot_password',
+  name?: string
+): Promise<{ success: boolean; otp: string; message: string }> {
   const cleanEmail = email.trim().toLowerCase();
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
@@ -489,7 +493,23 @@ export function generateAndSendOtp(email: string): { success: boolean; otp: stri
     localStorage.setItem(OTP_STORE_KEY, JSON.stringify(store));
   } catch {}
 
-  // Trigger Supabase password reset email in background
+  // Dispatch real email via Resend /api/send-otp
+  try {
+    await fetch('/api/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: cleanEmail,
+        otp,
+        purpose,
+        name,
+      }),
+    });
+  } catch (err) {
+    console.warn('Resend mail dispatch note:', err);
+  }
+
+  // Trigger Supabase password reset email in background as fallback
   try {
     supabase.auth.resetPasswordForEmail(cleanEmail);
   } catch {}

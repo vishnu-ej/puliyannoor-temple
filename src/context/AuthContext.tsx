@@ -340,14 +340,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAuthModalTab('signup_step2');
   };
 
-  // Send OTP via email (Simulation / Resend API hook)
-  const sendOtp = async (email: string): Promise<{ success: boolean; otp?: string; message?: string }> => {
+  // Send OTP via email using Resend API
+  const sendOtp = async (email: string, name?: string): Promise<{ success: boolean; otp?: string; message?: string }> => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
+
+    try {
+      await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          otp: code,
+          purpose: 'signup',
+          name,
+        }),
+      });
+    } catch (e) {
+      console.warn('Resend mail send error:', e);
+    }
+
     return {
       success: true,
       otp: code,
-      message: `A 6-digit verification code has been sent to ${email} (Simulation OTP: ${code})`,
+      message: `A 6-digit verification code has been sent to ${email}`,
     };
   };
 

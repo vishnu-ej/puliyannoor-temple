@@ -116,7 +116,7 @@ export const AuthModal: React.FC = () => {
     }
 
     setIsSendingDevoteeOtp(true);
-    const res = generateAndSendOtp(forgotEmail);
+    const res = await generateAndSendOtp(forgotEmail, 'forgot_password');
     setIsSendingDevoteeOtp(false);
 
     if (res.success) {

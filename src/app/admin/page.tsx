@@ -306,7 +306,7 @@ export default function AdminPage() {
       ? forgotEmailOrUser.trim()
       : 'puliyannoordevaswom@gmail.com';
 
-    const res = generateAndSendOtp(targetEmail);
+    const res = await generateAndSendOtp(targetEmail, 'admin_reset', 'Devaswom Super Admin');
     setIsSendingForgotOtp(false);
 
     if (res.success) {

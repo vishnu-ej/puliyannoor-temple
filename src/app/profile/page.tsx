@@ -365,7 +365,7 @@ function ProfileContent() {
     setProfileOtpError('');
     setProfileOtpSuccess('');
     setIsSendingProfileOtp(true);
-    const res = generateAndSendOtp(currentUser.email);
+    const res = await generateAndSendOtp(currentUser.email, 'forgot_password', currentUser.name);
     setIsSendingProfileOtp(false);
     if (res.success) {
       setProfileOtpSuccess(res.message);
