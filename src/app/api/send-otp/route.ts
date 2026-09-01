@@ -27,6 +27,9 @@ export async function POST(req: Request) {
     } else if (purpose === 'forgot_password') {
       titleText = 'Devotee Password Reset OTP';
       purposeDescription = 'We received a request to reset the password for your devotee account. Use the OTP code below to verify and choose a new password.';
+    } else if (purpose === 'delete_account') {
+      titleText = 'Devotee Account Deletion Verification OTP';
+      purposeDescription = 'A request has been initiated to permanently delete your devotee account from Puliyannoor Sree Mahadeva Temple Portal. Enter the OTP code below to confirm account deletion.';
     } else if (purpose === 'admin_reset') {
       titleText = 'Devaswom Admin Security OTP';
       purposeDescription = 'A request has been initiated to reset the Administrative password for Puliyannoor Ooranma Devaswom. Enter this code to verify administrative authorization.';

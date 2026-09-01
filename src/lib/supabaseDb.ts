@@ -532,6 +532,69 @@ export async function deleteDevoteeAccountFromSupabase(
   };
 }
 
+/**
+ * Deletes a devotee account from public.profiles and virtual database after Email OTP verification.
+ * Perfect for Google Auth accounts or devotees without an active password.
+ * Note: Receipt copies / booking items in public.bookings remain in the backend for temple audit records.
+ */
+export async function deleteDevoteeAccountViaOtpFromSupabase(
+  userId: string,
+  email: string,
+  otpCode: string
+): Promise<{ success: boolean; message: string }> {
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanOtp = otpCode.trim();
+
+  if (!cleanOtp || cleanOtp.length !== 6) {
+    return { success: false, message: 'Please enter the valid 6-digit OTP verification code' };
+  }
+
+  // 1. Verify OTP code
+  const verifyRes = verifyOtpCode(cleanEmail, cleanOtp);
+  if (!verifyRes.success) {
+    return { success: false, message: verifyRes.message || 'Invalid or expired OTP code' };
+  }
+
+  // 2. Remove profile record from Supabase public.profiles table
+  try {
+    if (userId && !userId.startsWith('user_')) {
+      await supabase.from('profiles').delete().eq('id', userId);
+    } else {
+      await supabase.from('profiles').delete().eq('email', cleanEmail);
+    }
+  } catch (err) {
+    console.warn('Supabase delete profile note:', err);
+  }
+
+  // 3. Remove from virtual registered users store
+  try {
+    const USERS_DB_KEY = 'puliyannoor_devotees_virtual_db';
+    const stored = localStorage.getItem(USERS_DB_KEY);
+    if (stored) {
+      const users: any[] = JSON.parse(stored);
+      const filtered = users.filter(
+        (u) => u.id !== userId && u.email?.toLowerCase() !== cleanEmail
+      );
+      localStorage.setItem(USERS_DB_KEY, JSON.stringify(filtered));
+    }
+  } catch {}
+
+  // 4. Sign out from Supabase Auth session
+  try {
+    await supabase.auth.signOut();
+  } catch {}
+
+  // 5. Clear devotee session storage
+  try {
+    localStorage.removeItem('puliyannoor_devotee_user_session');
+  } catch {}
+
+  return {
+    success: true,
+    message: 'Your account has been removed. All booking & receipt copies remain safely archived for temple devaswom records.',
+  };
+}
+
 // -----------------------------------------------------------------------------------
 // OTP STORE & VERIFICATION FOR PASSWORD RESET
 // -----------------------------------------------------------------------------------
@@ -548,7 +611,7 @@ interface StoredOtp {
  */
 export async function generateAndSendOtp(
   email: string,
-  purpose: 'forgot_password' | 'admin_reset' | 'signup' = 'forgot_password',
+  purpose: 'forgot_password' | 'admin_reset' | 'signup' | 'delete_account' = 'forgot_password',
   name?: string
 ): Promise<{ success: boolean; otp: string; message: string }> {
   const cleanEmail = email.trim().toLowerCase();

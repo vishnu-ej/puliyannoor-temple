@@ -17,6 +17,7 @@ import {
   verifyOtpCode,
   resetPasswordWithVerifiedOtp,
   deleteDevoteeAccountFromSupabase,
+  deleteDevoteeAccountViaOtpFromSupabase,
   DbBooking,
   DbChatMessage,
 } from '../../lib/supabaseDb';
@@ -422,34 +423,98 @@ function ProfileContent() {
 
   // Delete Account Modal State & Handler
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteAuthMode, setDeleteAuthMode] = useState<'password' | 'otp'>('password');
   const [deletePasswordInput, setDeletePasswordInput] = useState('');
   const [deleteShowPassword, setDeleteShowPassword] = useState(false);
+  const [deleteOtpCode, setDeleteOtpCode] = useState('');
+  const [isSendingDeleteOtp, setIsSendingDeleteOtp] = useState(false);
+  const [deleteOtpSent, setDeleteOtpSent] = useState(false);
+  const [deleteOtpTimer, setDeleteOtpTimer] = useState(0);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [deleteError, setDeleteError] = useState('');
 
+  // Delete OTP Timer
+  useEffect(() => {
+    if (deleteOtpTimer > 0) {
+      const timer = setTimeout(() => setDeleteOtpTimer((prev) => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [deleteOtpTimer]);
+
+  // Open Delete Modal and default auth mode based on user type
+  const openDeleteAccountModal = () => {
+    if (!currentUser) return;
+    const isGoogle = Boolean(currentUser.avatar?.includes('google'));
+    setDeleteAuthMode(isGoogle ? 'otp' : 'password');
+    setDeletePasswordInput('');
+    setDeleteOtpCode('');
+    setDeleteOtpSent(false);
+    setDeleteError('');
+    setIsDeleteModalOpen(true);
+  };
+
+  // Send OTP for account deletion
+  const handleSendDeleteOtp = async () => {
+    if (!currentUser?.email) return;
+    setDeleteError('');
+    setIsSendingDeleteOtp(true);
+    const res = await generateAndSendOtp(currentUser.email, 'delete_account', currentUser.name);
+    setIsSendingDeleteOtp(false);
+
+    if (res.success) {
+      setDeleteOtpSent(true);
+      setDeleteOtpTimer(60);
+      showToast('OTP code dispatched to your registered email!');
+    } else {
+      setDeleteError('Failed to dispatch OTP. Please try again.');
+    }
+  };
+
+  // Execute Account Deletion (via Password or OTP)
   const handleDeleteAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) return;
     setDeleteError('');
 
-    if (!deletePasswordInput.trim()) {
-      setDeleteError('Please enter your password to confirm account deletion / സ്ഥിരീകരിക്കാൻ പാസ്‌വേഡ് നൽകുക');
-      return;
-    }
+    if (deleteAuthMode === 'password') {
+      if (!deletePasswordInput.trim()) {
+        setDeleteError('Please enter your password to confirm account deletion / സ്ഥിരീകരിക്കാൻ പാസ്‌വേഡ് നൽകുക');
+        return;
+      }
+      setIsDeletingAccount(true);
+      const res = await deleteDevoteeAccountFromSupabase(currentUser.id, currentUser.email, deletePasswordInput);
+      setIsDeletingAccount(false);
 
-    setIsDeletingAccount(true);
-    const res = await deleteDevoteeAccountFromSupabase(currentUser.id, currentUser.email, deletePasswordInput);
-    setIsDeletingAccount(false);
-
-    if (res.success) {
-      setIsDeleteModalOpen(false);
-      showToast(res.message);
-      logout();
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1800);
+      if (res.success) {
+        setIsDeleteModalOpen(false);
+        showToast(res.message);
+        logout();
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1800);
+      } else {
+        setDeleteError(res.message);
+      }
     } else {
-      setDeleteError(res.message);
+      // OTP Verification Mode
+      if (!deleteOtpCode.trim() || deleteOtpCode.trim().length !== 6) {
+        setDeleteError('Please enter the 6-digit OTP code sent to your email');
+        return;
+      }
+      setIsDeletingAccount(true);
+      const res = await deleteDevoteeAccountViaOtpFromSupabase(currentUser.id, currentUser.email, deleteOtpCode);
+      setIsDeletingAccount(false);
+
+      if (res.success) {
+        setIsDeleteModalOpen(false);
+        showToast(res.message);
+        logout();
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1800);
+      } else {
+        setDeleteError(res.message);
+      }
     }
   };
 
@@ -1288,11 +1353,7 @@ function ProfileContent() {
 
               <button
                 type="button"
-                onClick={() => {
-                  setIsDeleteModalOpen(true);
-                  setDeletePasswordInput('');
-                  setDeleteError('');
-                }}
+                onClick={openDeleteAccountModal}
                 className="py-2 px-3.5 rounded-xl bg-white hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs shadow-2xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer self-start md:self-center flex-shrink-0"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -2123,36 +2184,121 @@ function ProfileContent() {
                 </div>
               )}
 
-              {/* Verification Form */}
+              {/* Verification Form (Password or OTP Mode) */}
               <form onSubmit={handleDeleteAccount} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#38050E] mb-1 font-cinzel">
-                    Enter Your Password to Confirm *
-                  </label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
-                    <input
-                      type={deleteShowPassword ? 'text' : 'password'}
-                      required
-                      value={deletePasswordInput}
-                      onChange={(e) => setDeletePasswordInput(e.target.value)}
-                      placeholder="Enter your current password"
-                      className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 font-medium text-[#2B150F]"
-                    />
+                {deleteAuthMode === 'password' ? (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[#38050E] mb-1 font-cinzel">
+                        Enter Your Password to Confirm *
+                      </label>
+                      <div className="relative">
+                        <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
+                        <input
+                          type={deleteShowPassword ? 'text' : 'password'}
+                          required
+                          value={deletePasswordInput}
+                          onChange={(e) => setDeletePasswordInput(e.target.value)}
+                          placeholder="Enter your current password"
+                          className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 font-medium text-[#2B150F]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setDeleteShowPassword(!deleteShowPassword)}
+                          className="absolute right-3.5 top-3.5 text-gray-400 hover:text-gray-700 cursor-pointer"
+                        >
+                          {deleteShowPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      <span className="text-[10px] text-gray-500 mt-1 block font-mono">
+                        Account: {currentUser?.email}
+                      </span>
+                    </div>
+
+                    {/* Switcher for Google Auth / No Password Users */}
                     <button
                       type="button"
-                      onClick={() => setDeleteShowPassword(!deleteShowPassword)}
-                      className="absolute right-3.5 top-3.5 text-gray-400 hover:text-gray-700 cursor-pointer"
+                      onClick={() => {
+                        setDeleteAuthMode('otp');
+                        setDeleteError('');
+                      }}
+                      className="text-[11px] text-[#8C6219] hover:text-[#610C1B] hover:underline font-semibold flex items-center gap-1.5 cursor-pointer pt-1 transition-colors"
                     >
-                      {deleteShowPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      <Mail className="w-3.5 h-3.5 text-[#610C1B]" />
+                      <span>Signed in via Google or no password? Verify via Email OTP instead</span>
                     </button>
                   </div>
-                  <span className="text-[10px] text-gray-500 mt-1 block font-mono">
-                    Account: {currentUser?.email}
-                  </span>
-                </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[#38050E] mb-1 font-cinzel">
+                        Email OTP Verification
+                      </label>
+                      <div className="p-3 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] text-xs text-[#5A382A] flex items-center justify-between gap-2">
+                        <span className="font-medium text-[#38050E] truncate">{currentUser?.email}</span>
+                        {deleteOtpSent && deleteOtpTimer > 0 ? (
+                          <span className="text-[10px] font-mono text-[#8C6219] whitespace-nowrap">
+                            Resend in {deleteOtpTimer}s
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={handleSendDeleteOtp}
+                            disabled={isSendingDeleteOtp}
+                            className="px-2.5 py-1 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-[11px] font-bold transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1 disabled:opacity-75"
+                          >
+                            {isSendingDeleteOtp ? (
+                              <>
+                                <Clock className="w-3 h-3 animate-spin" />
+                                <span>Sending...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Send className="w-3 h-3" />
+                                <span>{deleteOtpSent ? 'Resend OTP' : 'Send Code'}</span>
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </div>
 
-                <div className="flex items-center gap-3 pt-2">
+                    {deleteOtpSent && (
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-[#38050E] mb-1 font-cinzel">
+                          Enter 6-Digit OTP Code *
+                        </label>
+                        <input
+                          type="text"
+                          maxLength={6}
+                          required
+                          value={deleteOtpCode}
+                          onChange={(e) => setDeleteOtpCode(e.target.value.replace(/\D/g, ''))}
+                          placeholder="123456"
+                          className="w-full text-center tracking-[0.3em] font-mono text-lg py-2 rounded-xl border-2 border-rose-300 text-rose-950 font-bold focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        />
+                        <span className="text-[10px] text-gray-500 mt-1 block">
+                          Check your inbox for the 6-digit verification code.
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Switcher back to password */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeleteAuthMode('password');
+                        setDeleteError('');
+                      }}
+                      className="text-[11px] text-[#8C6219] hover:text-[#610C1B] hover:underline font-semibold flex items-center gap-1.5 cursor-pointer pt-1 transition-colors"
+                    >
+                      <Key className="w-3.5 h-3.5 text-[#610C1B]" />
+                      <span>Or verify deletion using Account Password instead</span>
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
                   <button
                     type="button"
                     onClick={() => setIsDeleteModalOpen(false)}
@@ -2162,8 +2308,8 @@ function ProfileContent() {
                   </button>
                   <button
                     type="submit"
-                    disabled={isDeletingAccount}
-                    className="flex-1 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 disabled:opacity-75 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                    disabled={isDeletingAccount || (deleteAuthMode === 'otp' && !deleteOtpSent)}
+                    className="flex-1 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 disabled:opacity-50 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                   >
                     {isDeletingAccount ? (
                       <>
