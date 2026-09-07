@@ -77,6 +77,26 @@ export async function getProfileFromSupabase(userId: string): Promise<DbProfile 
   }
 }
 
+export async function getProfileByEmailFromSupabase(email: string): Promise<DbProfile | null> {
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('email', cleanEmail)
+      .limit(1)
+      .maybeSingle();
+
+    if (error || !data) {
+      return null;
+    }
+    return data as DbProfile;
+  } catch (err) {
+    console.warn('Supabase getProfileByEmail exception:', err);
+    return null;
+  }
+}
+
 export async function upsertProfileInSupabase(profile: Partial<DbProfile> & { id: string }): Promise<DbProfile | null> {
   try {
     const payload = {

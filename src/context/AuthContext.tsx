@@ -40,7 +40,7 @@ interface AuthContextType {
   closeAuthModal: () => void;
   setAuthModalTab: (tab: 'login' | 'signup_step1' | 'signup_step2' | 'signup_otp' | 'forgot_password') => void;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  loginWithGoogle: (redirectPath?: string) => Promise<{ success: boolean; error?: string }>;
   startSignupStep1: (email: string, password: string) => void;
   sendOtp: (email: string) => Promise<{ success: boolean; otp?: string; message?: string }>;
   verifyOtpAndRegister: (otpEntered: string, profileDetails: Omit<UserProfile, 'id' | 'createdAt' | 'email'>) => Promise<{ success: boolean; error?: string }>;
@@ -159,8 +159,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       });
 
+      const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === STORAGE_KEY || !e.key) {
+          try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+              setCurrentUser(JSON.parse(stored));
+            } else {
+              setCurrentUser(null);
+            }
+          } catch {}
+        }
+      };
+      window.addEventListener('storage', handleStorageChange);
+
       return () => {
         authListener?.subscription?.unsubscribe();
+        window.removeEventListener('storage', handleStorageChange);
       };
     } catch (e) {
       console.warn('Supabase Auth Listener Error:', e);
@@ -270,64 +285,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: true };
   };
 
-  // Sign in / Sign up with Google OAuth via Supabase
-  const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+  // Sign in / Sign up with Direct Google OAuth 2.0 (Direct connection via Client ID & Secret)
+  const loginWithGoogle = async (redirectPath?: string): Promise<{ success: boolean; error?: string }> => {
     clearAdminSession();
     try {
-      const redirectOrigin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${redirectOrigin}/profile`,
-        },
-      });
-
-      if (error) {
-        console.warn('Supabase Google OAuth initiation message:', error.message);
-        // Clean un-prefilled Google pilgrim login
-        const newGoogleUser: UserProfile = {
-          id: `user_google_${Date.now()}`,
-          name: 'Devotee Pilgrim',
-          email: 'devotee.pilgrim@gmail.com',
-          phone: '',
-          dob: '',
-          place: '',
-          star: '',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-          createdAt: Date.now(),
-        };
-
-        const users = getRegisteredUsers();
-        if (!users.some((u) => u.email === newGoogleUser.email)) {
-          saveRegisteredUsers([...users, newGoogleUser]);
-        }
-
-        setCurrentUser(newGoogleUser);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newGoogleUser));
-        clearAdminSession();
-        closeAuthModal();
+      const target = redirectPath || redirectAfterAuth || '/profile';
+      if (typeof window !== 'undefined') {
+        window.location.href = `/api/auth/google?redirect=${encodeURIComponent(target)}`;
         return { success: true };
       }
-
-      return { success: true };
-    } catch {
-      const newGoogleUser: UserProfile = {
-        id: `user_google_${Date.now()}`,
-        name: 'Devotee Pilgrim',
-        email: 'devotee.pilgrim@gmail.com',
-        phone: '',
-        dob: '',
-        place: '',
-        star: '',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-        createdAt: Date.now(),
-      };
-
-      setCurrentUser(newGoogleUser);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newGoogleUser));
-      clearAdminSession();
-      closeAuthModal();
-      return { success: true };
+      return { success: false, error: 'Window not available' };
+    } catch (err: any) {
+      console.error('Direct Google OAuth initiation error:', err);
+      return { success: false, error: err.message || 'Failed to initiate Direct Google OAuth' };
     }
   };
 

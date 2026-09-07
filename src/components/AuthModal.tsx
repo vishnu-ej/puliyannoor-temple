@@ -228,18 +228,11 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  // Handle Google OAuth
+  // Handle Direct Google OAuth
   const handleGoogleAuth = async () => {
     setIsSubmitting(true);
-    const res = await loginWithGoogle();
-    setIsSubmitting(false);
-    if (res.success) {
-      if (redirectAfterAuth) {
-        router.push(redirectAfterAuth);
-      } else {
-        router.push('/profile');
-      }
-    }
+    const target = redirectAfterAuth || '/profile';
+    await loginWithGoogle(target);
   };
 
   // Handle Sign Up Step 1 Submit
