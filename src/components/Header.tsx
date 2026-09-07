@@ -86,9 +86,10 @@ export const Header: React.FC = () => {
             <a
               href="tel:+918891346001"
               className="hidden lg:inline-flex items-center gap-1.5 text-[#FAF5E8]/85 hover:text-[#E6BE65] transition-colors"
+              title="Devaswom Office: 88913 46001 / 96057 52642"
             >
               <PhoneCall className="w-3 h-3 text-[#C99738]" />
-              <span className="text-[11px] font-medium">Devaswom Office</span>
+              <span className="text-[11px] font-medium">Devaswom Office: 88913 46001 / 96057 52642</span>
             </a>
           </div>
         </div>

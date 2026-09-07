@@ -74,6 +74,8 @@ export interface TempleContactInfo {
   email: string;
   phone: string;
   phoneDisplay: string;
+  phone2?: string;
+  phone2Display?: string;
   whatsapp: string;
   whatsappDisplay: string;
   address: string;
@@ -95,6 +97,8 @@ const DEFAULT_CONTACT_INFO: TempleContactInfo = {
   email: 'puliyannoordevaswom@gmail.com',
   phone: '+918891346001',
   phoneDisplay: '+91 88913 46001',
+  phone2: '+919605752642',
+  phone2Display: '+91 96057 52642',
   whatsapp: '918891346001',
   whatsappDisplay: '+91 88913 46001',
   address: 'PM34+XQ6, Puliyannoor, Mutholy, Pala, Kottayam District, Kerala 686573, India',
@@ -307,6 +311,10 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ) {
           parsed.phone = '+918891346001';
           parsed.phoneDisplay = '+91 88913 46001';
+        }
+        if (!parsed.phone2) {
+          parsed.phone2 = '+919605752642';
+          parsed.phone2Display = '+91 96057 52642';
         }
         if (
           !parsed.whatsapp ||

@@ -382,7 +382,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
               <p className="text-[11px] text-[#5A382A] italic">
                 {language === 'en'
                   ? '* Devotees transferring funds for major poojas or Annadanam are kindly requested to share the transaction screenshot to the Devaswom WhatsApp or email puliyannoordevaswom@gmail.com.'
-                  : '* ബാങ്ക് വഴി വഴിപാടുകൾക്ക് തുക അയക്കുന്ന ഭക്തർ രസീത് ദേവസ്വം വാട്സാപ്പിൽ (+91 94470 00000) അല്ലെങ്കിൽ puliyannoordevaswom@gmail.com ൽ അയച്ചു നൽകണമെന്ന് അഭ്യർത്ഥിക്കുന്നു.'}
+                  : '* ബാങ്ക് വഴി വഴിപാടുകൾക്ക് തുക അയക്കുന്ന ഭക്തർ രസീത് ദേവസ്വം വാട്സാപ്പിൽ (+91 88913 46001 / +91 96057 52642) അല്ലെങ്കിൽ puliyannoordevaswom@gmail.com ൽ അയച്ചു നൽകണമെന്ന് അഭ്യർത്ഥിക്കുന്നു.'}
               </p>
             </div>
 

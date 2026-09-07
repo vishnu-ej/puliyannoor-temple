@@ -67,12 +67,22 @@ export const ContactSection: React.FC = () => {
                 {t('contact_phone_desc')}
               </p>
             </div>
-            <a
-              href={`tel:${contactInfo.phone}`}
-              className="font-cinzel font-bold text-xs sm:text-sm text-[#610C1B] hover:text-[#8B1428] underline underline-offset-4"
-            >
-              {contactInfo.phoneDisplay}
-            </a>
+            <div className="flex flex-col gap-1.5 items-center">
+              <a
+                href={`tel:${contactInfo.phone}`}
+                className="font-cinzel font-bold text-xs sm:text-sm text-[#610C1B] hover:text-[#8B1428] underline underline-offset-4"
+              >
+                {contactInfo.phoneDisplay}
+              </a>
+              {contactInfo.phone2 && (
+                <a
+                  href={`tel:${contactInfo.phone2}`}
+                  className="font-cinzel font-bold text-xs sm:text-sm text-[#610C1B] hover:text-[#8B1428] underline underline-offset-4"
+                >
+                  {contactInfo.phone2Display || contactInfo.phone2}
+                </a>
+              )}
+            </div>
           </div>
 
           {/* Email Card */}

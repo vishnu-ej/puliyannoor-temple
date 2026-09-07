@@ -3007,10 +3007,17 @@ export default function AdminPage() {
                       </div>
 
                       <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
-                        <span className="text-[#8C6219] font-bold block mb-1">Office Phone Number:</span>
-                        <span className="font-mono text-sm font-bold text-[#38050E]">
-                          {contactInfo.phoneDisplay}
-                        </span>
+                        <span className="text-[#8C6219] font-bold block mb-1">Office Phone Numbers:</span>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="font-mono text-sm font-bold text-[#38050E]">
+                            Contact 1: {contactInfo.phoneDisplay}
+                          </span>
+                          {contactInfo.phone2Display && (
+                            <span className="font-mono text-sm font-bold text-[#38050E]">
+                              Contact 2: {contactInfo.phone2Display}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="bg-white p-3.5 rounded-xl border border-[#E4D5AE]">
@@ -3182,11 +3189,22 @@ export default function AdminPage() {
                           <input
                             type="text"
                             value={contactForm.phoneDisplay}
-                            onChange={(e) => setContactForm({ ...contactForm, phoneDisplay: e.target.value })}
+                            onChange={(e) => setContactForm({ ...contactForm, phoneDisplay: e.target.value, phone: e.target.value.replace(/\s+/g, '') })}
                             placeholder="e.g. +91 88913 46001"
                             className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-[#8C6219] mb-1">Contact 2 (Secondary Phone)</label>
+                        <input
+                          type="text"
+                          value={contactForm.phone2Display || ''}
+                          onChange={(e) => setContactForm({ ...contactForm, phone2Display: e.target.value, phone2: e.target.value.replace(/\s+/g, '') })}
+                          placeholder="e.g. +91 96057 52642"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm font-mono"
+                        />
                       </div>
 
                       <div>

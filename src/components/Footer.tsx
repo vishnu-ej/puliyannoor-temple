@@ -134,6 +134,15 @@ export const Footer: React.FC = () => {
                 <Phone className="w-3.5 h-3.5 text-[#C99738]" />
                 <span>{contactInfo.phoneDisplay}</span>
               </a>
+              {contactInfo.phone2 && (
+                <a
+                  href={`tel:${contactInfo.phone2}`}
+                  className="inline-flex items-center gap-1.5 text-xs text-[#FAF5E8]/80 hover:text-[#E6BE65] transition-colors"
+                >
+                  <Phone className="w-3.5 h-3.5 text-[#C99738]" />
+                  <span>{contactInfo.phone2Display || contactInfo.phone2}</span>
+                </a>
+              )}
             </div>
 
             <div className="pt-2">
