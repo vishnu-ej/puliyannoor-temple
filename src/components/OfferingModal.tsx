@@ -17,7 +17,8 @@ import {
   MapPin,
   Send,
   ShoppingCart,
-  Plus,
+  Phone,
+  MessageSquare,
 } from 'lucide-react';
 
 interface OfferingModalProps {
@@ -31,9 +32,10 @@ export const OfferingModal: React.FC<OfferingModalProps> = ({
   onClose,
   initialOffering,
 }) => {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const { addToCart } = useCart();
   const { offerings, contactInfo } = useContent();
+
   const [selectedOfferingId, setSelectedOfferingId] = useState<string>(
     initialOffering?.id || (offerings[0] ? offerings[0].id : 'udayasthamana_pooja')
   );
@@ -84,14 +86,18 @@ export const OfferingModal: React.FC<OfferingModalProps> = ({
       if (!familyName.trim() || !place.trim()) {
         alert(
           language === 'en'
-            ? 'Please enter Family Name and Place for Koottu Namaskaram'
+            ? 'Please enter Family / Illam Name and Place for Koottu Namaskaram'
             : 'കൂട്ടനമസ്കാരത്തിനായി കുടുംബപ്പേരും സ്ഥലവും നൽകുക'
         );
         return;
       }
     } else {
       if (!devoteeName.trim()) {
-        alert(language === 'en' ? 'Please enter devotee name' : 'ഭക്തന്റെ പേര് നൽകുക');
+        alert(
+          language === 'en'
+            ? 'Please enter Devotee Name'
+            : 'ഭക്തന്റെ പേര് രേഖപ്പെടുത്തുക'
+        );
         return;
       }
     }
@@ -124,12 +130,12 @@ export const OfferingModal: React.FC<OfferingModalProps> = ({
     if (!currentOffering) return;
     let devoteeInfo = '';
     if (isKoottuNamaskaram) {
-      devoteeInfo = `*Family Name:* ${familyName.trim() || 'Not specified'}\n*Place:* ${place.trim() || 'Not specified'}`;
+      devoteeInfo = `*Family Name (കുടുംബപ്പേര്):* ${familyName.trim() || 'Not specified'}\n*Place (സ്ഥലം):* ${place.trim() || 'Not specified'}`;
     } else {
       const starName = selectedStar
         ? `${selectedStar.nameEn} (${selectedStar.nameMl})`
         : 'Not specified';
-      devoteeInfo = `*Devotee Name:* ${devoteeName.trim() || 'Not specified'}\n*Birth Star (നക്ഷത്രം):* ${starName}`;
+      devoteeInfo = `*Devotee Name (ഭക്തന്റെ പേര്):* ${devoteeName.trim() || 'Not specified'}\n*Birth Star (നക്ഷത്രം):* ${starName}`;
     }
 
     const message = `*Puliyannoor Sree Mahadeva Temple - Vazhipadu Inquiry*
@@ -149,266 +155,356 @@ _Inquiry submitted via official temple web portal_`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A0409]/75 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1A0409]/80 backdrop-blur-sm animate-fadeIn">
+      {/* Outer Modal Container with overflow-hidden to keep scrollbar strictly inside rounded boundaries */}
       <div
-        className="glass-panel rounded-3xl max-w-lg w-full p-6 sm:p-8 border-2 border-[#C99738] shadow-2xl relative max-h-[92vh] overflow-y-auto bg-[#FAF5E8] animate-scaleUp"
+        className="relative w-full max-w-lg max-h-[90vh] flex flex-col rounded-3xl bg-[#FFFDF9] border-2 border-[#C99738] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] overflow-hidden animate-scaleUp"
         role="dialog"
         aria-modal="true"
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full text-[#8C6219] hover:bg-[#610C1B] hover:text-[#FAF5E8] transition-colors cursor-pointer"
-          aria-label="Close modal"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* Fixed Header */}
+        <div className="shrink-0 bg-gradient-to-r from-[#1A0409] via-[#38050E] to-[#610C1B] text-[#FAF5E8] px-5 sm:px-6 py-4 border-b border-[#C99738]/40 flex items-center justify-between relative">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#C99738]/20 border border-[#C99738]/50 flex items-center justify-center text-[#E6BE65] shadow-inner">
+              <Sparkles className="w-5 h-5 text-[#E6BE65]" />
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider text-[#E6BE65]/90">
+                <span>ॐ ശ്രീ പുളിയന്നൂർ മഹാദേവ ക്ഷേത്രം ॐ</span>
+              </div>
+              <h2 className="font-cinzel text-lg sm:text-xl font-bold text-[#FFFDF9] leading-snug">
+                {language === 'en' ? 'Offering Booking & Inquiry' : 'വഴിപാട് ബുക്കിംഗും അന്വേഷണവും'}
+              </h2>
+            </div>
+          </div>
 
-        {/* Modal Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#610C1B]/10 border border-[#610C1B]/20 text-xs font-bold text-[#610C1B] uppercase tracking-wider mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-[#C99738]" />
-            <span>{language === 'en' ? 'Offering Inquiry' : 'വഴിപാട് അന്വേഷണം'}</span>
-          </div>
-          <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-[#38050E]">
-            {currentOffering?.name[language]}
-          </h2>
-          <div className="font-malayalam-sans text-xs text-[#8C6219] font-semibold mt-0.5">
-            {currentOffering?.name[language === 'en' ? 'ml' : 'en']}
-          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full text-[#E6BE65] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="Close modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        {/* Selected Offering Info Box */}
-        <div className="rounded-2xl p-4 bg-gradient-to-r from-[#610C1B] to-[#38050E] text-[#FAF5E8] mb-6 shadow-md border border-[#C99738]/40">
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <span className="text-[10px] uppercase tracking-wider text-[#E6BE65] font-semibold block">
-                {language === 'en' ? 'Offering Rate' : 'വഴിപാട് നിരക്ക്'}
-              </span>
-              <span className="font-cinzel text-xl sm:text-2xl font-extrabold text-[#FAF5E8]">
-                ₹{currentOffering?.price.toLocaleString('en-IN')}
-              </span>
+        {/* Scrollable Body - Scrollbar is safely contained inside the rounded container */}
+        <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-4 overscroll-contain [scrollbar-width:thin] [scrollbar-color:#C99738_#FFFDF9]">
+          {/* Selected Offering Details Banner */}
+          <div className="rounded-2xl p-4 bg-gradient-to-br from-[#38050E] to-[#610C1B] text-[#FAF5E8] shadow-md border border-[#C99738]/50">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <span className="text-[10px] uppercase tracking-wider text-[#E6BE65] font-semibold block mb-0.5">
+                  {language === 'en' ? 'Selected Vazhipadu' : 'തിരഞ്ഞെടുത്ത വഴിപാട്'}
+                </span>
+                <h3 className="font-cinzel text-lg sm:text-xl font-bold text-white truncate">
+                  {currentOffering?.name[language]}
+                </h3>
+                <p className="font-malayalam-sans text-xs text-[#E6BE65] mt-0.5">
+                  {currentOffering?.name[language === 'en' ? 'ml' : 'en']}
+                </p>
+              </div>
+
+              <div className="text-right shrink-0">
+                <span className="text-[10px] uppercase tracking-wider text-[#FAF5E8]/70 block mb-0.5">
+                  {language === 'en' ? 'Total Rate' : 'ആകെ നിരക്ക്'}
+                </span>
+                <div className="font-cinzel text-xl sm:text-2xl font-black text-[#E6BE65]">
+                  ₹{(currentOffering ? currentOffering.price * quantity : 0).toLocaleString('en-IN')}
+                </div>
+              </div>
             </div>
 
             {/* Quantity Selector */}
-            <div className="flex items-center gap-2 bg-[#FAF5E8]/15 px-3 py-1.5 rounded-xl border border-[#FAF5E8]/30">
-              <span className="text-xs text-[#FAF5E8]/80 font-medium">Qty:</span>
-              <div className="flex items-center gap-2">
+            <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between">
+              <span className="text-xs text-[#FAF5E8]/90 font-medium">
+                {language === 'en' ? 'Quantity (എണ്ണം):' : 'വഴിപാടുകളുടെ എണ്ണം:'}
+              </span>
+              <div className="flex items-center gap-2 bg-black/30 px-2.5 py-1 rounded-xl border border-[#C99738]/40">
                 <button
                   type="button"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-6 h-6 rounded-md bg-[#FAF5E8]/20 text-[#FAF5E8] font-bold text-xs flex items-center justify-center hover:bg-[#FAF5E8]/40 cursor-pointer"
+                  className="w-6 h-6 rounded bg-white/15 hover:bg-white/30 text-[#FAF5E8] font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                  aria-label="Decrease quantity"
                 >
-                  -
+                  −
                 </button>
-                <span className="font-mono font-bold text-sm text-[#E6BE65] min-w-[16px] text-center">
+                <span className="font-mono font-bold text-sm text-[#E6BE65] min-w-[20px] text-center">
                   {quantity}
                 </span>
                 <button
                   type="button"
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-6 h-6 rounded-md bg-[#FAF5E8]/20 text-[#FAF5E8] font-bold text-xs flex items-center justify-center hover:bg-[#FAF5E8]/40 cursor-pointer"
+                  className="w-6 h-6 rounded bg-white/15 hover:bg-white/30 text-[#FAF5E8] font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
+                  aria-label="Increase quantity"
                 >
                   +
                 </button>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Form Container */}
-        <form onSubmit={handleAddToCart} className="space-y-4">
-          {/* Select Offering Dropdown */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-              {language === 'en' ? 'Select Offering' : 'വഴിപാട് തിരഞ്ഞെടുക്കുക'}
-            </label>
-            <select
-              value={selectedOfferingId}
-              onChange={(e) => setSelectedOfferingId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-            >
-              {offerings.map((off) => (
-                <option key={off.id} value={off.id}>
-                  #{off.slNo} - {off.name.ml} / {off.name.en} (₹{off.price.toLocaleString('en-IN')})
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Booking Form */}
+          <form onSubmit={handleAddToCart} className="space-y-4">
+            {/* Choose Offering Dropdown */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1.5 font-cinzel">
+                {language === 'en' ? 'Choose Offering (വഴിപാട്)' : 'വഴിപാട് തിരഞ്ഞെടുക്കുക'}
+              </label>
+              <select
+                value={selectedOfferingId}
+                onChange={(e) => setSelectedOfferingId(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#C99738]/50 bg-white text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] focus:border-[#610C1B] font-medium shadow-sm transition-all"
+              >
+                {offerings.map((off) => (
+                  <option key={off.id} value={off.id}>
+                    #{off.slNo} - {off.name.ml} / {off.name.en} (₹{off.price.toLocaleString('en-IN')})
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Conditional Fields: Koottu Namaskaram vs Regular Offering */}
-          {isKoottuNamaskaram ? (
-            <div className="p-3.5 rounded-2xl bg-[#C99738]/15 border border-[#C99738]/40 space-y-3">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#610C1B] font-cinzel">
-                <Home className="w-4 h-4 text-[#C99738]" />
-                <span>Koottu Namaskaram Details / കൂട്ടനമസ്കാരം വിവരങ്ങൾ</span>
+            {/* Conditional Details: Koottu Namaskaram vs Regular Offering */}
+            {isKoottuNamaskaram ? (
+              <div className="p-4 rounded-2xl bg-[#C99738]/10 border border-[#C99738]/40 space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#610C1B] font-cinzel">
+                  <Home className="w-4 h-4 text-[#C99738]" />
+                  <span>
+                    {language === 'en'
+                      ? 'Koottu Namaskaram Family Details'
+                      : 'കൂട്ടനമസ്കാരം കുടുംബ വിവരങ്ങൾ'}
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#8C6219] mb-1">
+                    {language === 'en'
+                      ? 'Family / Illam Name *'
+                      : 'കുടുംബപ്പേര് / ഇല്ലപ്പേര് *'}
+                  </label>
+                  <div className="relative">
+                    <Home className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
+                    <input
+                      type="text"
+                      required
+                      placeholder={
+                        language === 'en'
+                          ? 'e.g. Vadakkedathu Mana / Family Name'
+                          : 'ഉദാ: വടക്കേടത്ത് ഇല്ലം / കുടുംബപ്പേര്'
+                      }
+                      value={familyName}
+                      onChange={(e) => setFamilyName(e.target.value)}
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#C99738]/50 bg-white text-sm text-[#2B150F] placeholder:text-stone-400 placeholder:italic focus:outline-none focus:ring-2 focus:ring-[#C99738] shadow-sm"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#8C6219] mb-1">
+                    {language === 'en'
+                      ? 'Place / Residence *'
+                      : 'സ്ഥലം / വിലാസം *'}
+                  </label>
+                  <div className="relative">
+                    <MapPin className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
+                    <input
+                      type="text"
+                      required
+                      placeholder={
+                        language === 'en'
+                          ? 'e.g. Puliyannoor, Pala'
+                          : 'ഉദാ: പുളിയന്നൂർ, പാലാ'
+                      }
+                      value={place}
+                      onChange={(e) => setPlace(e.target.value)}
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#C99738]/50 bg-white text-sm text-[#2B150F] placeholder:text-stone-400 placeholder:italic focus:outline-none focus:ring-2 focus:ring-[#C99738] shadow-sm"
+                    />
+                  </div>
+                </div>
               </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Devotee Full Name */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1.5 font-cinzel">
+                    {language === 'en'
+                      ? 'Devotee Full Name * (ഭക്തന്റെ പേര്)'
+                      : 'ഭക്തന്റെ പേര് * (Devotee Full Name)'}
+                  </label>
+                  <div className="relative">
+                    <User className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
+                    <input
+                      type="text"
+                      required
+                      placeholder={
+                        language === 'en'
+                          ? 'e.g. Suresh Kumar / സുരേഷ് കുമാർ'
+                          : 'ഉദാ: സുരേഷ് കുമാർ / Suresh Kumar'
+                      }
+                      value={devoteeName}
+                      onChange={(e) => setDevoteeName(e.target.value)}
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#C99738]/50 bg-white text-sm text-[#2B150F] placeholder:text-stone-400 placeholder:italic focus:outline-none focus:ring-2 focus:ring-[#C99738] shadow-sm"
+                    />
+                  </div>
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-                  {t('lbl_family_name')} *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Vadakkedathu (വടക്കേടത്ത് ഇല്ലം/കുടുംബം)"
-                  value={familyName}
-                  onChange={(e) => setFamilyName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-                />
+                {/* Birth Star Dropdown */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1.5 font-cinzel">
+                    {language === 'en'
+                      ? 'Birth Star (ജന്മനക്ഷത്രം)'
+                      : 'ജന്മനക്ഷത്രം (Birth Star)'}
+                  </label>
+                  <div className="relative">
+                    <Star className="w-4 h-4 text-[#8C6219] absolute left-3 top-3 pointer-events-none" />
+                    <select
+                      value={starId}
+                      onChange={(e) => setStarId(e.target.value)}
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#C99738]/50 bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] shadow-sm font-medium"
+                    >
+                      <option value="">
+                        {language === 'en'
+                          ? '-- Select Birth Star (നക്ഷത്രം തിരഞ്ഞെടുക്കുക) --'
+                          : '-- നക്ഷത്രം തിരഞ്ഞെടുക്കുക (Select Birth Star) --'}
+                      </option>
+                      {NAKSHATRAS.map((nak) => (
+                        <option key={nak.id} value={nak.id}>
+                          {nak.id}. {nak.nameMl} ({nak.nameEn})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
+            )}
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-                  {t('lbl_place')} *
-                </label>
+            {/* Preferred Date */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1.5 font-cinzel">
+                {language === 'en'
+                  ? 'Preferred Date of Offering * (വഴിപാട് തീയതി)'
+                  : 'വഴിപാട് നടത്തേണ്ട തീയതി * (Preferred Date)'}
+              </label>
+              <div className="relative">
+                <Calendar className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
                 <input
-                  type="text"
+                  type="date"
                   required
-                  placeholder="e.g. Puliyannoor, Pala"
-                  value={place}
-                  onChange={(e) => setPlace(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                  value={offeringDate}
+                  onChange={(e) => setOfferingDate(e.target.value)}
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#C99738]/50 bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] shadow-sm"
                 />
               </div>
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-                  {t('form_name')} *
-                </label>
-                <div className="relative">
-                  <User className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
+
+            {/* Contact Phone with Country Code */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1.5 font-cinzel">
+                {language === 'en'
+                  ? 'Contact Phone / WhatsApp (ഫോൺ നമ്പർ)'
+                  : 'ഫോൺ / വാട്സാപ്പ് നമ്പർ (Contact Phone)'}
+              </label>
+              <div className="flex gap-2">
+                <select
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className="w-36 px-2 py-2.5 rounded-xl border border-[#C99738]/50 bg-white text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738] shadow-sm"
+                >
+                  <option value="+91">+91 (India 🇮🇳)</option>
+                  <option value="+1">+1 (USA/Canada 🇺🇸)</option>
+                  <option value="+971">+971 (UAE 🇦🇪)</option>
+                  <option value="+966">+966 (Saudi 🇸🇦)</option>
+                  <option value="+968">+968 (Oman 🇴🇲)</option>
+                  <option value="+974">+974 (Qatar 🇶🇦)</option>
+                  <option value="+973">+973 (Bahrain 🇧🇭)</option>
+                  <option value="+965">+965 (Kuwait 🇰🇼)</option>
+                  <option value="+44">+44 (UK 🇬🇧)</option>
+                  <option value="+65">+65 (Singapore 🇸🇬)</option>
+                  <option value="+60">+60 (Malaysia 🇲🇾)</option>
+                  <option value="+61">+61 (Australia 🇦🇺)</option>
+                  <option value="+49">+49 (Germany 🇩🇪)</option>
+                  <option value="+33">+33 (France 🇫🇷)</option>
+                  <option value="+41">+41 (Switzerland 🇨🇭)</option>
+                  <option value="+64">+64 (New Zealand 🇳🇿)</option>
+                </select>
+                <div className="relative flex-1">
+                  <Phone className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
                   <input
-                    type="text"
-                    required
-                    placeholder="Devotee Full Name"
-                    value={devoteeName}
-                    onChange={(e) => setDevoteeName(e.target.value)}
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                    type="tel"
+                    placeholder={
+                      countryCode === '+91'
+                        ? '10-digit mobile number (e.g. 98470 12345)'
+                        : 'Contact number'
+                    }
+                    maxLength={countryCode === '+91' ? 10 : 15}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#C99738]/50 bg-white text-sm text-[#2B150F] placeholder:text-stone-400 placeholder:italic focus:outline-none focus:ring-2 focus:ring-[#C99738] font-mono shadow-sm"
                   />
                 </div>
               </div>
+              {phone && countryCode === '+91' && phone.length !== 10 && (
+                <p className="text-[11px] text-amber-700 mt-1 font-medium">
+                  ⚠️ Indian mobile number must be exactly 10 digits ({phone.length}/10 entered)
+                </p>
+              )}
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-                  {t('form_star')}
-                </label>
-                <div className="relative">
-                  <Star className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
-                  <select
-                    value={starId}
-                    onChange={(e) => setStarId(e.target.value)}
-                    className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-                  >
-                    <option value="">{t('form_select_star')}</option>
-                    {NAKSHATRAS.map((nak) => (
-                      <option key={nak.id} value={nak.id}>
-                        {nak.id}. {nak.nameMl} ({nak.nameEn})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            {/* Special Prayer / Sankalpam */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1.5 font-cinzel">
+                {language === 'en'
+                  ? 'Special Prayer / Sankalpam (പ്രാർത്ഥന / സങ്കൽപ്പം)'
+                  : 'പ്രാർത്ഥന / സങ്കൽപ്പം (Special Prayer)'}
+              </label>
+              <div className="relative">
+                <MessageSquare className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
+                <textarea
+                  rows={2}
+                  placeholder={
+                    language === 'en'
+                      ? 'e.g. For good health, family prosperity, birthday, wedding anniversary...'
+                      : 'ഉദാ: ദീർഘായുസ്സ്, കുടുംബൈശ്വര്യം, പിറന്നാൾ, വിവാഹ വാർഷികം...'
+                  }
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#C99738]/50 bg-white text-sm text-[#2B150F] placeholder:text-stone-400 placeholder:italic focus:outline-none focus:ring-2 focus:ring-[#C99738] resize-none shadow-sm"
+                />
               </div>
             </div>
-          )}
 
-          {/* Preferred Date */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-              {t('form_date')} *
-            </label>
-            <div className="relative">
-              <Calendar className="w-4 h-4 text-[#8C6219] absolute left-3 top-3" />
-              <input
-                type="date"
-                required
-                value={offeringDate}
-                onChange={(e) => setOfferingDate(e.target.value)}
-                className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
-              />
-            </div>
-          </div>
-
-          {/* Phone Number with Country Code */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-              {t('form_phone')}
-            </label>
-            <div className="flex gap-2">
-              <select
-                value={countryCode}
-                onChange={(e) => setCountryCode(e.target.value)}
-                className="w-36 px-2 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-xs font-mono font-bold text-[#38050E] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+            {/* Action Buttons */}
+            <div className="pt-2 space-y-2.5">
+              {/* Primary Action Button: Add to Cart */}
+              <button
+                type="submit"
+                className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#610C1B] via-[#8B1428] to-[#610C1B] hover:brightness-110 text-white font-cinzel font-bold text-sm tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-lg shadow-[#610C1B]/30 border border-[#E6BE65]/40 transition-all cursor-pointer"
               >
-                <option value="+91">+91 (India 🇮🇳)</option>
-                <option value="+1">+1 (USA/Canada 🇺🇸)</option>
-                <option value="+971">+971 (UAE 🇦🇪)</option>
-                <option value="+966">+966 (Saudi 🇸🇦)</option>
-                <option value="+968">+968 (Oman 🇴🇲)</option>
-                <option value="+974">+974 (Qatar 🇶🇦)</option>
-                <option value="+973">+973 (Bahrain 🇧🇭)</option>
-                <option value="+965">+965 (Kuwait 🇰🇼)</option>
-                <option value="+44">+44 (UK 🇬🇧)</option>
-                <option value="+65">+65 (Singapore 🇸🇬)</option>
-                <option value="+60">+60 (Malaysia 🇲🇾)</option>
-                <option value="+61">+61 (Australia 🇦🇺)</option>
-                <option value="+49">+49 (Germany 🇩🇪)</option>
-                <option value="+33">+33 (France 🇫🇷)</option>
-                <option value="+41">+41 (Switzerland 🇨🇭)</option>
-                <option value="+64">+64 (New Zealand 🇳🇿)</option>
-              </select>
-              <input
-                type="tel"
-                placeholder={countryCode === '+91' ? '10-digit mobile number' : 'Contact number'}
-                maxLength={countryCode === '+91' ? 10 : 15}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] font-mono"
-              />
+                <ShoppingCart className="w-4 h-4 text-[#E6BE65]" />
+                <span>
+                  {language === 'en'
+                    ? 'Book Offering (Add to Cart)'
+                    : 'വഴിപാട് ബുക്ക് ചെയ്യുക (കാർട്ടിലേക്ക് ചേർക്കുക)'}
+                </span>
+              </button>
+
+              {/* Secondary Action: Direct WhatsApp Inquire */}
+              <button
+                type="button"
+                onClick={handleDirectWhatsAppSend}
+                className="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
+              >
+                <Send className="w-4 h-4 text-white" />
+                <span>
+                  {language === 'en'
+                    ? 'Inquire via WhatsApp'
+                    : 'വാട്സാപ്പ് വഴി ചോദിക്കുക (WhatsApp Inquire)'}
+                </span>
+              </button>
             </div>
-            {phone && countryCode === '+91' && phone.length !== 10 && (
-              <p className="text-[11px] text-amber-700 mt-1">
-                ⚠️ Indian mobile number must be exactly 10 digits ({phone.length}/10 entered)
-              </p>
-            )}
-          </div>
-
-          {/* Special Notes */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#8C6219] mb-1 font-cinzel">
-              {t('lbl_special_prayer')}
-            </label>
-            <textarea
-              rows={2}
-              placeholder="e.g. For birthday / wedding anniversary / health..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] bg-white text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] resize-none"
-            />
-          </div>
-
-          {/* Primary Action Button: Add to Cart */}
-          <button
-            type="submit"
-            className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-[#FAF5E8] font-bold text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
-          >
-            <ShoppingCart className="w-4 h-4 text-[#E6BE65]" />
-            <span>{t('btn_add_to_cart')}</span>
-          </button>
-
-          {/* Secondary Action: Direct WhatsApp Inquire */}
-          <button
-            type="button"
-            onClick={handleDirectWhatsAppSend}
-            className="w-full py-2.5 px-4 rounded-xl bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#1F4E34] font-bold text-xs flex items-center justify-center gap-2 border border-[#25D366]/40 transition-colors cursor-pointer"
-          >
-            <Send className="w-3.5 h-3.5 text-[#25D366]" />
-            <span>{t('btn_inquire_whatsapp')}</span>
-          </button>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
 };
+
