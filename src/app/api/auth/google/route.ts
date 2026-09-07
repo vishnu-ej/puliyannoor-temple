@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
   const proto = request.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
   const origin = `${proto}://${host}`;
 
-  const callbackPath = searchParams.get('callback') || '/api/auth/callback/google';
-  const redirectUri = `${origin}${callbackPath}`;
+  const callbackPath = searchParams.get('callback') || '/auth/callback/google';
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}${callbackPath}`;
 
   const stateData = {
     redirect: redirectTarget,
