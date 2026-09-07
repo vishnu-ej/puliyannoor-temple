@@ -390,7 +390,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
             <div className="w-full md:w-56 bg-white rounded-2xl p-4 border-2 border-[#C99738] flex flex-col items-center justify-center text-center shadow-md flex-shrink-0">
               <div
                 onClick={() => setIsQrModalOpen(true)}
-                className="relative w-36 h-36 rounded-xl overflow-hidden border border-[#E4D5AE] cursor-pointer group shadow-sm hover:shadow-md transition-all bg-white p-1"
+                className="relative w-36 h-36 rounded-xl overflow-hidden border border-[#E4D5AE] cursor-pointer group shadow-sm hover:shadow-md transition-all bg-white p-2.5 flex items-center justify-center"
                 title="Click to zoom QR code"
               >
                 <img

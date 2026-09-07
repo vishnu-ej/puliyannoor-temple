@@ -277,7 +277,16 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const savedOfferings = localStorage.getItem('puliyannoor_offerings');
       if (savedOfferings) {
         const sanitized = savedOfferings.replaceAll('പുളിയ', 'പുലിയ');
-        setOfferings(JSON.parse(sanitized));
+        const parsed: OfferingItem[] = JSON.parse(sanitized);
+        const existingIds = new Set(parsed.map((o) => o.id));
+        const missing = DEFAULT_OFFERINGS.filter((o) => !existingIds.has(o.id));
+        if (missing.length > 0) {
+          const merged = [...parsed, ...missing];
+          setOfferings(merged);
+          localStorage.setItem('puliyannoor_offerings', JSON.stringify(merged));
+        } else {
+          setOfferings(parsed);
+        }
       }
 
       const savedFestivals = localStorage.getItem('puliyannoor_festivals');

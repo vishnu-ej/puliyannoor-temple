@@ -64,6 +64,7 @@ export const Header: React.FC = () => {
     { href: '/offerings', labelKey: 'nav_offerings' },
     { href: '/events', labelKey: 'nav_events' },
     { href: '/visit', labelKey: 'nav_visit' },
+    { href: '/contact', labelKey: 'nav_contact' },
   ];
 
   const isActive = (href: string) => {

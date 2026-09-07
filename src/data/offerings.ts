@@ -1660,4 +1660,23 @@ export const OFFERINGS: OfferingItem[] = [
     },
     popular: true,
   },
+  {
+    slNo: 89,
+    id: 'durithahara_manthrarchana',
+    name: {
+      en: 'Durithahara Manthrarchana',
+      ml: 'ദുരിതഹാരമന്ത്രാർച്ചന',
+    },
+    category: 'archana_pushpanjali',
+    price: 45,
+    description: {
+      en: 'Sacred archana performed chanting the powerful Durithahara mantra to alleviate all hardships and afflictions.',
+      ml: 'സർവ്വ ദുരിതങ്ങളും കഷ്ടതകളും ദൂരീകരിക്കാൻ പ്രത്യേക ദുരിതഹാര മന്ത്രജപത്തോടെ നടത്തുന്ന പുണ്യ അർച്ചന.',
+    },
+    significance: {
+      en: 'Alleviates doshas, removes obstacles, and brings peace, relief, and divine grace.',
+      ml: 'തീരാദുരിത നിവാരണം, സർവ്വകാര്യ തടസ്സങ്ങൾ നീങ്ങാൻ, മനഃശാന്തിയും ദൈവാധീനവും.',
+    },
+    popular: true,
+  },
 ];
