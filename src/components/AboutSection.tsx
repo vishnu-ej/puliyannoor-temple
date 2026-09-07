@@ -151,7 +151,7 @@ export const AboutSection: React.FC = () => {
                   <span>PM34+XQ6, Puliyannoor</span>
                 </span>
                 <a
-                  href="https://maps.app.goo.gl/ZaRbzjtd9mCYbESP9"
+                  href="https://maps.app.goo.gl/9MKkuSQNDhMj3gts8"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-bold text-[#610C1B] hover:text-[#8B1428] underline underline-offset-2"

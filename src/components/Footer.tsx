@@ -147,7 +147,7 @@ export const Footer: React.FC = () => {
 
             <div className="pt-2">
               <a
-                href="https://maps.app.goo.gl/ZaRbzjtd9mCYbESP9"
+                href="https://maps.app.goo.gl/9MKkuSQNDhMj3gts8"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#E6BE65] hover:text-[#FAF5E8] underline underline-offset-4"

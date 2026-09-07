@@ -80,99 +80,16 @@ export const VisitSection: React.FC = () => {
           {/* Map & Visual Navigation Box (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
             <div className="relative rounded-3xl overflow-hidden border-2 border-[#C99738]/40 shadow-lg bg-[#F3EBD7] group">
-              {/* Map Illustration SVG / Frame */}
+              {/* Google Maps Embed Frame */}
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F3EBD7]">
-                <svg
-                  viewBox="0 0 500 380"
-                  className="w-full h-full object-cover"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect width="500" height="380" fill="#F3EBD7" />
-
-                  {/* Grid Lines */}
-                  <g stroke="#E4D5AE" strokeWidth="1">
-                    <line x1="0" y1="70" x2="500" y2="70" />
-                    <line x1="0" y1="140" x2="500" y2="140" />
-                    <line x1="0" y1="210" x2="500" y2="210" />
-                    <line x1="0" y1="280" x2="500" y2="280" />
-                    <line x1="0" y1="350" x2="500" y2="350" />
-                    <line x1="80" y1="0" x2="80" y2="380" />
-                    <line x1="160" y1="0" x2="160" y2="380" />
-                    <line x1="240" y1="0" x2="240" y2="380" />
-                    <line x1="320" y1="0" x2="320" y2="380" />
-                    <line x1="400" y1="0" x2="400" y2="380" />
-                  </g>
-
-                  {/* River Meenachil curve */}
-                  <path
-                    d="M-20 80 Q140 120 220 70 Q300 20 420 80 Q480 120 520 90"
-                    fill="none"
-                    stroke="#52B788"
-                    strokeWidth="8"
-                    opacity="0.3"
-                  />
-                  <text x="30" y="85" fontFamily="sans-serif" fontSize="9" fill="#1F4E34" fontWeight="bold" opacity="0.6">
-                    MEENACHIL RIVER
-                  </text>
-
-                  {/* Road from Pala route */}
-                  <path
-                    d="M0 320 Q120 280 200 290 Q280 300 320 220 Q350 150 260 140"
-                    fill="none"
-                    stroke="#C99738"
-                    strokeWidth="5"
-                    strokeLinecap="round"
-                    strokeDasharray="2 10"
-                  />
-                  <text x="25" y="305" fontFamily="sans-serif" fontSize="11" fill="#8C6219" fontWeight="bold">
-                    ROUTE FROM PALA TOWN (3.2 km) →
-                  </text>
-
-                  {/* Green Foliage groves */}
-                  <g fill="#1F4E34" opacity="0.35">
-                    <circle cx="80" cy="180" r="35" />
-                    <circle cx="430" cy="300" r="45" />
-                    <circle cx="430" cy="80" r="30" />
-                    <circle cx="100" cy="40" r="25" />
-                  </g>
-
-                  {/* Temple Pin Marker */}
-                  <g transform="translate(250, 150)">
-                    <ellipse cx="0" cy="18" rx="22" ry="7" fill="#1A0409" opacity="0.25" />
-                    <path
-                      d="M0 -42 C20 -42 34 -26 34 -6 C34 20 0 46 0 46 C0 46 -34 20 -34 -6 C-34 -26 -20 -42 0 -42Z"
-                      fill="#610C1B"
-                      stroke="#C99738"
-                      strokeWidth="2.5"
-                    />
-                    <circle cx="0" cy="-8" r="16" fill="#FAF5E8" />
-                    <text x="0" y="-3" textAnchor="middle" fontFamily="serif" fontSize="14" fill="#610C1B" fontWeight="bold">
-                      ॐ
-                    </text>
-                  </g>
-
-                  {/* Temple Label */}
-                  <rect x="130" y="205" width="240" height="42" rx="8" fill="#1A0409" opacity="0.92" />
-                  <text x="250" y="222" textAnchor="middle" fontFamily="Cinzel, serif" fontSize="13" fill="#FAF5E8" fontWeight="bold">
-                    Puliyannoor Mahadeva
-                  </text>
-                  <text x="250" y="238" textAnchor="middle" fontFamily="sans-serif" fontSize="9" fill="#E6BE65" letterSpacing="1">
-                    CHERUTHIL VALUTHU TEMPLE
-                  </text>
-                </svg>
-
-                {/* Floating Map Action Overlay */}
-                <div className="absolute inset-0 bg-[#1A0409]/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <a
-                    href="https://maps.app.goo.gl/ZaRbzjtd9mCYbESP9"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-full bg-[#610C1B] text-[#FAF5E8] text-xs font-bold flex items-center gap-2 shadow-xl border border-[#C99738]"
-                  >
-                    <ExternalLink className="w-4 h-4 text-[#E6BE65]" />
-                    <span>{t('btn_open_google_maps')}</span>
-                  </a>
-                </div>
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3932.720075687327!2d76.6569033!3d9.704915199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b07cd94c221134b%3A0xebf436f6a36abe2b!2sPuliyannoor%20Mahadeva%20Temple!5e0!3m2!1sen!2sin!4v1788793360180!5m2!1sen!2sin"
+                  className="w-full h-full border-0"
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  title="Puliyannoor Mahadeva Temple Google Map"
+                />
               </div>
 
               {/* Address Strip below Map */}
@@ -196,7 +113,17 @@ export const VisitSection: React.FC = () => {
                   </button>
 
                   <a
-                    href="https://maps.app.goo.gl/ZaRbzjtd9mCYbESP9"
+                    href="https://maps.app.goo.gl/9MKkuSQNDhMj3gts8"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F3EBD7] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold border border-[#E4D5AE] transition-all text-center"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 text-[#C99738]" />
+                    <span>{t('btn_open_google_maps')}</span>
+                  </a>
+
+                  <a
+                    href="https://maps.app.goo.gl/9MKkuSQNDhMj3gts8"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] text-xs font-bold shadow-sm transition-all text-center"
