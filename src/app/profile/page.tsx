@@ -875,13 +875,13 @@ function ProfileContent() {
 
         {/* Profile Incomplete Banner Prompt */}
         {isProfileIncomplete && (
-          <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-[#FFFBEB] via-[#FEF3C7] to-[#FFFBEB] border-2 border-[#F59E0B] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-scaleUp">
+          <div className="mb-6 p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#FFFBEB] via-[#FEF3C7] to-[#FFFBEB] border-2 border-[#F59E0B] shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-scaleUp">
             <div className="flex items-start sm:items-center gap-3.5">
               <div className="w-10 h-10 rounded-2xl bg-[#F59E0B]/20 text-[#B45309] flex items-center justify-center flex-shrink-0">
                 <AlertCircle className="w-5 h-5 text-[#B45309]" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h4 className="font-cinzel font-bold text-sm text-[#92400E]">
                     Profile Incomplete (പ്രൊഫൈൽ അപൂർണ്ണമാണ്)
                   </h4>
@@ -906,7 +906,7 @@ function ProfileContent() {
                   }
                 }, 100);
               }}
-              className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 active:scale-95"
+              className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center justify-center gap-1.5 active:scale-95 text-center"
             >
               <Edit3 className="w-3.5 h-3.5 text-[#E6BE65]" />
               <span>Complete Profile</span>
@@ -915,16 +915,16 @@ function ProfileContent() {
         )}
 
         {/* Profile Top Banner Card */}
-        <div className="bg-gradient-to-r from-[#1A0409] via-[#38050E] to-[#610C1B] rounded-3xl p-6 sm:p-8 text-[#FAF5E8] shadow-xl border border-[#C99738]/40 mb-8 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-[#1A0409] via-[#38050E] to-[#610C1B] rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-[#FAF5E8] shadow-xl border border-[#C99738]/40 mb-6 sm:mb-8 relative overflow-hidden">
           <div className="absolute right-0 top-0 bottom-0 opacity-10 flex items-center pr-6 pointer-events-none text-9xl font-cinzel text-[#E6BE65]">
             ॐ
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 relative z-10">
-            <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5 sm:gap-6 relative z-10">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5 text-center sm:text-left min-w-0 w-full sm:w-auto">
               {/* Avatar Ring with Supabase Storage Upload Trigger */}
-              <div className="relative group">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#610C1B] to-[#1A0409] border-3 border-[#C99738] shadow-lg flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-2xl sm:text-3xl flex-shrink-0 overflow-hidden">
+              <div className="relative group flex-shrink-0">
+                <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#610C1B] to-[#1A0409] border-2 sm:border-3 border-[#C99738] shadow-lg flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-xl sm:text-3xl flex-shrink-0 overflow-hidden">
                   {currentUser.avatar ? (
                     <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
                   ) : (
@@ -950,23 +950,23 @@ function ProfileContent() {
                 </button>
               </div>
 
-              <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#FAF5E8]/10 text-[#E6BE65] text-xs font-bold mb-1">
-                  <Sparkles className="w-3 h-3" />
-                  <span>Devotee Pilgrim Account · Supabase Cloud Connected</span>
+              <div className="space-y-1 min-w-0 max-w-full">
+                <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 rounded-full bg-[#FAF5E8]/10 text-[#E6BE65] text-[11px] sm:text-xs font-bold mb-1 max-w-full">
+                  <Sparkles className="w-3 h-3 flex-shrink-0" />
+                  <span className="truncate">Devotee Account · Supabase Cloud</span>
                 </div>
-                <h1 className="font-cinzel font-bold text-xl sm:text-2xl text-[#FAF5E8]">
+                <h1 className="font-cinzel font-bold text-lg sm:text-2xl text-[#FAF5E8] truncate">
                   {currentUser.name}
                 </h1>
-                <p className="text-xs text-[#FAF5E8]/80 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                  <span className="flex items-center gap-1">
-                    <Mail className="w-3.5 h-3.5 text-[#C99738]" />
-                    {currentUser.email}
+                <p className="text-xs text-[#FAF5E8]/80 flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
+                  <span className="flex items-center gap-1 min-w-0">
+                    <Mail className="w-3.5 h-3.5 text-[#C99738] flex-shrink-0" />
+                    <span className="truncate max-w-[200px] sm:max-w-none">{currentUser.email}</span>
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1">
-                    <Phone className="w-3.5 h-3.5 text-[#C99738]" />
-                    {currentUser.phone ? currentUser.phone : <span className="text-amber-300 italic">No mobile added</span>}
+                    <Phone className="w-3.5 h-3.5 text-[#C99738] flex-shrink-0" />
+                    {currentUser.phone ? currentUser.phone : <span className="text-amber-300 italic">No mobile</span>}
                   </span>
                   {currentUser.star ? (
                     <>
@@ -984,19 +984,19 @@ function ProfileContent() {
                 </p>
                 {currentUser.place ? (
                   <p className="text-xs text-[#FAF5E8]/70 flex items-center justify-center sm:justify-start gap-1">
-                    <MapPin className="w-3 h-3 text-[#C99738]" />
-                    {currentUser.place}
+                    <MapPin className="w-3 h-3 text-[#C99738] flex-shrink-0" />
+                    <span className="truncate">{currentUser.place}</span>
                   </p>
                 ) : (
                   <p className="text-xs text-amber-200/80 flex items-center justify-center sm:justify-start gap-1 italic">
-                    <MapPin className="w-3 h-3 text-[#C99738]" />
+                    <MapPin className="w-3 h-3 text-[#C99738] flex-shrink-0" />
                     Residence not specified
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-center sm:self-start">
               <button
                 onClick={loadSupabaseData}
                 disabled={isLoadingSupabase}
@@ -1008,7 +1008,7 @@ function ProfileContent() {
 
               <button
                 onClick={logout}
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#FAF5E8] hover:text-white border border-white/20 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer flex-shrink-0"
+                className="px-3.5 sm:px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#FAF5E8] hover:text-white border border-white/20 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer flex-shrink-0"
               >
                 <LogOut className="w-3.5 h-3.5 text-[#E6BE65]" />
                 <span>Sign Out</span>
@@ -1018,10 +1018,10 @@ function ProfileContent() {
         </div>
 
         {/* 3 Interactive Profile Tabs */}
-        <div className="flex border-b border-[#E4D5AE] mb-6 gap-2 sm:gap-4 overflow-x-auto">
+        <div className="flex border-b border-[#E4D5AE] mb-6 gap-2 sm:gap-4 overflow-x-auto scrollbar-none py-1">
           <button
             onClick={() => setActiveTab('details')}
-            className={`pb-3 px-3 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            className={`pb-2.5 sm:pb-3 px-3 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${
               activeTab === 'details'
                 ? 'border-[#610C1B] text-[#610C1B]'
                 : 'border-transparent text-[#5A382A] hover:text-[#2B150F]'
@@ -1036,7 +1036,7 @@ function ProfileContent() {
 
           <button
             onClick={() => setActiveTab('bookings')}
-            className={`pb-3 px-3 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            className={`pb-2.5 sm:pb-3 px-3 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${
               activeTab === 'bookings'
                 ? 'border-[#610C1B] text-[#610C1B]'
                 : 'border-transparent text-[#5A382A] hover:text-[#2B150F]'
@@ -1048,7 +1048,7 @@ function ProfileContent() {
 
           <button
             onClick={() => setActiveTab('chat')}
-            className={`pb-3 px-3 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap relative ${
+            className={`pb-2.5 sm:pb-3 px-3 sm:px-4 text-xs sm:text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap flex-shrink-0 relative ${
               activeTab === 'chat'
                 ? 'border-[#610C1B] text-[#610C1B]'
                 : 'border-transparent text-[#5A382A] hover:text-[#2B150F]'
@@ -1295,31 +1295,31 @@ function ProfileContent() {
             )}
 
             {/* Account Security & Password Management (Compact Sleek Sub-Box) */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
-              <div className="flex items-center gap-3">
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+              <div className="flex items-start sm:items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-[#610C1B] text-[#E6BE65] flex items-center justify-center shadow-xs flex-shrink-0">
                   <Key className="w-4 h-4 text-[#E6BE65]" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="font-cinzel font-bold text-xs sm:text-sm text-[#38050E] uppercase tracking-wide">
                       Account Security (പാസ്‌വേഡ് സുരക്ഷ)
                     </h4>
-                    <span className="text-[9px] bg-white text-[#8C6219] font-mono px-2 py-0.5 rounded-full border border-[#E4D5AE] hidden sm:inline-block">
+                    <span className="text-[9px] bg-white text-[#8C6219] font-mono px-2 py-0.5 rounded-full border border-[#E4D5AE]">
                       Protected
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#5A382A]">
+                  <p className="text-[11px] text-[#5A382A] mt-0.5">
                     Update your password directly or verify via an email OTP code.
                   </p>
                 </div>
               </div>
 
-              {/* Small, Compact Action Buttons Aligned Neatly */}
-              <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto justify-start md:justify-end">
+              {/* Action Buttons */}
+              <div className="flex flex-col xs:flex-row items-stretch xs:items-center gap-2 w-full sm:w-auto flex-shrink-0">
                 <Link
                   href="/profile/change-password?mode=update"
-                  className="py-2 px-3.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                  className="py-2 px-3.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white font-bold text-xs shadow-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer text-center"
                 >
                   <Key className="w-3.5 h-3.5 text-[#E6BE65]" />
                   <span>Update Password</span>
@@ -1327,7 +1327,7 @@ function ProfileContent() {
 
                 <Link
                   href="/profile/change-password?mode=reset"
-                  className="py-2 px-3.5 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] font-bold text-xs border border-[#C99738] shadow-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                  className="py-2 px-3.5 rounded-xl bg-white hover:bg-[#FAF5E8] text-[#610C1B] font-bold text-xs border border-[#C99738] shadow-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer text-center"
                 >
                   <Mail className="w-3.5 h-3.5 text-[#610C1B]" />
                   <span>Reset via OTP</span>
@@ -1335,9 +1335,9 @@ function ProfileContent() {
               </div>
             </div>
 
-            {/* Remove / Delete Account Section (Password Verified) */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-rose-50/40 border border-rose-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-2xs">
-              <div className="flex items-center gap-3">
+            {/* Remove / Delete Account Section (Password or OTP Verified) */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-rose-50/40 border border-rose-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-2xs">
+              <div className="flex items-start sm:items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center flex-shrink-0">
                   <Trash2 className="w-4 h-4 text-rose-700" />
                 </div>
@@ -1345,8 +1345,8 @@ function ProfileContent() {
                   <h4 className="font-cinzel font-bold text-xs sm:text-sm text-[#5C0A17] uppercase tracking-wide">
                     Delete Account (അക്കൗണ്ട് നീക്കം ചെയ്യുക)
                   </h4>
-                  <p className="text-[11px] text-[#7A3E47] leading-relaxed">
-                    Verified with password. Removes account credentials while vazhipadu booking receipts remain safely archived in devaswom records.
+                  <p className="text-[11px] text-[#7A3E47] leading-relaxed mt-0.5">
+                    Verified with password or OTP. Removes account credentials while vazhipadu booking receipts remain safely archived in devaswom records.
                   </p>
                 </div>
               </div>
@@ -1354,7 +1354,7 @@ function ProfileContent() {
               <button
                 type="button"
                 onClick={openDeleteAccountModal}
-                className="py-2 px-3.5 rounded-xl bg-white hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs shadow-2xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer self-start md:self-center flex-shrink-0"
+                className="w-full sm:w-auto py-2 px-3.5 rounded-xl bg-white hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs shadow-2xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer flex-shrink-0 text-center"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete Account</span>
@@ -1367,9 +1367,9 @@ function ProfileContent() {
         {/* TAB 2: MY VAZHIPADU BOOKINGS */}
         {/* ================================================================= */}
         {activeTab === 'bookings' && (
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E4D5AE] shadow-sm space-y-6 animate-fadeIn">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-[#E4D5AE] shadow-sm space-y-6 animate-fadeIn">
             {/* Header Area */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#E4D5AE] pb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 border-b border-[#E4D5AE] pb-4">
               <div>
                 <h3 className="font-cinzel font-bold text-base sm:text-lg text-[#38050E]">
                   My Confirmed Vazhipadu Bookings
@@ -1380,14 +1380,14 @@ function ProfileContent() {
               </div>
 
               {filteredBookings.length > 0 && (
-                <div className="flex items-center gap-2.5">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={() => {
                       setSelectedDevoteeFilter('ALL');
                       setIsPrintReceiptModalOpen(true);
                     }}
-                    className="px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                    className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer"
                   >
                     <Printer className="w-3.5 h-3.5 text-[#E6BE65]" />
                     <span>Print Single PDF</span>
@@ -1395,7 +1395,7 @@ function ProfileContent() {
 
                   <Link
                     href="/offerings"
-                    className="px-3.5 py-2 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold flex items-center gap-1 border border-[#E4D5AE] transition-all"
+                    className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold flex items-center justify-center gap-1 border border-[#E4D5AE] transition-all"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-[#C99738]" />
                     <span>Book More</span>
@@ -1406,17 +1406,17 @@ function ProfileContent() {
 
             {/* Date Filtering Bar */}
             {allProfileBookings.length > 0 && (
-              <div className="p-4 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                   <div className="flex items-center gap-2 text-xs font-bold text-[#610C1B]">
-                    <Filter className="w-3.5 h-3.5" />
-                    <span>Filter by Pooja Date / Date Range:</span>
+                    <Filter className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Filter by Pooja Date / Range:</span>
                   </div>
 
-                  <div className="inline-flex rounded-xl p-0.5 bg-white border border-[#E4D5AE] text-xs font-bold">
+                  <div className="inline-flex rounded-xl p-0.5 bg-white border border-[#E4D5AE] text-xs font-bold self-start sm:self-auto overflow-x-auto scrollbar-none max-w-full">
                     <button
                       onClick={() => setDateFilterMode('all')}
-                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
                         dateFilterMode === 'all'
                           ? 'bg-[#610C1B] text-white shadow-xs'
                           : 'text-[#5A382A] hover:text-[#2B150F]'
@@ -1426,7 +1426,7 @@ function ProfileContent() {
                     </button>
                     <button
                       onClick={() => setDateFilterMode('single')}
-                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
                         dateFilterMode === 'single'
                           ? 'bg-[#610C1B] text-white shadow-xs'
                           : 'text-[#5A382A] hover:text-[#2B150F]'
@@ -1436,7 +1436,7 @@ function ProfileContent() {
                     </button>
                     <button
                       onClick={() => setDateFilterMode('range')}
-                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap ${
                         dateFilterMode === 'range'
                           ? 'bg-[#610C1B] text-white shadow-xs'
                           : 'text-[#5A382A] hover:text-[#2B150F]'
@@ -1653,42 +1653,42 @@ function ProfileContent() {
         {/* TAB 3: DIRECT CHAT WITH TEMPLE DESK (LIVE SUPABASE DB CONNECTED) */}
         {/* ================================================================= */}
         {activeTab === 'chat' && (
-          <div className="bg-white rounded-3xl border border-[#E4D5AE] shadow-md flex flex-col h-[650px] overflow-hidden animate-fadeIn">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E4D5AE] shadow-md flex flex-col h-[520px] sm:h-[650px] max-h-[80vh] overflow-hidden animate-fadeIn">
             {/* Chat Desk Header */}
-            <div className="px-6 py-4 bg-gradient-to-r from-[#1A0409] to-[#38050E] text-[#FAF5E8] border-b border-[#C99738]/30 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#610C1B] border border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-base flex items-center justify-center shadow-xs">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-[#1A0409] to-[#38050E] text-[#FAF5E8] border-b border-[#C99738]/30 flex items-center justify-between">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-[#610C1B] border border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-sm sm:text-base flex items-center justify-center shadow-xs flex-shrink-0">
                   ॐ
                 </div>
-                <div>
-                  <h3 className="font-cinzel font-bold text-sm text-[#FAF5E8]">
+                <div className="min-w-0">
+                  <h3 className="font-cinzel font-bold text-xs sm:text-sm text-[#FAF5E8] truncate">
                     Puliyannoor Devaswom Official Chat Desk
                   </h3>
-                  <div className="flex items-center gap-1.5 text-[11px] text-[#E6BE65]">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Supabase Live Channel · Connected</span>
+                  <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-[#E6BE65]">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+                    <span className="truncate">Supabase Live Channel · Connected</span>
                   </div>
                 </div>
               </div>
 
-              <div className="hidden sm:flex items-center gap-1 text-[11px] text-[#FAF5E8]/75 bg-white/10 px-3 py-1 rounded-full border border-white/15">
+              <div className="hidden sm:flex items-center gap-1 text-[11px] text-[#FAF5E8]/75 bg-white/10 px-3 py-1 rounded-full border border-white/15 flex-shrink-0">
                 <Clock className="w-3.5 h-3.5 text-[#E6BE65]" />
                 <span>Office: 7:00 AM – 12:00 PM | 4:30 PM – 7:00 PM</span>
               </div>
             </div>
 
             {/* 21-Day Retention Policy Notice Banner */}
-            <div className="px-4 py-2 bg-[#FAF5E8] border-b border-[#E4D5AE] text-[11px] text-[#8C6219] flex items-center justify-between gap-2">
+            <div className="px-3 sm:px-4 py-2 bg-[#FAF5E8] border-b border-[#E4D5AE] text-[10px] sm:text-[11px] text-[#8C6219] flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <Info className="w-3.5 h-3.5 text-[#610C1B] flex-shrink-0" />
                 <span>
-                  <strong>Data Policy:</strong> Messages are securely retained for <strong>21 days</strong> in Supabase cloud for ritual correspondence.
+                  <strong>Data Policy:</strong> Messages securely retained for <strong>21 days</strong> in Supabase cloud.
                 </span>
               </div>
             </div>
 
             {/* Messages Scroll Area */}
-            <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-3.5 bg-[#FAF5E8]/20">
+            <div className="flex-1 p-3 sm:p-6 overflow-y-auto space-y-3.5 bg-[#FAF5E8]/20">
               {activeMessages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3 text-gray-500">
                   <div className="w-14 h-14 rounded-2xl bg-[#610C1B]/10 text-[#610C1B] flex items-center justify-center mx-auto">
@@ -1710,7 +1710,7 @@ function ProfileContent() {
                       className={`flex ${isDevotee ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-md rounded-2xl p-3.5 text-xs leading-relaxed shadow-xs ${
+                        className={`max-w-[85%] sm:max-w-md rounded-2xl p-3 sm:p-3.5 text-xs leading-relaxed shadow-xs ${
                           isDevotee
                             ? 'bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-white rounded-br-none'
                             : 'bg-white border border-[#E4D5AE] text-[#2B150F] rounded-bl-none'
@@ -1724,7 +1724,7 @@ function ProfileContent() {
                           <span>{isDevotee ? 'You' : 'Puliyannoor Devaswom Office'}</span>
                         </div>
 
-                        <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
+                        <p className="font-normal whitespace-pre-wrap break-words">{msg.text}</p>
 
                         <div
                           className={`flex items-center justify-end gap-1 mt-1.5 text-[10px] ${
@@ -1741,19 +1741,19 @@ function ProfileContent() {
             </div>
 
             {/* Chat Composer Input */}
-            <form onSubmit={handleSendChatMessage} className="p-3 bg-white border-t border-[#E4D5AE] flex gap-2">
+            <form onSubmit={handleSendChatMessage} className="p-2.5 sm:p-3 bg-white border-t border-[#E4D5AE] flex gap-2">
               <input
                 type="text"
                 value={chatMessageText}
                 onChange={(e) => setChatMessageText(e.target.value)}
                 placeholder="Type your message to Puliyannoor Devaswom..."
-                className="flex-1 px-4 py-2.5 rounded-xl border border-[#E4D5AE] bg-[#FAF5E8]/30 text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-[#E4D5AE] bg-[#FAF5E8]/30 text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer flex-shrink-0"
               >
-                <Send className="w-4 h-4 text-[#E6BE65]" />
+                <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#E6BE65]" />
                 <span>Send</span>
               </button>
             </form>
@@ -1832,7 +1832,7 @@ function ProfileContent() {
                 </div>
 
                 {/* Primary Booking Metadata Header */}
-                <div className="grid grid-cols-2 gap-4 text-xs p-3.5 rounded-xl bg-[#FAF5E8]/50 border border-[#E4D5AE]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs p-3 sm:p-3.5 rounded-xl bg-[#FAF5E8]/50 border border-[#E4D5AE]">
                   <div className="space-y-1">
                     <p>
                       <span className="text-[#8C6219] font-bold">Booked By Account:</span>{' '}
@@ -1846,7 +1846,7 @@ function ProfileContent() {
                     </p>
                   </div>
 
-                  <div className="space-y-1 text-right">
+                  <div className="space-y-1 text-left sm:text-right pt-2 sm:pt-0 border-t sm:border-t-0 border-[#E4D5AE]/60">
                     <p>
                       <span className="text-[#8C6219] font-bold">Order Ref:</span>{' '}
                       <strong className="font-mono text-[#610C1B]">
@@ -1870,9 +1870,9 @@ function ProfileContent() {
                     .map(([devotee, data], devIdx) => (
                       <div key={devotee} className="border border-[#E4D5AE] rounded-xl overflow-hidden print:border-gray-400">
                         {/* Devotee Section Header */}
-                        <div className="bg-[#FAF5E8] px-4 py-2 border-b border-[#E4D5AE] flex items-center justify-between print:bg-gray-100">
-                          <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-[#610C1B] text-[#E6BE65] font-bold text-[10px] flex items-center justify-center print:bg-black print:text-white">
+                        <div className="bg-[#FAF5E8] px-3.5 sm:px-4 py-2 border-b border-[#E4D5AE] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-2 print:bg-gray-100">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="w-5 h-5 rounded-full bg-[#610C1B] text-[#E6BE65] font-bold text-[10px] flex items-center justify-center print:bg-black print:text-white flex-shrink-0">
                               {devIdx + 1}
                             </span>
                             <span className="font-bold text-xs text-[#38050E]">
@@ -1883,36 +1883,38 @@ function ProfileContent() {
                               Birth Star: {data.star || 'Not specified'}
                             </span>
                           </div>
-                          <span className="text-[11px] text-[#8C6219] font-bold print:text-black">
+                          <span className="text-[11px] text-[#8C6219] font-bold print:text-black self-end sm:self-auto">
                             Subtotal: <span className="font-mono text-[#610C1B] print:text-black">₹{data.subtotal}.00</span>
                           </span>
                         </div>
 
                         {/* Table for this specific devotee */}
-                        <table className="w-full text-xs text-left">
-                          <thead className="bg-[#1A0409]/90 text-[#FAF5E8] font-cinzel text-[10px] print:bg-gray-800 print:text-white">
-                            <tr>
-                              <th className="py-2 px-3 w-10">Sl.</th>
-                              <th className="py-2 px-3">Vazhipad</th>
-                              <th className="py-2 px-3">Offering Date</th>
-                              <th className="py-2 px-3">Deity (പ്രതിഷ്ഠ)</th>
-                              <th className="py-2 px-3 text-right">Rate (₹)</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-[#E4D5AE]/60 bg-white print:divide-gray-300">
-                            {data.items.map((item, itemIdx) => (
-                              <tr key={item.id}>
-                                <td className="py-2 px-3 font-mono text-gray-500">{itemIdx + 1}</td>
-                                <td className="py-2 px-3 font-bold text-[#38050E] print:text-black">{item.vazhipadName}</td>
-                                <td className="py-2 px-3 text-[#5A382A] print:text-black">{item.offeringDate}</td>
-                                <td className="py-2 px-3 text-[#8C6219] print:text-black">{item.deity}</td>
-                                <td className="py-2 px-3 text-right font-mono font-bold text-[#38050E] print:text-black">
-                                  ₹{item.amount}.00
-                                </td>
+                        <div className="overflow-x-auto w-full">
+                          <table className="w-full min-w-[460px] print:min-w-0 text-xs text-left">
+                            <thead className="bg-[#1A0409]/90 text-[#FAF5E8] font-cinzel text-[10px] print:bg-gray-800 print:text-white">
+                              <tr>
+                                <th className="py-2 px-3 w-10">Sl.</th>
+                                <th className="py-2 px-3">Vazhipad</th>
+                                <th className="py-2 px-3">Offering Date</th>
+                                <th className="py-2 px-3">Deity (പ്രതിഷ്ഠ)</th>
+                                <th className="py-2 px-3 text-right">Rate (₹)</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody className="divide-y divide-[#E4D5AE]/60 bg-white print:divide-gray-300">
+                              {data.items.map((item, itemIdx) => (
+                                <tr key={item.id}>
+                                  <td className="py-2 px-3 font-mono text-gray-500">{itemIdx + 1}</td>
+                                  <td className="py-2 px-3 font-bold text-[#38050E] print:text-black">{item.vazhipadName}</td>
+                                  <td className="py-2 px-3 text-[#5A382A] print:text-black">{item.offeringDate}</td>
+                                  <td className="py-2 px-3 text-[#8C6219] print:text-black">{item.deity}</td>
+                                  <td className="py-2 px-3 text-right font-mono font-bold text-[#38050E] print:text-black">
+                                    ₹{item.amount}.00
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     ))}
                 </div>
@@ -2222,9 +2224,9 @@ function ProfileContent() {
                         setDeleteAuthMode('otp');
                         setDeleteError('');
                       }}
-                      className="text-[11px] text-[#8C6219] hover:text-[#610C1B] hover:underline font-semibold flex items-center gap-1.5 cursor-pointer pt-1 transition-colors"
+                      className="text-[11px] text-[#8C6219] hover:text-[#610C1B] hover:underline font-semibold flex items-center gap-1.5 cursor-pointer pt-1 transition-colors text-left"
                     >
-                      <Mail className="w-3.5 h-3.5 text-[#610C1B]" />
+                      <Mail className="w-3.5 h-3.5 text-[#610C1B] flex-shrink-0" />
                       <span>Signed in via Google or no password? Verify via Email OTP instead</span>
                     </button>
                   </div>
@@ -2234,7 +2236,7 @@ function ProfileContent() {
                       <label className="block text-xs font-bold uppercase tracking-wider text-[#38050E] mb-1 font-cinzel">
                         Email OTP Verification
                       </label>
-                      <div className="p-3 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] text-xs text-[#5A382A] flex items-center justify-between gap-2">
+                      <div className="p-3 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] text-xs text-[#5A382A] flex flex-col xs:flex-row xs:items-center justify-between gap-2">
                         <span className="font-medium text-[#38050E] truncate">{currentUser?.email}</span>
                         {deleteOtpSent && deleteOtpTimer > 0 ? (
                           <span className="text-[10px] font-mono text-[#8C6219] whitespace-nowrap">
@@ -2245,7 +2247,7 @@ function ProfileContent() {
                             type="button"
                             onClick={handleSendDeleteOtp}
                             disabled={isSendingDeleteOtp}
-                            className="px-2.5 py-1 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-[11px] font-bold transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1 disabled:opacity-75"
+                            className="px-2.5 py-1 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-white text-[11px] font-bold transition-colors cursor-pointer whitespace-nowrap flex items-center justify-center gap-1 disabled:opacity-75 self-start xs:self-auto"
                           >
                             {isSendingDeleteOtp ? (
                               <>
@@ -2275,7 +2277,7 @@ function ProfileContent() {
                           value={deleteOtpCode}
                           onChange={(e) => setDeleteOtpCode(e.target.value.replace(/\D/g, ''))}
                           placeholder="123456"
-                          className="w-full text-center tracking-[0.3em] font-mono text-lg py-2 rounded-xl border-2 border-rose-300 text-rose-950 font-bold focus:outline-none focus:ring-2 focus:ring-rose-500"
+                          className="w-full text-center tracking-[0.2em] sm:tracking-[0.3em] font-mono text-base sm:text-lg py-2 rounded-xl border-2 border-rose-300 text-rose-950 font-bold focus:outline-none focus:ring-2 focus:ring-rose-500"
                         />
                         <span className="text-[10px] text-gray-500 mt-1 block">
                           Check your inbox for the 6-digit verification code.
@@ -2290,26 +2292,26 @@ function ProfileContent() {
                         setDeleteAuthMode('password');
                         setDeleteError('');
                       }}
-                      className="text-[11px] text-[#8C6219] hover:text-[#610C1B] hover:underline font-semibold flex items-center gap-1.5 cursor-pointer pt-1 transition-colors"
+                      className="text-[11px] text-[#8C6219] hover:text-[#610C1B] hover:underline font-semibold flex items-center gap-1.5 cursor-pointer pt-1 transition-colors text-left"
                     >
-                      <Key className="w-3.5 h-3.5 text-[#610C1B]" />
+                      <Key className="w-3.5 h-3.5 text-[#610C1B] flex-shrink-0" />
                       <span>Or verify deletion using Account Password instead</span>
                     </button>
                   </div>
                 )}
 
-                <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
+                <div className="flex flex-col-reverse sm:flex-row items-center gap-2 sm:gap-3 pt-3 border-t border-gray-100">
                   <button
                     type="button"
                     onClick={() => setIsDeleteModalOpen(false)}
-                    className="flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition-colors cursor-pointer"
+                    className="w-full sm:flex-1 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition-colors cursor-pointer text-center"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isDeletingAccount || (deleteAuthMode === 'otp' && !deleteOtpSent)}
-                    className="flex-1 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 disabled:opacity-50 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                    className="w-full sm:flex-1 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 disabled:opacity-50 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer text-center"
                   >
                     {isDeletingAccount ? (
                       <>

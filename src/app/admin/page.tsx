@@ -698,122 +698,122 @@ export default function AdminPage() {
       )}
 
       {/* Sidebar Navigation (Sticky until footer section begins) */}
-      <aside className="w-full md:w-72 md:sticky md:top-[104px] md:h-[calc(100vh-104px)] bg-[#1A0409] text-[#FAF5E8] flex flex-col justify-between border-r border-[#C99738]/30 flex-shrink-0 z-30 overflow-y-auto">
+      <aside className="w-full md:w-72 md:sticky md:top-[104px] md:h-[calc(100vh-104px)] bg-[#1A0409] text-[#FAF5E8] flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#C99738]/30 flex-shrink-0 z-30 overflow-y-auto">
         <div>
           {/* Header Branding */}
-          <div className="p-5 border-b border-[#C99738]/20 flex items-center justify-between">
+          <div className="p-3.5 sm:p-5 border-b border-[#C99738]/20 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#610C1B] to-[#38050E] border border-[#C99738] flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-lg shadow-md">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[#610C1B] to-[#38050E] border border-[#C99738] flex items-center justify-center text-[#E6BE65] font-cinzel font-bold text-base sm:text-lg shadow-md">
                 ॐ
               </div>
               <div>
-                <h2 className="font-cinzel font-bold text-sm text-[#FAF5E8] leading-tight">
+                <h2 className="font-cinzel font-bold text-xs sm:text-sm text-[#FAF5E8] leading-tight">
                   Puliyannoor Admin
                 </h2>
-                <span className="text-[10px] text-[#E6BE65] font-medium block">
+                <span className="text-[9px] sm:text-[10px] text-[#E6BE65] font-medium block">
                   Ooranma Devaswom
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Nav Items */}
-          <nav className="p-3 space-y-1">
+          {/* Nav Items (Horizontal scroll on mobile, vertical stack on desktop) */}
+          <nav className="p-2 md:p-3 flex md:flex-col overflow-x-auto md:overflow-x-visible scrollbar-none gap-1.5 md:space-y-1">
             <button
               onClick={() => setActiveTab('chats')}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`flex-shrink-0 whitespace-nowrap md:w-full flex items-center justify-between px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'chats'
                   ? 'bg-[#610C1B] text-[#FAF5E8] shadow-sm font-bold'
                   : 'text-[#FAF5E8]/80 hover:bg-[#38050E] hover:text-[#FAF5E8]'
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                <MessageSquare className="w-4 h-4 text-[#C99738]" />
-                <span>Devotee Inquiries & Chat</span>
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C99738]" />
+                <span>Devotee Chats</span>
               </div>
               {chats.some((c) => c.unread) && (
-                <span className="w-2 h-2 rounded-full bg-[#E6BE65] animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[#E6BE65] animate-pulse ml-2" />
               )}
             </button>
 
             <button
               onClick={() => setActiveTab('offerings')}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`flex-shrink-0 whitespace-nowrap md:w-full flex items-center justify-between px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'offerings'
                   ? 'bg-[#610C1B] text-[#FAF5E8] shadow-sm font-bold'
                   : 'text-[#FAF5E8]/80 hover:bg-[#38050E] hover:text-[#FAF5E8]'
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                <Flame className="w-4 h-4 text-[#C99738]" />
-                <span>Offerings & Vazhipadu</span>
+              <div className="flex items-center gap-2">
+                <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C99738]" />
+                <span>Offerings</span>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FAF5E8]/10 text-[#E6BE65] font-bold">
+              <span className="text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-[#FAF5E8]/10 text-[#E6BE65] font-bold ml-2">
                 {offerings.length}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab('festivals')}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`flex-shrink-0 whitespace-nowrap md:w-full flex items-center justify-between px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'festivals'
                   ? 'bg-[#610C1B] text-[#FAF5E8] shadow-sm font-bold'
                   : 'text-[#FAF5E8]/80 hover:bg-[#38050E] hover:text-[#FAF5E8]'
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                <Calendar className="w-4 h-4 text-[#C99738]" />
-                <span>Calendar & Festivals</span>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C99738]" />
+                <span>Festivals</span>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FAF5E8]/10 text-[#E6BE65] font-bold">
+              <span className="text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-[#FAF5E8]/10 text-[#E6BE65] font-bold ml-2">
                 {festivals.length}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab('contacts')}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`flex-shrink-0 whitespace-nowrap md:w-full flex items-center justify-between px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'contacts'
                   ? 'bg-[#610C1B] text-[#FAF5E8] shadow-sm font-bold'
                   : 'text-[#FAF5E8]/80 hover:bg-[#38050E] hover:text-[#FAF5E8]'
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                <Building className="w-4 h-4 text-[#C99738]" />
-                <span>Contacts & Bank Info</span>
+              <div className="flex items-center gap-2">
+                <Building className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C99738]" />
+                <span>Contacts & Bank</span>
               </div>
             </button>
 
             <button
               onClick={() => setActiveTab('profile')}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`flex-shrink-0 whitespace-nowrap md:w-full flex items-center justify-between px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'profile'
                   ? 'bg-[#610C1B] text-[#FAF5E8] shadow-sm font-bold'
                   : 'text-[#FAF5E8]/80 hover:bg-[#38050E] hover:text-[#FAF5E8]'
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                <UserCheck className="w-4 h-4 text-[#C99738]" />
-                <span>Trustee Profile & System</span>
+              <div className="flex items-center gap-2">
+                <UserCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C99738]" />
+                <span>Trustee Profile</span>
               </div>
             </button>
           </nav>
         </div>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-[#C99738]/20 space-y-3">
+        <div className="p-3 sm:p-4 border-t border-[#C99738]/20 flex md:flex-col items-center gap-2">
           <Link
             href="/"
             target="_blank"
-            className="w-full py-2 px-3 rounded-xl bg-[#FAF5E8]/10 hover:bg-[#FAF5E8]/20 text-[#FAF5E8] text-xs font-semibold flex items-center justify-between transition-colors"
+            className="flex-1 md:w-full py-1.5 sm:py-2 px-3 rounded-xl bg-[#FAF5E8]/10 hover:bg-[#FAF5E8]/20 text-[#FAF5E8] text-xs font-semibold flex items-center justify-between transition-colors"
           >
-            <span>View Public Site</span>
+            <span>Public Site</span>
             <ExternalLink className="w-3.5 h-3.5 text-[#E6BE65]" />
           </Link>
 
           <button
             onClick={handleLogout}
-            className="w-full py-2 px-3 rounded-xl bg-[#5C0A17]/60 hover:bg-[#5C0A17] text-[#FFE4E6] text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            className="flex-1 md:w-full py-1.5 sm:py-2 px-3 rounded-xl bg-[#5C0A17]/60 hover:bg-[#5C0A17] text-[#FFE4E6] text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
@@ -824,9 +824,9 @@ export default function AdminPage() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#FAF5E8] min-h-[calc(100vh-104px)]">
         {/* Top App Bar */}
-        <header className="px-6 py-3.5 bg-white border-b border-[#E4D5AE] flex items-center justify-between shadow-xs">
+        <header className="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-white border-b border-[#E4D5AE] flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs">
           <div className="flex items-center gap-2">
-            <h2 className="font-cinzel font-bold text-base md:text-lg text-[#38050E] capitalize">
+            <h2 className="font-cinzel font-bold text-sm sm:text-base md:text-lg text-[#38050E] capitalize">
               {activeTab === 'chats' && 'Devotee Inquiries & Live Chat Desk'}
               {activeTab === 'offerings' && 'Vazhipadu & Pooja Rate Manager'}
               {activeTab === 'festivals' && 'Temple Calendar & Festival Editor'}
@@ -835,11 +835,11 @@ export default function AdminPage() {
             </h2>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 self-start sm:self-auto">
             {/* Role Badge & Switcher */}
-            <div className="flex items-center gap-1.5 bg-[#FAF5E8] px-3 py-1 rounded-full border border-[#C99738]/50 shadow-xs">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#610C1B]" />
-              <span className="text-[11px] font-bold text-[#38050E]">
+            <div className="flex items-center gap-1.5 bg-[#FAF5E8] px-2.5 sm:px-3 py-1 rounded-full border border-[#C99738]/50 shadow-xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#610C1B] flex-shrink-0" />
+              <span className="text-[10px] sm:text-[11px] font-bold text-[#38050E]">
                 {activeRole === 'super_admin' ? 'Super Admin (Trustee)' : 'Staff Admin (Support)'}
               </span>
               <button

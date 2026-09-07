@@ -186,10 +186,10 @@ export const VisitSection: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <button
                     onClick={handleCopy}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F3EBD7] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold border border-[#E4D5AE] transition-all cursor-pointer"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F3EBD7] hover:bg-[#E4D5AE] text-[#610C1B] text-xs font-bold border border-[#E4D5AE] transition-all cursor-pointer text-center"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-[#1F4E34]" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copied ? t('copied_text') : t('btn_copy_address')}</span>
@@ -199,7 +199,7 @@ export const VisitSection: React.FC = () => {
                     href="https://maps.app.goo.gl/ZaRbzjtd9mCYbESP9"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] text-xs font-bold shadow-sm transition-all"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#610C1B] hover:bg-[#8B1428] text-[#FAF5E8] text-xs font-bold shadow-sm transition-all text-center"
                   >
                     <Navigation className="w-3.5 h-3.5 text-[#E6BE65]" />
                     <span>Directions</span>

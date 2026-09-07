@@ -307,18 +307,18 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/90 border border-[#E4D5AE] shadow-inner space-y-2.5 text-xs sm:text-sm">
-                <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-white/90 border border-[#E4D5AE] shadow-inner space-y-2.5 text-xs sm:text-sm">
+                <div className="flex flex-wrap justify-between items-center border-b border-[#E4D5AE]/60 pb-2 gap-1">
                   <span className="text-[#8C6219] font-bold">Bank:</span>
                   <span className="font-bold text-[#38050E]">{contactInfo.bankName}</span>
                 </div>
 
-                <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
+                <div className="flex flex-wrap justify-between items-center border-b border-[#E4D5AE]/60 pb-2 gap-1">
                   <span className="text-[#8C6219] font-bold">Account Name:</span>
                   <span className="font-bold text-[#38050E]">{contactInfo.accountName}</span>
                 </div>
 
-                <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
+                <div className="flex flex-wrap justify-between items-center border-b border-[#E4D5AE]/60 pb-2 gap-1">
                   <span className="text-[#8C6219] font-bold">Account Number:</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-sm sm:text-base text-[#610C1B]">
@@ -338,7 +338,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center border-b border-[#E4D5AE]/60 pb-2">
+                <div className="flex flex-wrap justify-between items-center border-b border-[#E4D5AE]/60 pb-2 gap-1">
                   <span className="text-[#8C6219] font-bold">IFSC Code:</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-sm sm:text-base text-[#610C1B]">
@@ -358,7 +358,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center">
+                <div className="flex flex-wrap justify-between items-center gap-1">
                   <span className="text-[#8C6219] font-bold">UPI ID:</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-semibold text-xs sm:text-sm text-[#1A0409]">

@@ -47,10 +47,10 @@ export const TimingsSection: React.FC = () => {
 
         {/* Filter Tab Buttons */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] p-1 shadow-sm">
+          <div className="inline-flex flex-wrap justify-center rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] p-1 shadow-sm gap-1 max-w-full">
             <button
               onClick={() => setSelectedTab('all')}
-              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                 selectedTab === 'all'
                   ? 'bg-[#610C1B] text-[#FAF5E8] shadow-sm'
                   : 'text-[#5A382A] hover:text-[#610C1B]'
@@ -60,7 +60,7 @@ export const TimingsSection: React.FC = () => {
             </button>
             <button
               onClick={() => setSelectedTab('morning')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                 selectedTab === 'morning'
                   ? 'bg-[#610C1B] text-[#FAF5E8] shadow-sm'
                   : 'text-[#5A382A] hover:text-[#610C1B]'
@@ -71,7 +71,7 @@ export const TimingsSection: React.FC = () => {
             </button>
             <button
               onClick={() => setSelectedTab('evening')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                 selectedTab === 'evening'
                   ? 'bg-[#610C1B] text-[#FAF5E8] shadow-sm'
                   : 'text-[#5A382A] hover:text-[#610C1B]'
@@ -86,8 +86,8 @@ export const TimingsSection: React.FC = () => {
         {/* Timings Table / Card List */}
         <div className="glass-card rounded-2xl border-2 border-[#C99738]/30 shadow-lg overflow-hidden mb-8">
           {/* Table Header Row */}
-          <div className="bg-[#610C1B] text-[#FAF5E8] px-5 py-3.5 flex items-center justify-between">
-            <div className="flex items-center gap-2 font-cinzel font-bold text-sm sm:text-base tracking-wide">
+          <div className="bg-[#610C1B] text-[#FAF5E8] px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between">
+            <div className="flex items-center gap-2 font-cinzel font-bold text-xs sm:text-base tracking-wide">
               <CalendarDays className="w-4 h-4 text-[#E6BE65]" />
               <span>Daily Pooja Rituals & Darshan</span>
             </div>
@@ -100,7 +100,7 @@ export const TimingsSection: React.FC = () => {
             {filteredTimings.map((timing, index) => (
               <div
                 key={timing.id}
-                className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#FAF5E8] transition-colors"
+                className="p-3.5 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#FAF5E8] transition-colors"
               >
                 <div className="flex items-start gap-3.5">
                   <div

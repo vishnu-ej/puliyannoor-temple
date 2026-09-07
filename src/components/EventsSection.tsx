@@ -108,39 +108,39 @@ export const EventsSection: React.FC = () => {
               </p>
 
               {/* Countdown Grid */}
-            <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
-              <div className="bg-[#FAF5E8]/10 rounded-2xl p-2.5 sm:p-4 border border-[#E6BE65]/30">
-                <span className="block font-cinzel text-xl sm:text-3xl font-extrabold text-[#E6BE65]">
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-4 max-w-md mx-auto">
+              <div className="bg-[#FAF5E8]/10 rounded-xl sm:rounded-2xl p-2 sm:p-4 border border-[#E6BE65]/30">
+                <span className="block font-cinzel text-lg sm:text-3xl font-extrabold text-[#E6BE65]">
                   {timeLeft.days}
                 </span>
-                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#FAF5E8]/80 font-medium">
+                <span className="text-[9px] sm:text-xs uppercase tracking-wider text-[#FAF5E8]/80 font-medium">
                   {t('countdown_days')}
                 </span>
               </div>
 
-              <div className="bg-[#FAF5E8]/10 rounded-2xl p-2.5 sm:p-4 border border-[#E6BE65]/30">
-                <span className="block font-cinzel text-xl sm:text-3xl font-extrabold text-[#E6BE65]">
+              <div className="bg-[#FAF5E8]/10 rounded-xl sm:rounded-2xl p-2 sm:p-4 border border-[#E6BE65]/30">
+                <span className="block font-cinzel text-lg sm:text-3xl font-extrabold text-[#E6BE65]">
                   {timeLeft.hours}
                 </span>
-                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#FAF5E8]/80 font-medium">
+                <span className="text-[9px] sm:text-xs uppercase tracking-wider text-[#FAF5E8]/80 font-medium">
                   {t('countdown_hours')}
                 </span>
               </div>
 
-              <div className="bg-[#FAF5E8]/10 rounded-2xl p-2.5 sm:p-4 border border-[#E6BE65]/30">
-                <span className="block font-cinzel text-xl sm:text-3xl font-extrabold text-[#E6BE65]">
+              <div className="bg-[#FAF5E8]/10 rounded-xl sm:rounded-2xl p-2 sm:p-4 border border-[#E6BE65]/30">
+                <span className="block font-cinzel text-lg sm:text-3xl font-extrabold text-[#E6BE65]">
                   {timeLeft.minutes}
                 </span>
-                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#FAF5E8]/80 font-medium">
+                <span className="text-[9px] sm:text-xs uppercase tracking-wider text-[#FAF5E8]/80 font-medium">
                   {t('countdown_minutes')}
                 </span>
               </div>
 
-              <div className="bg-[#FAF5E8]/10 rounded-2xl p-2.5 sm:p-4 border border-[#E6BE65]/30">
-                <span className="block font-cinzel text-xl sm:text-3xl font-extrabold text-[#E6BE65]">
+              <div className="bg-[#FAF5E8]/10 rounded-xl sm:rounded-2xl p-2 sm:p-4 border border-[#E6BE65]/30">
+                <span className="block font-cinzel text-lg sm:text-3xl font-extrabold text-[#E6BE65]">
                   {timeLeft.seconds}
                 </span>
-                <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[#FAF5E8]/80 font-medium">
+                <span className="text-[9px] sm:text-xs uppercase tracking-wider text-[#FAF5E8]/80 font-medium">
                   {t('countdown_seconds')}
                 </span>
               </div>
@@ -151,9 +151,9 @@ export const EventsSection: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsCalendarOpen(true)}
-                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#C99738] via-[#E6BE65] to-[#C99738] text-[#38050E] font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all cursor-pointer border border-[#FAF5E8]/40 font-cinzel"
+                className="px-4 sm:px-5 py-2.5 rounded-full bg-gradient-to-r from-[#C99738] via-[#E6BE65] to-[#C99738] text-[#38050E] font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all cursor-pointer border border-[#FAF5E8]/40 font-cinzel text-center"
               >
-                <Calendar className="w-4 h-4 text-[#38050E]" />
+                <Calendar className="w-4 h-4 text-[#38050E] flex-shrink-0" />
                 <span>
                   {language === 'en'
                     ? 'View Official Annual Temple Calendar 1202 (2026–2027)'

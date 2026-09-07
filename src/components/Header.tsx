@@ -120,18 +120,18 @@ export const Header: React.FC = () => {
               </span>
             </div>
 
-            <div className="flex flex-col overflow-hidden">
+            <div className="flex flex-col min-w-0">
               <span className="font-cinzel font-bold text-xs sm:text-base md:text-lg text-[#38050E] leading-tight tracking-wide group-hover:text-[#610C1B] transition-colors truncate">
                 Puliyannoor Mahadeva
               </span>
-              <span className="font-malayalam-sans text-[10px] sm:text-xs text-[#8C6219] font-medium leading-tight truncate">
+              <span className="font-malayalam-sans text-[9px] sm:text-xs text-[#8C6219] font-medium leading-tight truncate">
                 പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രം
               </span>
             </div>
           </Link>
 
           {/* RIGHT: Navigation Links + Language Toggle + Profile Icon Button */}
-          <div className="flex items-center justify-end gap-1.5 sm:gap-2.5 flex-1 pl-1">
+          <div className="flex items-center justify-end gap-1.5 sm:gap-2.5 flex-shrink-0">
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1.5 whitespace-nowrap">
               {navItems.map((item) => {
@@ -160,10 +160,10 @@ export const Header: React.FC = () => {
             </nav>
 
             {/* Language Switcher Pill */}
-            <div className="inline-flex rounded-full p-0.5 bg-[#F3EBD7] border border-[#E4D5AE] text-[11px] font-bold flex-shrink-0">
+            <div className="inline-flex rounded-full p-0.5 bg-[#F3EBD7] border border-[#E4D5AE] text-[10px] sm:text-[11px] font-bold flex-shrink-0">
               <button
                 onClick={() => setLanguage('en')}
-                className={`px-2 py-1 rounded-full transition-all cursor-pointer ${
+                className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer ${
                   language === 'en'
                     ? 'bg-[#610C1B] text-[#FAF5E8] shadow-xs'
                     : 'text-[#5A382A] hover:text-[#2B150F]'
@@ -174,7 +174,7 @@ export const Header: React.FC = () => {
               </button>
               <button
                 onClick={() => setLanguage('ml')}
-                className={`px-2 py-1 rounded-full transition-all cursor-pointer ${
+                className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full transition-all cursor-pointer ${
                   language === 'ml'
                     ? 'bg-[#610C1B] text-[#FAF5E8] shadow-xs'
                     : 'text-[#5A382A] hover:text-[#2B150F]'
@@ -185,7 +185,7 @@ export const Header: React.FC = () => {
               </button>
             </div>
 
-            {/* Profile / Admin Button (Desktop) */}
+            {/* Profile / Admin Button */}
             {pathname.startsWith('/admin') && isAdminSession ? (
               <Link
                 href="/admin?tab=profile"
@@ -194,8 +194,8 @@ export const Header: React.FC = () => {
                     window.dispatchEvent(new CustomEvent('admin-switch-tab', { detail: 'profile' }));
                   }
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-br from-[#610C1B] to-[#38050E] border-2 border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-xs shadow-md hover:scale-105 transition-transform flex-shrink-0 cursor-pointer"
-                title={`Puliyannoor Devaswom Admin: ${adminData?.name || 'Managing Trustee'} - Click to view Trustee Profile & System`}
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-br from-[#610C1B] to-[#38050E] border-2 border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-xs shadow-md hover:scale-105 transition-transform flex-shrink-0 cursor-pointer"
+                title={`Puliyannoor Devaswom Admin: ${adminData?.name || 'Managing Trustee'}`}
               >
                 <div className="w-4 h-4 rounded-full bg-[#C99738]/30 flex items-center justify-center text-[9px] font-bold text-[#E6BE65]">
                   PT
@@ -205,7 +205,7 @@ export const Header: React.FC = () => {
             ) : isAuthenticated && currentUser ? (
               <Link
                 href="/profile"
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-[#610C1B] to-[#38050E] border-2 border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-xs flex items-center justify-center shadow-md hover:scale-105 transition-transform flex-shrink-0 cursor-pointer"
+                className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-[#610C1B] to-[#38050E] border-2 border-[#C99738] text-[#E6BE65] font-cinzel font-bold text-xs flex items-center justify-center shadow-md hover:scale-105 transition-transform flex-shrink-0 cursor-pointer"
                 title={`Devotee Profile: ${currentUser.name}`}
               >
                 <span>
@@ -218,26 +218,38 @@ export const Header: React.FC = () => {
                 </span>
               </Link>
             ) : (
-              <button
-                onClick={() => openAuthModal('login')}
-                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-[#FAF5E8] text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all flex-shrink-0 cursor-pointer"
-                title="Devotee Sign In"
-              >
-                <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center">
-                  <User className="w-2.5 h-2.5 text-[#E6BE65]" />
-                </div>
-                <span>Sign In</span>
-              </button>
+              <>
+                {/* Compact User button on mobile < sm */}
+                <button
+                  onClick={() => openAuthModal('login')}
+                  className="sm:hidden w-7 h-7 rounded-full bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-[#FAF5E8] flex items-center justify-center shadow-md active:scale-95 transition-all flex-shrink-0 cursor-pointer"
+                  title="Devotee Sign In"
+                  aria-label="Devotee Sign In"
+                >
+                  <User className="w-3.5 h-3.5 text-[#E6BE65]" />
+                </button>
+                {/* Full Sign In button on sm and up */}
+                <button
+                  onClick={() => openAuthModal('login')}
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-[#FAF5E8] text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all flex-shrink-0 cursor-pointer"
+                  title="Devotee Sign In"
+                >
+                  <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center">
+                    <User className="w-2.5 h-2.5 text-[#E6BE65]" />
+                  </div>
+                  <span>Sign In</span>
+                </button>
+              </>
             )}
 
             {/* Mobile Menu Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-[#610C1B] hover:bg-[#F3EBD7] active:scale-95 transition-all cursor-pointer flex-shrink-0 min-w-[40px] min-h-[40px] flex items-center justify-center"
+              className="lg:hidden p-1.5 sm:p-2 rounded-xl text-[#610C1B] hover:bg-[#F3EBD7] active:scale-95 transition-all cursor-pointer flex-shrink-0 min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
         </div>

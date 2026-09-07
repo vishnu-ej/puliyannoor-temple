@@ -61,12 +61,12 @@ export const Footer: React.FC = () => {
             <h4 className="font-cinzel font-bold text-xs uppercase tracking-widest text-[#E6BE65] mb-3">
               {t('footer_quick_links')}
             </h4>
-            <ul className="space-y-2 text-xs md:text-sm">
+            <ul className="grid grid-cols-2 sm:grid-cols-1 gap-2 text-xs md:text-sm">
               {links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[#FAF5E8]/75 hover:text-[#E6BE65] transition-colors"
+                    className="text-[#FAF5E8]/75 hover:text-[#E6BE65] transition-colors inline-block"
                   >
                     {t(link.labelKey)}
                   </Link>
@@ -122,16 +122,16 @@ export const Footer: React.FC = () => {
             <div className="pt-1 flex flex-col gap-1.5 text-xs text-[#FAF5E8]/90">
               <a
                 href={`mailto:${contactInfo.email}`}
-                className="inline-flex items-center gap-1.5 text-xs text-[#E6BE65] hover:text-white transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs text-[#E6BE65] hover:text-white transition-colors break-all"
               >
-                <Mail className="w-3.5 h-3.5 text-[#C99738]" />
-                <span className="truncate">{contactInfo.email}</span>
+                <Mail className="w-3.5 h-3.5 text-[#C99738] flex-shrink-0" />
+                <span>{contactInfo.email}</span>
               </a>
               <a
                 href={`tel:${contactInfo.phone}`}
                 className="inline-flex items-center gap-1.5 text-xs text-[#FAF5E8]/80 hover:text-[#E6BE65] transition-colors"
               >
-                <Phone className="w-3.5 h-3.5 text-[#C99738]" />
+                <Phone className="w-3.5 h-3.5 text-[#C99738] flex-shrink-0" />
                 <span>{contactInfo.phoneDisplay}</span>
               </a>
               {contactInfo.phone2 && (
@@ -139,7 +139,7 @@ export const Footer: React.FC = () => {
                   href={`tel:${contactInfo.phone2}`}
                   className="inline-flex items-center gap-1.5 text-xs text-[#FAF5E8]/80 hover:text-[#E6BE65] transition-colors"
                 >
-                  <Phone className="w-3.5 h-3.5 text-[#C99738]" />
+                  <Phone className="w-3.5 h-3.5 text-[#C99738] flex-shrink-0" />
                   <span>{contactInfo.phone2Display || contactInfo.phone2}</span>
                 </a>
               )}
@@ -160,9 +160,9 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Disclaimer & Copyright */}
-        <div className="mt-12 pt-6 border-t border-[#FAF5E8]/10 flex flex-col md:flex-row items-center md:items-start justify-between gap-4 text-xs text-[#FAF5E8]/60 text-center md:text-left">
+        <div className="mt-12 pt-6 border-t border-[#FAF5E8]/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-[#FAF5E8]/60 text-left">
           <p className="max-w-md">{t('footer_disclaimer')}</p>
-          <div className="flex flex-col items-center md:items-end gap-1.5 text-center md:text-right flex-shrink-0">
+          <div className="flex flex-col items-start md:items-end gap-1.5 text-left md:text-right flex-shrink-0">
             <p>© {currentYear} {t('footer_rights')}</p>
             <span className="text-[10px] text-[#E6BE65]/80 font-mono tracking-wide">
               Current Website Version: v2.0.0
