@@ -62,6 +62,7 @@ export interface ChatConversation {
   id: string;
   devoteeName: string;
   devoteePhone?: string;
+  hasWhatsapp?: boolean;
   star?: string;
   subject: string;
   unread: boolean;
@@ -116,110 +117,8 @@ const DEFAULT_CONTACT_INFO: TempleContactInfo = {
   officeHoursEvening: 'Evening: 4:30 PM – 7:00 PM',
 };
 
-const DEFAULT_CHATS: ChatConversation[] = [
-  {
-    id: 'chat_1',
-    devoteeName: 'Anoop Menon (അനൂപ് മേനോൻ)',
-    devoteePhone: '+91 98471 23456',
-    star: 'Thiruvathira (തിരുവാതിര)',
-    subject: 'Udayasthamana Pooja Booking Date Inquiry',
-    unread: true,
-    status: 'active',
-    lastMessageTime: '10:45 AM',
-    messages: [
-      {
-        id: 'm1_1',
-        sender: 'devotee',
-        text: 'നമസ്കാരം, 2027 ജനുവരി മാസത്തിൽ ഉദയാസ്തമന പൂജയ്ക്ക് ഒഴിവുള്ള തീയതികൾ അറിയാൻ ആഗ്രഹിക്കുന്നു.',
-        timestamp: '10:30 AM',
-      },
-      {
-        id: 'm1_2',
-        sender: 'admin',
-        text: 'നമസ്കാരം അനൂപ്. 2027 ജനുവരി 14 (മകര സംക്രാന്തി), ജനുവരി 21 തീയതികളിൽ ഉദയാസ്തമന പൂജ ബുക്കിംഗ് ലഭ്യമാണ്.',
-        timestamp: '10:38 AM',
-      },
-      {
-        id: 'm1_3',
-        sender: 'devotee',
-        text: 'നന്ദി സ്വാമി. ജനുവരി 21 തീയതി കുടുംബാംഗങ്ങളുമായി ആലോചിച്ച് അഡ്വാൻസ് അടയ്ക്കാൻ ബാങ്ക് വിവരങ്ങൾ ഇവിടെ നോക്കി ചെയ്യാം.',
-        timestamp: '10:45 AM',
-      },
-    ],
-  },
-  {
-    id: 'chat_2',
-    devoteeName: 'Sreedevi Namboothiri (ശ്രീദേവി)',
-    devoteePhone: '+91 94462 89012',
-    star: 'Rohini (രോഹിണി)',
-    subject: 'Koottu Namaskaram for Vadakkedathu Family',
-    unread: false,
-    status: 'resolved',
-    lastMessageTime: 'Yesterday',
-    messages: [
-      {
-        id: 'm2_1',
-        sender: 'devotee',
-        text: 'ഞങ്ങളുടെ വടക്കേടത്ത് കുടുംബത്തിന്റെ പേരിലുള്ള കൂട്ടനമസ്കാരം ചിങ്ങം 1-ന് നടത്താൻ ആഗ്രഹിക്കുന്നു. കുടുംബപ്പേരും സ്ഥലവും രേഖപ്പെടുത്തിയിട്ടുണ്ട്.',
-        timestamp: 'Yesterday 04:15 PM',
-      },
-      {
-        id: 'm2_2',
-        sender: 'admin',
-        text: 'നമസ്കാരം ശ്രീദേവി. ചിങ്ങം 1-ലെ കൂട്ടനമസ്കാരം ലിസ്റ്റിൽ ചേർത്തു. പ്രസാദം പൂജയ്ക്ക് ശേഷം ക്ഷേത്രത്തിൽ നിന്ന് നേരിട്ട് വാങ്ങാവുന്നതാണ്.',
-        timestamp: 'Yesterday 04:40 PM',
-      },
-    ],
-  },
-  {
-    id: 'chat_3',
-    devoteeName: 'K. Radhakrishnan (കെ. രാധാകൃഷ്ണൻ)',
-    devoteePhone: '+91 97455 67890',
-    star: 'Revathi (രേവതി)',
-    subject: 'Temple Auditorium Booking for Marriage',
-    unread: true,
-    status: 'active',
-    lastMessageTime: '08:20 AM',
-    messages: [
-      {
-        id: 'm3_1',
-        sender: 'devotee',
-        text: '2027 ഏപ്രിൽ 18 ഞായറാഴ്ച ക്ഷേത്ര ഓഡിറ്റോറിയം വിവാഹ ആവശ്യത്തിനായി ലഭ്യമാണോ? അഡ്വാൻസ് ടോക്കൺ തുക എത്രയാണ്?',
-        timestamp: '08:10 AM',
-      },
-      {
-        id: 'm3_2',
-        sender: 'admin',
-        text: 'നമസ്കാരം രാധാകൃഷ്ണൻ. ഏപ്രിൽ 18 തീയതി ഓഡിറ്റോറിയം ലഭ്യമാണ്. ₹10,000 അഡ്വാൻസ് അടച്ചു ബുക്കിംഗ് ഉറപ്പാക്കാം.',
-        timestamp: '08:20 AM',
-      },
-    ],
-  },
-  {
-    id: 'chat_4',
-    devoteeName: 'Unnikrishnan P. (ഉണ്ണികൃഷ്ണൻ പി.)',
-    devoteePhone: '+91 94950 11223',
-    star: 'Aswathi (അശ്വതി)',
-    subject: 'Thila Homam for Ancestral Peace',
-    unread: false,
-    status: 'pending',
-    lastMessageTime: 'Aug 28',
-    messages: [
-      {
-        id: 'm4_1',
-        sender: 'devotee',
-        text: 'ശനിയാഴ്ച ദിവസങ്ങളിൽ തിലഹോമം നടത്തുന്നതിന് മുൻകൂട്ടി രജിസ്റ്റർ ചെയ്യേണ്ടതുണ്ടോ?',
-        timestamp: 'Aug 28 06:00 PM',
-      },
-      {
-        id: 'm4_2',
-        sender: 'admin',
-        text: 'ശനിയാഴ്ച പുലർച്ചെ 5:30-നാണ് തിലഹോമം. തലേദിവസം വൈകിട്ട് 6:30-ന് മുൻപായി പേരും നക്ഷത്രവും ദേവസ്വം ഓഫീസിൽ നൽകുന്നത് ഉത്തമമാണ്.',
-        timestamp: 'Aug 28 06:25 PM',
-      },
-    ],
-  },
-];
+// No sample dummy chats - direct devotee inquiries only
+const DEFAULT_CHATS: ChatConversation[] = [];
 
 interface ContentContextType {
   offerings: OfferingItem[];
@@ -257,7 +156,14 @@ interface ContentContextType {
     deleteType: 'for_me' | 'for_everyone',
     deletedByRole?: 'admin' | 'devotee'
   ) => void;
-  createDevoteeInquiryChat: (devoteeName: string, phone: string, subject: string, messageText: string, star?: string) => void;
+  createDevoteeInquiryChat: (
+    devoteeName: string,
+    phone: string,
+    subject: string,
+    messageText: string,
+    star?: string,
+    hasWhatsapp?: boolean
+  ) => void;
   markChatAsRead: (conversationId: string) => void;
   updateChatStatus: (conversationId: string, status: 'active' | 'resolved' | 'pending') => void;
   advanceMessageDeliveryStatus: (conversationId: string, messageId: string) => 'sent' | 'delivered' | 'read';
@@ -349,14 +255,15 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const parsedChats: ChatConversation[] = JSON.parse(sanitized);
         const now = Date.now();
         const TWENTY_ONE_DAYS = 21 * 24 * 60 * 60 * 1000;
-        // Auto-prune chat messages older than 21 days for privacy and data retention policy
+        // Auto-prune chat messages older than 21 days for privacy and purge any legacy sample chats
         const prunedChats = parsedChats
+          .filter((chat) => !chat.id.startsWith('chat_1') && !chat.id.startsWith('chat_2') && !chat.id.startsWith('chat_3') && !chat.id.startsWith('chat_4'))
           .map((chat) => ({
             ...chat,
             messages: chat.messages.filter((m) => now - (m.createdAt || now) <= TWENTY_ONE_DAYS),
           }))
           .filter((chat) => chat.messages.length > 0);
-        setChats(prunedChats.length > 0 ? prunedChats : DEFAULT_CHATS);
+        setChats(prunedChats);
       }
 
       const savedCalendar = localStorage.getItem('puliyannoor_annual_calendar');
@@ -762,7 +669,8 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     phone: string,
     subject: string,
     messageText: string,
-    star?: string
+    star?: string,
+    hasWhatsapp?: boolean
   ) => {
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -771,11 +679,16 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const normalizedInputPhone = phone ? phone.replace(/\D/g, '').slice(-10) : '';
 
     setChats((prev) => {
-      // Find existing chat with matching mobile phone number
+      // Find existing chat with matching mobile phone number or devotee name
       const existingChatIndex = prev.findIndex((chat) => {
-        if (!chat.devoteePhone || !normalizedInputPhone) return false;
-        const normalizedChatPhone = chat.devoteePhone.replace(/\D/g, '').slice(-10);
-        return normalizedChatPhone === normalizedInputPhone && normalizedChatPhone.length >= 7;
+        if (normalizedInputPhone && normalizedInputPhone.length >= 7 && chat.devoteePhone) {
+          const normalizedChatPhone = chat.devoteePhone.replace(/\D/g, '').slice(-10);
+          if (normalizedChatPhone === normalizedInputPhone) return true;
+        }
+        if (devoteeName && chat.devoteeName && chat.devoteeName.trim().toLowerCase() === devoteeName.trim().toLowerCase()) {
+          return true;
+        }
+        return false;
       });
 
       if (existingChatIndex !== -1) {
@@ -793,6 +706,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
           ...existingChat,
           devoteeName: devoteeName || existingChat.devoteeName,
           devoteePhone: phone || existingChat.devoteePhone,
+          hasWhatsapp: hasWhatsapp !== undefined ? hasWhatsapp : existingChat.hasWhatsapp,
           star: star || existingChat.star,
           subject: existingChat.subject || subject || 'Devotee Inquiry',
           unread: true, // Show unread badge to notify admin
@@ -811,6 +725,7 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         id: `chat_${Date.now()}`,
         devoteeName,
         devoteePhone: phone,
+        hasWhatsapp,
         star,
         subject: subject || 'Devotee Inquiry',
         unread: true,

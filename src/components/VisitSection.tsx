@@ -17,7 +17,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-export const VisitSection: React.FC = () => {
+export const VisitSection: React.FC<{ hideHeader?: boolean }> = ({ hideHeader = false }) => {
   const { language, t } = useLanguage();
   const [copied, setCopied] = useState(false);
 
@@ -55,25 +55,27 @@ export const VisitSection: React.FC = () => {
   ];
 
   return (
-    <section id="visit" className="py-16 md:py-24 bg-[#FAF5E8] relative">
+    <section id="visit" className={`py-16 md:py-24 bg-[#FAF5E8] relative ${hideHeader ? 'pt-8 md:pt-12' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1F4E34]/10 border border-[#1F4E34]/20 text-xs font-bold text-[#1F4E34] uppercase tracking-widest mb-3">
-            <MapPin className="w-3.5 h-3.5 text-[#C99738]" />
-            <span>{t('visit_eyebrow')}</span>
+        {!hideHeader && (
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1F4E34]/10 border border-[#1F4E34]/20 text-xs font-bold text-[#1F4E34] uppercase tracking-widest mb-3">
+              <MapPin className="w-3.5 h-3.5 text-[#C99738]" />
+              <span>{t('visit_eyebrow')}</span>
+            </div>
+
+            <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-bold text-[#38050E] mb-3">
+              {t('visit_title')}
+            </h2>
+
+            <p className="text-sm sm:text-base text-[#5A382A] font-light leading-relaxed">
+              {t('visit_subtitle')}
+            </p>
+
+            <MuralDivider variant="simple" className="my-2" />
           </div>
-
-          <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-bold text-[#38050E] mb-3">
-            {t('visit_title')}
-          </h2>
-
-          <p className="text-sm sm:text-base text-[#5A382A] font-light leading-relaxed">
-            {t('visit_subtitle')}
-          </p>
-
-          <MuralDivider variant="simple" className="my-2" />
-        </div>
+        )}
 
         {/* 2-Column Grid: Map & Route Guide / Dress Code */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

@@ -13,6 +13,8 @@ export interface UserProfile {
   name: string;
   email: string;
   phone: string;
+  countryCode?: string;
+  hasWhatsapp?: boolean;
   dob?: string;
   place?: string;
   star?: string; // Birth Star (Nakshatram)
@@ -26,6 +28,8 @@ interface PendingSignupData {
   name?: string;
   dob?: string;
   phone?: string;
+  countryCode?: string;
+  hasWhatsapp?: boolean;
   place?: string;
   star?: string;
 }
@@ -111,6 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: session.user.email || dbProf?.email || '',
             name: dbProf?.name || userMeta.full_name || userMeta.name || session.user.email?.split('@')[0] || 'Devotee Pilgrim',
             phone: dbProf?.phone || userMeta.phone || '',
+            countryCode: dbProf?.country_code || userMeta.country_code || '+91',
+            hasWhatsapp: dbProf?.has_whatsapp ?? userMeta.has_whatsapp ?? false,
             dob: dbProf?.dob || userMeta.dob || '',
             place: dbProf?.place || userMeta.place || '',
             star: dbProf?.star || userMeta.star || '',
@@ -128,6 +134,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               name: devoteeProfile.name,
               email: devoteeProfile.email,
               phone: devoteeProfile.phone,
+              country_code: devoteeProfile.countryCode,
+              has_whatsapp: devoteeProfile.hasWhatsapp,
               star: devoteeProfile.star,
               dob: devoteeProfile.dob,
               place: devoteeProfile.place,
@@ -148,6 +156,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: session.user.email || dbProf?.email || '',
             name: dbProf?.name || userMeta.full_name || userMeta.name || session.user.email?.split('@')[0] || 'Devotee Pilgrim',
             phone: dbProf?.phone || userMeta.phone || '',
+            countryCode: dbProf?.country_code || userMeta.country_code || '+91',
+            hasWhatsapp: dbProf?.has_whatsapp ?? userMeta.has_whatsapp ?? false,
             dob: dbProf?.dob || userMeta.dob || '',
             place: dbProf?.place || userMeta.place || '',
             star: dbProf?.star || userMeta.star || '',
@@ -447,6 +457,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         data: {
           name: updated.name,
           phone: updated.phone,
+          country_code: updated.countryCode,
+          has_whatsapp: updated.hasWhatsapp,
           star: updated.star,
           dob: updated.dob,
           place: updated.place,
@@ -463,6 +475,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name: updated.name,
       email: updated.email,
       phone: updated.phone,
+      country_code: updated.countryCode,
+      has_whatsapp: updated.hasWhatsapp,
       star: updated.star,
       dob: updated.dob,
       place: updated.place,

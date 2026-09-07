@@ -34,7 +34,7 @@ export default function TimingsPage() {
       </div>
 
       {/* Timings Section */}
-      <TimingsSection />
+      <TimingsSection hideHeader />
     </div>
   );
 }

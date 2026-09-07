@@ -28,7 +28,7 @@ export default function VisitPage() {
       </div>
 
       {/* Visit Section */}
-      <VisitSection />
+      <VisitSection hideHeader />
     </div>
   );
 }

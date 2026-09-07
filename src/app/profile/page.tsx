@@ -56,6 +56,9 @@ import {
   Camera,
   Upload,
   RefreshCw,
+  ChevronDown,
+  Reply,
+  Ban,
 } from 'lucide-react';
 
 // 27 Malayalam Birth Stars (Nakshatrams)
@@ -133,20 +136,33 @@ function numberToWords(num: number): string {
   return convertLessThanThousand(num);
 }
 
-// Master Demo Bookings (for user_devotee_1 demo account)
+// Master Demo Bookings: Single consolidated preset vazhipadu entry containing Pushpanjali (₹30), Dhara (₹50), and Purakilvilakku (₹35)
 const DEMO_SEED_BOOKINGS: RawVazhipaduRecord[] = [
   {
-    id: 'bk_1',
-    orderId: 'ORD-2026-0814',
+    id: 'bk_preset_1',
+    orderId: 'ORD-PLY-2026-0814',
+    receiptNumber: 'PLY-REC-2026-0814',
+    offeringId: 'pushpanjali',
+    fallbackName: 'Pushpanjali (പുഷ്പാഞ്ജലി)',
+    fallbackPrice: 30,
+    devoteeName: 'Devotee',
+    star: 'Thiruvathira (തിരുവാതിര)',
+    bookingDate: '24 Aug 2026',
+    offeringDate: '15 Sep 2026 (Pradosham)',
+    offeringDateIso: '2026-09-15',
+    deity: 'Sree Mahadeva',
+    paymentStatus: 'completed',
+    status: 'Confirmed',
+  },
+  {
+    id: 'bk_preset_2',
+    orderId: 'ORD-PLY-2026-0814',
     receiptNumber: 'PLY-REC-2026-0814',
     offeringId: 'dhara',
     fallbackName: 'Dhara (ധാര)',
     fallbackPrice: 50,
-    devoteeName: 'Suresh Kumar (സുരേഷ് കുമാർ)',
+    devoteeName: 'Devotee',
     star: 'Thiruvathira (തിരുവാതിര)',
-    bookedByUserId: 'user_devotee_1',
-    bookedByEmail: 'suresh.kumar@gmail.com',
-    bookedByPhone: '+91 98470 12345',
     bookingDate: '24 Aug 2026',
     offeringDate: '15 Sep 2026 (Pradosham)',
     offeringDateIso: '2026-09-15',
@@ -155,97 +171,18 @@ const DEMO_SEED_BOOKINGS: RawVazhipaduRecord[] = [
     status: 'Confirmed',
   },
   {
-    id: 'bk_2',
-    orderId: 'ORD-2026-0814',
+    id: 'bk_preset_3',
+    orderId: 'ORD-PLY-2026-0814',
     receiptNumber: 'PLY-REC-2026-0814',
-    offeringId: 'mrithyunjaya_homam',
-    fallbackName: 'Mrithyunjaya Homam (മൃത്യുഞ്ജയ ഹോമം)',
-    fallbackPrice: 200,
-    devoteeName: 'Suresh Kumar (സുരേഷ് കുമാർ)',
+    offeringId: 'purakil_vilakku',
+    fallbackName: 'Purakil Vilakku (പുറകിൽ വിളക്ക്)',
+    fallbackPrice: 35,
+    devoteeName: 'Devotee',
     star: 'Thiruvathira (തിരുവാതിര)',
-    bookedByUserId: 'user_devotee_1',
-    bookedByEmail: 'suresh.kumar@gmail.com',
-    bookedByPhone: '+91 98470 12345',
     bookingDate: '24 Aug 2026',
     offeringDate: '15 Sep 2026 (Pradosham)',
     offeringDateIso: '2026-09-15',
-    deity: 'Sree Mahadeva',
-    paymentStatus: 'completed',
-    status: 'Confirmed',
-  },
-  {
-    id: 'bk_3',
-    orderId: 'ORD-2026-0814',
-    receiptNumber: 'PLY-REC-2026-0814',
-    offeringId: 'bhagya_sooktha_pushpanjali',
-    fallbackName: 'Bhagya Sooktha Pushpanjali (ഭാഗ്യസൂക്ത പുഷ്പാഞ്ജലി)',
-    fallbackPrice: 50,
-    devoteeName: 'Anjali Suresh (അഞ്ജലി സുരേഷ്)',
-    star: 'Rohini (രോഹിണി)',
-    bookedByUserId: 'user_devotee_1',
-    bookedByEmail: 'suresh.kumar@gmail.com',
-    bookedByPhone: '+91 98470 12345',
-    bookingDate: '24 Aug 2026',
-    offeringDate: '15 Sep 2026 (Pradosham)',
-    offeringDateIso: '2026-09-15',
-    deity: 'Sree Mahadeva',
-    paymentStatus: 'completed',
-    status: 'Confirmed',
-  },
-  {
-    id: 'bk_4',
-    orderId: 'ORD-2026-0814',
-    receiptNumber: 'PLY-REC-2026-0814',
-    offeringId: 'neyyvilakku',
-    fallbackName: 'Neyyvilakku (നെയ്യ്‌വിളക്ക്)',
-    fallbackPrice: 30,
-    devoteeName: 'Anjali Suresh (അഞ്ജലി സുരേഷ്)',
-    star: 'Rohini (രോഹിണി)',
-    bookedByUserId: 'user_devotee_1',
-    bookedByEmail: 'suresh.kumar@gmail.com',
-    bookedByPhone: '+91 98470 12345',
-    bookingDate: '24 Aug 2026',
-    offeringDate: '15 Sep 2026 (Pradosham)',
-    offeringDateIso: '2026-09-15',
-    deity: 'Sree Ganapathi',
-    paymentStatus: 'completed',
-    status: 'Confirmed',
-  },
-  {
-    id: 'bk_5',
-    orderId: 'ORD-2026-0814',
-    receiptNumber: 'PLY-REC-2026-0814',
-    offeringId: 'vidyagopala_manthraarchana',
-    fallbackName: 'Vidyagopala Manthraarchana (വിദ്യാഗോപാല മന്ത്രാർച്ചന)',
-    fallbackPrice: 40,
-    devoteeName: 'Abhinav Suresh (അഭിനവ് സുരേഷ്)',
-    star: 'Punartham (പുണർതം)',
-    bookedByUserId: 'user_devotee_1',
-    bookedByEmail: 'suresh.kumar@gmail.com',
-    bookedByPhone: '+91 98470 12345',
-    bookingDate: '24 Aug 2026',
-    offeringDate: '15 Sep 2026 (Pradosham)',
-    offeringDateIso: '2026-09-15',
-    deity: 'Sree Mahadeva',
-    paymentStatus: 'completed',
-    status: 'Confirmed',
-  },
-  {
-    id: 'bk_5b',
-    orderId: 'ORD-2026-0901',
-    receiptNumber: 'PLY-REC-2026-0901',
-    offeringId: 'oru_nerathe_pooja',
-    fallbackName: 'Oru Nerathe Pooja (ഒരു നേരത്തെ പൂജ)',
-    fallbackPrice: 750,
-    devoteeName: 'Suresh Kumar (സുരേഷ് കുമാർ)',
-    star: 'Thiruvathira (തിരുവാതിര)',
-    bookedByUserId: 'user_devotee_1',
-    bookedByEmail: 'suresh.kumar@gmail.com',
-    bookedByPhone: '+91 98470 12345',
-    bookingDate: '01 Sep 2026',
-    offeringDate: '29 Sep 2026 (Maha Pradosham)',
-    offeringDateIso: '2026-09-29',
-    deity: 'Sree Mahadeva',
+    deity: 'Sree Parvathi',
     paymentStatus: 'completed',
     status: 'Confirmed',
   },
@@ -253,7 +190,14 @@ const DEMO_SEED_BOOKINGS: RawVazhipaduRecord[] = [
 
 function ProfileContent() {
   const { currentUser, isAuthenticated, logout, updateProfile, uploadAvatar, openAuthModal } = useAuth();
-  const { offerings, chats, createDevoteeInquiryChat } = useContent();
+  const {
+    offerings,
+    chats,
+    createDevoteeInquiryChat,
+    sendMessage,
+    editChatMessage,
+    deleteChatMessage,
+  } = useContent();
   const { language } = useLanguage();
   const searchParams = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -264,7 +208,9 @@ function ProfileContent() {
   // Edit Profile State
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
-  const [editPhone, setEditPhone] = useState('');
+  const [editCountryCode, setEditCountryCode] = useState('+91');
+  const [editPhoneDigits, setEditPhoneDigits] = useState('');
+  const [editHasWhatsapp, setEditHasWhatsapp] = useState(false);
   const [editEmail, setEditEmail] = useState('');
   const [editStar, setEditStar] = useState('');
   const [editDob, setEditDob] = useState('');
@@ -287,8 +233,14 @@ function ProfileContent() {
   const [isPrintReceiptModalOpen, setIsPrintReceiptModalOpen] = useState(false);
   const [selectedDevoteeFilter, setSelectedDevoteeFilter] = useState<string>('ALL');
 
-  // Chat State
+  // Devotee Chat Interactive States
   const [chatMessageText, setChatMessageText] = useState('');
+  const [devoteeReplyingTo, setDevoteeReplyingTo] = useState<any | null>(null);
+  const [devoteeEditingMsgId, setDevoteeEditingMsgId] = useState<string | null>(null);
+  const [devoteeEditMsgText, setDevoteeEditMsgText] = useState<string>('');
+  const [devoteeDeletingMsg, setDevoteeDeletingMsg] = useState<any | null>(null);
+  const [devoteeOpenMenuMsgId, setDevoteeOpenMenuMsgId] = useState<string | null>(null);
+  const chatInputRef = useRef<HTMLInputElement>(null);
 
   // Devotee Password Reset State
   const [newPasswordInput, setNewPasswordInput] = useState('');
@@ -527,7 +479,18 @@ function ProfileContent() {
   useEffect(() => {
     if (currentUser) {
       setEditName(currentUser.name || '');
-      setEditPhone(currentUser.phone || '');
+      let cc = currentUser.countryCode || '+91';
+      let digits = currentUser.phone || '';
+      if (digits.startsWith('+')) {
+        const parts = digits.split(' ');
+        if (parts.length > 1) {
+          cc = parts[0];
+          digits = parts.slice(1).join(' ');
+        }
+      }
+      setEditCountryCode(cc);
+      setEditPhoneDigits(digits);
+      setEditHasWhatsapp(Boolean(currentUser.hasWhatsapp));
       setEditEmail(currentUser.email || '');
       setEditStar(currentUser.star || '');
       setEditDob(currentUser.dob || '');
@@ -578,36 +541,40 @@ function ProfileContent() {
   // Devotee saves profile (Synced to Supabase public.profiles + Auth metadata)
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editName.trim() || !editPhone.trim() || !editEmail.trim()) {
+    if (!editName.trim() || !editPhoneDigits.trim() || !editEmail.trim()) {
       showToast('Please fill in your Name, Mobile Number, and Email');
       return;
     }
 
+    const fullPhone = `${editCountryCode} ${editPhoneDigits.trim()}`.trim();
+
     await updateProfile({
       name: editName.trim(),
-      phone: editPhone.trim(),
+      phone: fullPhone,
+      countryCode: editCountryCode,
+      hasWhatsapp: editHasWhatsapp,
       email: editEmail.trim(),
       star: editStar,
       dob: editDob,
       place: editPlace.trim(),
     });
     setIsEditing(false);
-    showToast('Profile information saved and synced to Supabase cloud!');
+    showToast('Profile information saved successfully!');
   };
 
-  // Avatar Upload via Supabase Storage
+  // Avatar Upload
   const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setIsUploadingAvatar(true);
-    showToast('Uploading profile picture to Supabase Storage...');
+    showToast('Uploading profile picture...');
 
     const res = await uploadAvatar(file);
     setIsUploadingAvatar(false);
 
     if (res.success) {
-      showToast('Profile photo updated in Supabase Storage!');
+      showToast('Profile photo updated successfully!');
     } else {
       showToast(res.error || 'Failed to upload photo');
     }
@@ -664,29 +631,25 @@ function ProfileContent() {
       };
     });
 
-    // 2. Add demo seed bookings for demo user
-    const matchedDemo = DEMO_SEED_BOOKINGS.filter((booking) => {
-      if (booking.paymentStatus !== 'completed' || booking.status !== 'Confirmed') return false;
-      const matchesProfileId = booking.bookedByUserId && (booking.bookedByUserId === currentUser.id || currentUser.id === 'user_devotee_1');
-      return matchesProfileId;
-    }).map((item) => {
+    // 2. Add preset vazhipadu booking (Pushpanjali ₹30, Dhara ₹50, Purakilvilakku ₹35 under ORD-PLY-2026-0814)
+    const matchedDemo = DEMO_SEED_BOOKINGS.map((item) => {
       const dir = getDirectoryOffering(item.offeringId, item.fallbackName, item.fallbackPrice, item.deity);
       return {
-        id: item.id,
+        id: `${item.id}_${currentUser.id || 'devotee'}`,
         orderId: item.orderId,
         receiptNumber: item.receiptNumber,
         offeringId: item.offeringId,
         vazhipadName: dir.name,
-        devoteeName: item.devoteeName,
-        star: item.star,
-        bookedByUserId: item.bookedByUserId,
-        bookedByEmail: item.bookedByEmail,
-        bookedByPhone: item.bookedByPhone,
+        devoteeName: currentUser.name || 'Devotee',
+        star: currentUser.star || item.star,
+        bookedByUserId: currentUser.id,
+        bookedByEmail: currentUser.email,
+        bookedByPhone: currentUser.phone,
         bookingDate: item.bookingDate,
         offeringDate: item.offeringDate,
         offeringDateIso: item.offeringDateIso,
         deity: dir.deity,
-        amount: dir.price,
+        amount: item.fallbackPrice,
         paymentStatus: item.paymentStatus,
         status: item.status,
       };
@@ -759,19 +722,30 @@ function ProfileContent() {
   const TWENTY_ONE_DAYS_MS = 21 * 24 * 60 * 60 * 1000;
 
   const userChatThread = chats.find((c) => {
-    if (!c.devoteePhone || !userPhoneDigits) return false;
-    const chatDigits = c.devoteePhone.replace(/\D/g, '').slice(-10);
-    return chatDigits === userPhoneDigits;
+    if (userPhoneDigits && c.devoteePhone) {
+      const chatDigits = c.devoteePhone.replace(/\D/g, '').slice(-10);
+      if (chatDigits === userPhoneDigits) return true;
+    }
+    if (currentUser?.name && c.devoteeName && c.devoteeName.trim().toLowerCase() === currentUser.name.trim().toLowerCase()) {
+      return true;
+    }
+    return false;
   });
 
   const activeMessages = useMemo(() => {
-    const localMsgs = (userChatThread?.messages || []).map((m) => ({
-      id: m.id,
-      sender: m.sender,
-      text: m.text,
-      timestamp: m.timestamp,
-      createdAt: m.createdAt || now,
-    }));
+    const localMsgs = (userChatThread?.messages || [])
+      .filter((m) => !m.deletedFor?.includes('devotee'))
+      .map((m) => ({
+        id: m.id,
+        sender: m.sender,
+        text: m.text,
+        timestamp: m.timestamp,
+        createdAt: m.createdAt || now,
+        deliveryStatus: m.deliveryStatus,
+        replyTo: m.replyTo,
+        isEdited: m.isEdited,
+        isDeletedForEveryone: m.isDeletedForEveryone,
+      }));
 
     const remoteMsgs = supabaseChatMessages.map((m) => ({
       id: m.id || `msg_${Math.random()}`,
@@ -779,6 +753,10 @@ function ProfileContent() {
       text: m.message,
       timestamp: m.created_at ? new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now',
       createdAt: m.created_at ? new Date(m.created_at).getTime() : now,
+      deliveryStatus: 'delivered' as const,
+      replyTo: undefined,
+      isEdited: false,
+      isDeletedForEveryone: false,
     }));
 
     // Deduplicate by text and timestamp
@@ -786,12 +764,46 @@ function ProfileContent() {
     return all.filter((msg) => now - msg.createdAt <= TWENTY_ONE_DAYS_MS);
   }, [userChatThread, supabaseChatMessages, now]);
 
+  const handleDevoteeReplyClick = (msg: any) => {
+    setDevoteeReplyingTo(msg);
+    setDevoteeOpenMenuMsgId(null);
+    setTimeout(() => {
+      chatInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      chatInputRef.current?.focus();
+    }, 50);
+  };
+
+  const handleDevoteeSaveEdit = (msgId: string) => {
+    if (!userChatThread || !devoteeEditMsgText.trim()) return;
+    editChatMessage(userChatThread.id, msgId, devoteeEditMsgText.trim());
+    setDevoteeEditingMsgId(null);
+    setDevoteeEditMsgText('');
+    showToast('Message updated successfully');
+  };
+
+  const handleDevoteeDeleteMsg = (deleteType: 'for_me' | 'for_everyone') => {
+    if (!userChatThread || !devoteeDeletingMsg) return;
+    deleteChatMessage(userChatThread.id, devoteeDeletingMsg.id, deleteType, 'devotee');
+    setDevoteeDeletingMsg(null);
+    showToast(deleteType === 'for_everyone' ? 'Message deleted for everyone' : 'Message deleted for you');
+  };
+
   const handleSendChatMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatMessageText.trim() || !currentUser) return;
 
     const messageText = chatMessageText.trim();
     setChatMessageText('');
+    const replyContext = devoteeReplyingTo
+      ? {
+          id: devoteeReplyingTo.id,
+          text: devoteeReplyingTo.text,
+          sender: devoteeReplyingTo.sender,
+          senderName: devoteeReplyingTo.sender === 'devotee' ? (currentUser.name || 'You') : 'Puliyannoor Devaswom Office',
+        }
+      : undefined;
+
+    setDevoteeReplyingTo(null);
 
     // 1. Send to Supabase public.chat_messages table
     try {
@@ -807,17 +819,22 @@ function ProfileContent() {
     }
 
     // 2. Also record in local content context for instant response
-    createDevoteeInquiryChat(
-      currentUser.name,
-      currentUser.phone || '+91 00000 00000',
-      'Direct Devotee Chat Desk',
-      messageText,
-      currentUser.star
-    );
+    if (userChatThread) {
+      sendMessage(userChatThread.id, messageText, replyContext);
+    } else {
+      createDevoteeInquiryChat(
+        currentUser.name,
+        currentUser.phone || '+91 00000 00000',
+        'Direct Devotee Chat Desk',
+        messageText,
+        currentUser.star,
+        currentUser.hasWhatsapp
+      );
+    }
 
     // Refresh Supabase messages
     loadSupabaseData();
-    showToast('Message sent to Devaswom Admin Desk & saved to Supabase');
+    showToast('Message sent to Devaswom Admin Desk');
   };
 
   const handlePrintReceipt = () => {
@@ -937,13 +954,13 @@ function ProfileContent() {
                   )}
                 </div>
 
-                {/* Supabase Storage Upload Overlay */}
+                {/* Profile Photo Upload Overlay */}
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploadingAvatar}
                   className="absolute inset-0 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-[10px] font-bold"
-                  title="Upload profile photo to Supabase Storage"
+                  title="Upload profile photo"
                 >
                   <Camera className="w-4 h-4 mb-0.5 text-[#E6BE65]" />
                   <span>{isUploadingAvatar ? 'Saving...' : 'Change'}</span>
@@ -953,7 +970,7 @@ function ProfileContent() {
               <div className="space-y-1 min-w-0 max-w-full">
                 <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 rounded-full bg-[#FAF5E8]/10 text-[#E6BE65] text-[11px] sm:text-xs font-bold mb-1 max-w-full">
                   <Sparkles className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate">Devotee Account · Supabase Cloud</span>
+                  <span className="truncate">Devotee Account</span>
                 </div>
                 <h1 className="font-cinzel font-bold text-lg sm:text-2xl text-[#FAF5E8] truncate">
                   {currentUser.name}
@@ -1073,7 +1090,7 @@ function ProfileContent() {
                   Personal & Ritual Information
                 </h3>
                 <p className="text-xs text-[#5A382A]">
-                  Devotees can edit Name, Mobile Number, Email, and Birth Star anytime. Changes are saved to Supabase cloud.
+                  Devotees can edit Name, Mobile Number, Email, and Birth Star anytime. Changes are saved securely.
                 </p>
               </div>
               <button
@@ -1103,7 +1120,7 @@ function ProfileContent() {
                     />
                   </div>
 
-                  {/* 2. Contact Phone */}
+                  {/* 2. Contact Phone (Separate Country Code & Number Box + WhatsApp confirmation) */}
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-[#610C1B] mb-1 font-cinzel flex items-center justify-between">
                       <span>Contact Phone *</span>
@@ -1111,16 +1128,48 @@ function ProfileContent() {
                         <span className="text-[10px] text-amber-700 font-bold">Required</span>
                       )}
                     </label>
-                    <input
-                      type="text"
-                      value={editPhone}
-                      onChange={(e) => setEditPhone(e.target.value)}
-                      placeholder="e.g. +91 98470 12345"
-                      className={`w-full px-3.5 py-2.5 rounded-xl border bg-white text-sm text-[#2B150F] font-mono focus:outline-none focus:ring-2 ${
-                        !editPhone ? 'border-amber-500 focus:ring-amber-500 bg-amber-50/20' : 'border-[#C99738] focus:ring-[#C99738]'
-                      }`}
-                      required
-                    />
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={editCountryCode}
+                        onChange={(e) => setEditCountryCode(e.target.value)}
+                        className="w-24 px-2.5 py-2.5 rounded-xl border border-[#C99738] bg-white text-xs sm:text-sm font-mono text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] cursor-pointer shrink-0 font-medium"
+                      >
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+1">+1 (US/CA)</option>
+                        <option value="+971">+971 (AE)</option>
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+65">+65 (SG)</option>
+                        <option value="+61">+61 (AU)</option>
+                        <option value="+966">+966 (SA)</option>
+                        <option value="+974">+974 (QA)</option>
+                        <option value="+968">+968 (OM)</option>
+                        <option value="+965">+965 (KW)</option>
+                        <option value="+973">+973 (BH)</option>
+                        <option value="+60">+60 (MY)</option>
+                      </select>
+                      <input
+                        type="tel"
+                        value={editPhoneDigits}
+                        onChange={(e) => setEditPhoneDigits(e.target.value)}
+                        placeholder="e.g. 98470 12345"
+                        className={`flex-1 px-3.5 py-2.5 rounded-xl border bg-white text-sm text-[#2B150F] font-mono focus:outline-none focus:ring-2 ${
+                          !editPhoneDigits ? 'border-amber-500 focus:ring-amber-500 bg-amber-50/20' : 'border-[#C99738] focus:ring-[#C99738]'
+                        }`}
+                        required
+                      />
+                    </div>
+                    {/* WhatsApp Checkbox Option */}
+                    <label className="mt-2.5 flex items-center gap-2 text-xs text-[#5A382A] cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={editHasWhatsapp}
+                        onChange={(e) => setEditHasWhatsapp(e.target.checked)}
+                        className="w-4 h-4 rounded text-[#610C1B] focus:ring-[#C99738] border-[#C99738] cursor-pointer"
+                      />
+                      <span className="font-medium">
+                        This mobile number is registered on <strong className="text-emerald-700">WhatsApp</strong>
+                      </span>
+                    </label>
                   </div>
 
                   {/* 3. Primary Email */}
@@ -1225,7 +1274,7 @@ function ProfileContent() {
                     className="px-6 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Save className="w-4 h-4 text-[#E6BE65]" />
-                    <span>Save & Sync to Supabase</span>
+                    <span>Save</span>
                   </button>
                 </div>
               </form>
@@ -1250,7 +1299,15 @@ function ProfileContent() {
                     Contact Phone
                   </span>
                   {currentUser.phone ? (
-                    <span className="font-mono font-bold text-[#38050E]">{currentUser.phone}</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono font-bold text-[#38050E]">{currentUser.phone}</span>
+                      {currentUser.hasWhatsapp && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          <MessageSquare className="w-2.5 h-2.5" />
+                          <span>WhatsApp</span>
+                        </span>
+                      )}
+                    </div>
                   ) : (
                     <span className="text-amber-700 font-bold italic flex items-center gap-1">
                       <AlertTriangle className="w-3.5 h-3.5" />
@@ -1666,7 +1723,7 @@ function ProfileContent() {
                   </h3>
                   <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-[#E6BE65]">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-                    <span className="truncate">Supabase Live Channel · Connected</span>
+                    <span className="truncate">Devaswom Live Desk · Connected</span>
                   </div>
                 </div>
               </div>
@@ -1682,7 +1739,7 @@ function ProfileContent() {
               <div className="flex items-center gap-1.5">
                 <Info className="w-3.5 h-3.5 text-[#610C1B] flex-shrink-0" />
                 <span>
-                  <strong>Data Policy:</strong> Messages securely retained for <strong>21 days</strong> in Supabase cloud.
+                  <strong>Data Policy:</strong> Messages securely retained for <strong>21 days</strong>.
                 </span>
               </div>
             </div>
@@ -1704,34 +1761,198 @@ function ProfileContent() {
               ) : (
                 activeMessages.map((msg) => {
                   const isDevotee = msg.sender === 'devotee';
+                  const msgCreatedTime = msg.createdAt || Date.now();
+                  const elapsedMinutes = Math.floor((Date.now() - msgCreatedTime) / (60 * 1000));
+                  const isWithin15Min = elapsedMinutes < 15;
+
+                  // Deleted Message
+                  if (msg.isDeletedForEveryone) {
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`flex ${isDevotee ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[70%] rounded-2xl px-3.5 py-2 text-xs italic border shadow-2xs flex items-center gap-2 ${
+                            isDevotee
+                              ? 'bg-[#610C1B]/10 border-[#610C1B]/20 text-[#610C1B] rounded-br-none'
+                              : 'bg-gray-100/90 border-gray-200 text-gray-500 rounded-bl-none'
+                          }`}
+                        >
+                          <Ban className="w-3.5 h-3.5 opacity-60 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <span>This message was deleted</span>
+                            <span className="block not-italic text-[9px] opacity-70 mt-0.5">
+                              {msg.timestamp}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Inline Editing Card
+                  if (devoteeEditingMsgId === msg.id) {
+                    return (
+                      <div
+                        key={msg.id}
+                        className="w-full p-3.5 rounded-2xl bg-white border-2 border-[#C99738] shadow-md space-y-2.5 my-2 animate-scaleUp"
+                      >
+                        <div className="flex items-center justify-between border-b border-[#E4D5AE]/60 pb-1.5">
+                          <span className="font-bold text-xs text-[#610C1B]">Editing Message</span>
+                          <button
+                            type="button"
+                            onClick={() => setDevoteeEditingMsgId(null)}
+                            className="text-[#8C6219] hover:text-[#610C1B] p-1 rounded-lg"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <textarea
+                          value={devoteeEditMsgText}
+                          onChange={(e) => setDevoteeEditMsgText(e.target.value)}
+                          rows={2}
+                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE] text-xs text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                          autoFocus
+                        />
+                        <div className="flex justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setDevoteeEditingMsgId(null)}
+                            className="px-3 py-1.5 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#5A382A] text-xs font-semibold cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDevoteeSaveEdit(msg.id)}
+                            className="px-4 py-1.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold shadow-xs cursor-pointer"
+                          >
+                            Save Edit
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Normal Message Bubble
                   return (
                     <div
                       key={msg.id}
-                      className={`flex ${isDevotee ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${isDevotee ? 'justify-end' : 'justify-start'} group relative`}
                     >
                       <div
-                        className={`max-w-[85%] sm:max-w-md rounded-2xl p-3 sm:p-3.5 text-xs leading-relaxed shadow-xs ${
+                        className={`relative max-w-[70%] rounded-2xl p-3 text-xs leading-relaxed shadow-xs ${
                           isDevotee
                             ? 'bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-white rounded-br-none'
                             : 'bg-white border border-[#E4D5AE] text-[#2B150F] rounded-bl-none'
                         }`}
                       >
+                        {/* Header with Sender Name & Downward Arrow Menu */}
                         <div
                           className={`flex items-center justify-between gap-3 mb-1 text-[10px] font-bold ${
                             isDevotee ? 'text-white/80' : 'text-[#8C6219]'
                           }`}
                         >
                           <span>{isDevotee ? 'You' : 'Puliyannoor Devaswom Office'}</span>
+
+                          <div className="relative">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setDevoteeOpenMenuMsgId(devoteeOpenMenuMsgId === msg.id ? null : msg.id)
+                              }
+                              className={`p-0.5 rounded opacity-70 group-hover:opacity-100 hover:bg-white/20 transition-all cursor-pointer ${
+                                isDevotee ? 'text-white' : 'text-[#8C6219] hover:bg-[#FAF5E8]'
+                              }`}
+                              title="Message Options"
+                            >
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Dropdown Options */}
+                            {devoteeOpenMenuMsgId === msg.id && (
+                              <div className="absolute right-0 top-5 z-30 w-36 bg-white rounded-xl shadow-xl border border-[#E4D5AE] py-1 text-xs text-[#38050E] animate-scaleUp">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDevoteeReplyClick(msg)}
+                                  className="w-full text-left px-3 py-1.5 hover:bg-[#FAF5E8] flex items-center gap-2 text-[#38050E] font-medium cursor-pointer"
+                                >
+                                  <Reply className="w-3.5 h-3.5 text-[#610C1B]" />
+                                  <span>Reply</span>
+                                </button>
+
+                                {isDevotee && isWithin15Min && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setDevoteeEditingMsgId(msg.id);
+                                      setDevoteeEditMsgText(msg.text);
+                                      setDevoteeOpenMenuMsgId(null);
+                                    }}
+                                    className="w-full text-left px-3 py-1.5 hover:bg-[#FAF5E8] flex items-center gap-2 text-[#610C1B] font-bold cursor-pointer"
+                                  >
+                                    <Edit3 className="w-3.5 h-3.5" />
+                                    <span>Edit</span>
+                                  </button>
+                                )}
+
+                                <div className="border-t border-[#E4D5AE]/60 my-1" />
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setDevoteeDeletingMsg(msg);
+                                    setDevoteeOpenMenuMsgId(null);
+                                  }}
+                                  className="w-full text-left px-3 py-1.5 hover:bg-[#FAF5E8] flex items-center gap-2 text-red-600 font-medium cursor-pointer"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <span>Delete</span>
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
 
-                        <p className="font-normal whitespace-pre-wrap break-words">{msg.text}</p>
+                        {/* Quoted Reply Preview */}
+                        {msg.replyTo && (
+                          <div
+                            className={`mb-2 p-2 rounded-lg text-[11px] border-l-4 ${
+                              isDevotee
+                                ? 'bg-black/20 border-[#E6BE65] text-white/90'
+                                : 'bg-[#FAF5E8] border-[#610C1B] text-[#38050E]'
+                            }`}
+                          >
+                            <span
+                              className={`font-bold text-[10px] block ${
+                                isDevotee ? 'text-[#E6BE65]' : 'text-[#610C1B]'
+                              }`}
+                            >
+                              {msg.replyTo.senderName ||
+                                (msg.replyTo.sender === 'devotee' ? 'You' : 'Devaswom Office')}
+                            </span>
+                            <p className="truncate line-clamp-1 opacity-80">
+                              {msg.replyTo.text}
+                            </p>
+                          </div>
+                        )}
 
-                        <div
-                          className={`flex items-center justify-end gap-1 mt-1.5 text-[10px] ${
-                            isDevotee ? 'text-white/70' : 'text-[#8C6219]/70'
-                          }`}
-                        >
-                          <span>{msg.timestamp}</span>
+                        {/* Side-by-Side Text & Time Layout for Short Messages */}
+                        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                          <span className="font-normal whitespace-pre-wrap break-words">{msg.text}</span>
+                          <div
+                            className={`flex items-center gap-1 ml-auto shrink-0 self-end text-[10px] ${
+                              isDevotee ? 'text-white/70' : 'text-[#8C6219]/70'
+                            }`}
+                          >
+                            {msg.isEdited && (
+                              <span className={`italic text-[9px] ${isDevotee ? 'text-[#E6BE65]' : 'text-[#8C6219]'}`}>
+                                edited
+                              </span>
+                            )}
+                            <span>{msg.timestamp}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1740,21 +1961,52 @@ function ProfileContent() {
               )}
             </div>
 
+            {/* Replying To Banner Preview */}
+            {devoteeReplyingTo && (
+              <div className="px-4 py-2 bg-[#FAF5E8] border-t border-[#E4D5AE] flex items-center justify-between gap-3 animate-slideDown">
+                <div className="flex items-center gap-2.5 min-w-0 border-l-4 border-[#610C1B] pl-2.5">
+                  <Reply className="w-3.5 h-3.5 text-[#610C1B] flex-shrink-0" />
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold text-[#610C1B] block">
+                      Replying to {devoteeReplyingTo.sender === 'devotee' ? 'You' : 'Puliyannoor Devaswom Office'}
+                    </span>
+                    <p className="text-xs text-[#5A382A] truncate max-w-md">
+                      {devoteeReplyingTo.text}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDevoteeReplyingTo(null)}
+                  className="p-1 text-[#8C6219] hover:text-[#610C1B] hover:bg-white rounded-lg transition-colors cursor-pointer"
+                  title="Cancel reply"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
             {/* Chat Composer Input */}
             <form onSubmit={handleSendChatMessage} className="p-2.5 sm:p-3 bg-white border-t border-[#E4D5AE] flex gap-2">
               <input
+                ref={chatInputRef}
                 type="text"
                 value={chatMessageText}
                 onChange={(e) => setChatMessageText(e.target.value)}
-                placeholder="Type your message to Puliyannoor Devaswom..."
+                placeholder={
+                  devoteeReplyingTo
+                    ? `Replying to ${devoteeReplyingTo.sender === 'devotee' ? 'your message' : 'Devaswom'}...`
+                    : 'Type your message to Puliyannoor Devaswom...'
+                }
                 className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-[#E4D5AE] bg-[#FAF5E8]/30 text-xs sm:text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738]"
+                autoFocus={!!devoteeReplyingTo}
               />
               <button
                 type="submit"
                 className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#610C1B] to-[#8B1428] hover:brightness-110 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer flex-shrink-0"
               >
                 <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#E6BE65]" />
-                <span>Send</span>
+                <span>{devoteeReplyingTo ? 'Reply' : 'Send'}</span>
               </button>
             </form>
           </div>
@@ -2327,6 +2579,51 @@ function ProfileContent() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Devotee Message Delete Confirmation Modal */}
+        {devoteeDeletingMsg && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
+            <div className="bg-white rounded-3xl max-w-sm w-full p-6 border-2 border-[#C99738] shadow-2xl space-y-4 animate-scaleUp">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-cinzel font-bold text-sm text-[#38050E]">Delete Message?</h4>
+                  <p className="text-xs text-gray-500">Choose how you wish to delete this message</p>
+                </div>
+              </div>
+              <p className="text-xs text-[#5A382A] italic p-2.5 bg-[#FAF5E8] rounded-xl border border-[#E4D5AE] truncate">
+                "{devoteeDeletingMsg.text}"
+              </p>
+              <div className="space-y-2 pt-1">
+                {devoteeDeletingMsg.sender === 'devotee' && (
+                  <button
+                    type="button"
+                    onClick={() => handleDevoteeDeleteMsg('for_everyone')}
+                    className="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs cursor-pointer text-center"
+                  >
+                    Delete for Everyone
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => handleDevoteeDeleteMsg('for_me')}
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#FAF5E8] hover:bg-[#E4D5AE] text-[#5A382A] text-xs font-bold border border-[#E4D5AE] cursor-pointer text-center"
+                >
+                  Delete for Me
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDevoteeDeletingMsg(null)}
+                  className="w-full py-2 px-4 rounded-xl text-gray-500 hover:text-gray-800 text-xs font-medium cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         )}

@@ -227,7 +227,7 @@ function ChangePasswordContent() {
           </Link>
           <div className="flex items-center gap-1 text-[11px] text-[#8C6219] font-mono">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
-            <span>Supabase Cloud Auth</span>
+            <span>Devotee Authentication</span>
           </div>
         </div>
 
@@ -435,7 +435,7 @@ function ChangePasswordContent() {
                     <div className="p-3.5 rounded-2xl bg-[#FAF5E8]/60 border border-[#E4D5AE] text-xs text-[#5A382A] space-y-1">
                       <span className="font-bold text-[#38050E] block font-cinzel">Email OTP Verification</span>
                       <p>
-                        A secure 6-digit verification code will be dispatched to your registered email address via Resend.
+                        A secure 6-digit verification code will be dispatched to your registered email address.
                       </p>
                     </div>
 
@@ -470,7 +470,7 @@ function ChangePasswordContent() {
                       {isSendingOtp ? (
                         <>
                           <Clock className="w-4 h-4 animate-spin text-[#E6BE65]" />
-                          <span>Dispatching OTP via Resend...</span>
+                          <span>Dispatching OTP...</span>
                         </>
                       ) : (
                         <>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '../../context/AuthContext';
@@ -115,6 +115,16 @@ export default function AdminPage() {
   const [openMenuMsgId, setOpenMenuMsgId] = useState<string | null>(null);
   const [replyingToMsg, setReplyingToMsg] = useState<ChatMessage | null>(null);
   const [deletingMsg, setDeletingMsg] = useState<ChatMessage | null>(null);
+  const adminChatInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAdminReplyClick = (msg: ChatMessage) => {
+    setReplyingToMsg(msg);
+    setOpenMenuMsgId(null);
+    setTimeout(() => {
+      adminChatInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      adminChatInputRef.current?.focus();
+    }, 50);
+  };
 
   // Global Escape key listener to close active chat or modals
   useEffect(() => {
@@ -971,21 +981,29 @@ export default function AdminPage() {
                         <h3 className="font-bold text-sm text-[#38050E]">
                           {selectedChat.devoteeName}
                         </h3>
-                        {selectedChat.devoteePhone && (
+                        {selectedChat.devoteePhone && selectedChat.hasWhatsapp && (
                           <a
                             href={`https://wa.me/${selectedChat.devoteePhone.replace(/\D/g, '')}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 text-[11px] font-bold text-[#25D366] hover:underline"
+                            title="Open direct WhatsApp conversation"
                           >
                             <MessageSquare className="w-3 h-3" />
                             <span>WhatsApp</span>
                           </a>
                         )}
                       </div>
-                      <p className="text-xs text-[#8C6219] font-medium">
-                        Subject: {selectedChat.subject} {selectedChat.star ? `· Star: ${selectedChat.star}` : ''}
-                      </p>
+                      {selectedChat.subject && selectedChat.subject !== 'Direct Devotee Chat Desk' && (
+                        <p className="text-xs text-[#8C6219] font-medium">
+                          Subject: {selectedChat.subject} {selectedChat.star ? `· Star: ${selectedChat.star}` : ''}
+                        </p>
+                      )}
+                      {(!selectedChat.subject || selectedChat.subject === 'Direct Devotee Chat Desk') && selectedChat.star && (
+                        <p className="text-xs text-[#8C6219] font-medium">
+                          Star: {selectedChat.star}
+                        </p>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2.5">
@@ -1068,7 +1086,7 @@ export default function AdminPage() {
                         if (!isAdmin) {
                           return (
                             <div key={msg.id} className="flex justify-start relative group">
-                              <div className="relative max-w-md rounded-2xl p-3 text-xs leading-relaxed shadow-xs bg-white border border-[#E4D5AE] text-[#2B150F] rounded-bl-none">
+                              <div className="relative max-w-[70%] rounded-2xl p-3 text-xs leading-relaxed shadow-xs bg-white border border-[#E4D5AE] text-[#2B150F] rounded-bl-none">
                                 {/* Header with Sender Name & Downward Arrow Menu */}
                                 <div className="flex items-center justify-between gap-3 mb-1 text-[10px] text-[#8C6219] font-bold">
                                   <span>{selectedChat.devoteeName}</span>
@@ -1090,10 +1108,7 @@ export default function AdminPage() {
                                       <div className="absolute right-0 top-5 z-30 w-36 bg-white rounded-xl shadow-xl border border-[#E4D5AE] py-1 text-xs text-[#38050E] animate-scaleUp">
                                         <button
                                           type="button"
-                                          onClick={() => {
-                                            setReplyingToMsg(msg);
-                                            setOpenMenuMsgId(null);
-                                          }}
+                                          onClick={() => handleAdminReplyClick(msg)}
                                           className="w-full text-left px-3 py-1.5 hover:bg-[#FAF5E8] flex items-center gap-2 text-[#38050E] font-medium cursor-pointer"
                                         >
                                           <Reply className="w-3.5 h-3.5 text-[#610C1B]" />
@@ -1133,11 +1148,9 @@ export default function AdminPage() {
                                   </div>
                                 )}
 
-                                <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
-
-                                {/* Bottom Right Corner: Timestamp only */}
-                                <div className="flex items-center justify-end mt-1.5 text-[10px] text-[#8C6219]/70">
-                                  <span>{msg.timestamp}</span>
+                                <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                                  <span className="font-normal whitespace-pre-wrap break-words">{msg.text}</span>
+                                  <span className="text-[10px] text-[#8C6219]/70 ml-auto shrink-0 self-end">{msg.timestamp}</span>
                                 </div>
                               </div>
                             </div>
@@ -1206,7 +1219,7 @@ export default function AdminPage() {
                         // Sent Admin Message (Normal Bubble View)
                         return (
                           <div key={msg.id} className="flex justify-end relative group">
-                            <div className="relative max-w-md rounded-2xl p-3 text-xs leading-relaxed shadow-xs bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-white rounded-br-none">
+                            <div className="relative max-w-[70%] rounded-2xl p-3 text-xs leading-relaxed shadow-xs bg-gradient-to-r from-[#610C1B] to-[#8B1428] text-white rounded-br-none">
                               {/* Message Header with Downward Arrow on Right */}
                               <div className="flex items-center justify-between gap-3 mb-1 text-[10px] text-white/80">
                                 <span className="font-bold">Devaswom Office</span>
@@ -1230,10 +1243,7 @@ export default function AdminPage() {
                                       {/* Option 1: Reply */}
                                       <button
                                         type="button"
-                                        onClick={() => {
-                                          setReplyingToMsg(msg);
-                                          setOpenMenuMsgId(null);
-                                        }}
+                                        onClick={() => handleAdminReplyClick(msg)}
                                         className="w-full text-left px-3 py-1.5 hover:bg-[#FAF5E8] flex items-center gap-2 text-[#38050E] font-medium cursor-pointer"
                                       >
                                         <Reply className="w-3.5 h-3.5 text-[#610C1B]" />
@@ -1327,49 +1337,49 @@ export default function AdminPage() {
                                 </div>
                               )}
 
-                              {/* Message Body */}
-                              <p className="font-normal whitespace-pre-wrap">{msg.text}</p>
+                              {/* Message Body with Side-by-Side Timestamp for Short Messages */}
+                              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                                <span className="font-normal whitespace-pre-wrap break-words">{msg.text}</span>
+                                <div className="flex items-center justify-end gap-1.5 ml-auto shrink-0 self-end text-[10px] text-white/75">
+                                  {msg.isEdited && (
+                                    <span className="italic text-[9px] text-[#E6BE65]">edited</span>
+                                  )}
+                                  <span>{msg.timestamp}</span>
 
-                              {/* Right Lower Corner: Timestamp & Delivery Ticks */}
-                              <div className="flex items-center justify-end gap-1.5 mt-1.5 text-[10px] text-white/75">
-                                {msg.isEdited && (
-                                  <span className="italic text-[9px] text-[#E6BE65]">edited</span>
-                                )}
-                                <span>{msg.timestamp}</span>
-
-                                {/* WhatsApp-style Delivery Status Tick Badge */}
-                                {status === 'read' ? (
-                                  <span
-                                    className="font-extrabold text-[12px] text-[#E6BE65] leading-none select-none tracking-tighter"
-                                    title="Read / Seen by Devotee (Locked)"
-                                  >
-                                    ✓✓
-                                  </span>
-                                ) : status === 'delivered' ? (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      advanceMessageDeliveryStatus(selectedChat.id, msg.id);
-                                      showToast('Status advanced to Read (✓✓)');
-                                    }}
-                                    className="font-semibold text-[11px] text-white/75 hover:text-white leading-none cursor-pointer tracking-tighter select-none"
-                                    title="Click to advance status to Read (✓✓)"
-                                  >
-                                    ✓✓
-                                  </button>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      advanceMessageDeliveryStatus(selectedChat.id, msg.id);
-                                      showToast('Status advanced to Delivered (✓✓)');
-                                    }}
-                                    className="font-semibold text-[11px] text-white/75 hover:text-white leading-none cursor-pointer select-none"
-                                    title="Click to advance status to Delivered (✓✓)"
-                                  >
-                                    ✓
-                                  </button>
-                                )}
+                                  {/* WhatsApp-style Delivery Status Tick Badge */}
+                                  {status === 'read' ? (
+                                    <span
+                                      className="font-extrabold text-[12px] text-[#E6BE65] leading-none select-none tracking-tighter"
+                                      title="Read / Seen by Devotee (Locked)"
+                                    >
+                                      ✓✓
+                                    </span>
+                                  ) : status === 'delivered' ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        advanceMessageDeliveryStatus(selectedChat.id, msg.id);
+                                        showToast('Status advanced to Read (✓✓)');
+                                      }}
+                                      className="font-semibold text-[11px] text-white/75 hover:text-white leading-none cursor-pointer tracking-tighter select-none"
+                                      title="Click to advance status to Read (✓✓)"
+                                    >
+                                      ✓✓
+                                    </button>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        advanceMessageDeliveryStatus(selectedChat.id, msg.id);
+                                        showToast('Status advanced to Delivered (✓✓)');
+                                      }}
+                                      className="font-semibold text-[11px] text-white/75 hover:text-white leading-none cursor-pointer select-none"
+                                      title="Click to advance status to Delivered (✓✓)"
+                                    >
+                                      ✓
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1423,6 +1433,7 @@ export default function AdminPage() {
                   {/* Reply Input Box */}
                   <form onSubmit={handleSendMessage} className="p-3 border-t border-[#E4D5AE] flex gap-2">
                     <input
+                      ref={adminChatInputRef}
                       type="text"
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
@@ -3443,7 +3454,7 @@ export default function AdminPage() {
                   <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-[#5A382A]">
                     <span>User: <strong className="font-mono text-[#610C1B]">{currentAdminUser?.username || 'PDTemple'}</strong></span>
                     <span>•</span>
-                    <span>Source: <strong className="text-[#1F4E34]">Supabase Database (Live)</strong></span>
+                    <span>Source: <strong className="text-[#1F4E34]">Temple Database (Live)</strong></span>
                     <span>•</span>
                     <span>Version: <strong className="font-mono text-[#610C1B] bg-[#FAF5E8] px-2 py-0.5 rounded border border-[#E4D5AE]">v2.0.0</strong></span>
                   </div>
@@ -3465,7 +3476,7 @@ export default function AdminPage() {
                 </div>
 
                 <p className="text-xs text-[#5A382A] leading-relaxed">
-                  Update the login password for administrator account <strong>{currentAdminUser?.username || 'PDTemple'}</strong> in the Supabase database.
+                  Update the login password for administrator account <strong>{currentAdminUser?.username || 'PDTemple'}</strong> in the system database.
                 </p>
 
                 {adminPassStatusMsg && (
@@ -3639,7 +3650,7 @@ export default function AdminPage() {
                             onClick={async () => {
                               await deleteAdminUserFromSupabase(u.id);
                               setDbAdminUsers(dbAdminUsers.filter((x) => x.id !== u.id));
-                              showToast(`Removed admin user ${u.name} from Supabase database`);
+                              showToast(`Removed admin user ${u.name} from system database`);
                             }}
                             className="p-1.5 text-[#610C1B] hover:bg-rose-50 rounded-lg cursor-pointer transition-colors"
                             title="Delete Admin User"
@@ -3659,7 +3670,7 @@ export default function AdminPage() {
                   Database & System Management
                 </h4>
                 <p className="text-xs text-[#5A382A] leading-relaxed">
-                  All offering changes, festival schedules, and bank details are synchronized to Supabase cloud tables. If needed, you can reset all data back to the default certified 88 offerings and festival timetable.
+                  All offering changes, festival schedules, and bank details are synchronized to secure cloud database tables. If needed, you can reset all data back to the default certified 88 offerings and festival timetable.
                 </p>
 
                 {showLockedTooltip && (
@@ -3838,7 +3849,7 @@ export default function AdminPage() {
                 setNewAdminPassword('');
                 setNewAdminFullName('');
                 setNewUserEmail('');
-                showToast(`Admin account created for ${newAdmin.name} in Supabase database!`);
+                showToast(`Admin account created for ${newAdmin.name} in system database!`);
               }}
               className="space-y-3 text-xs"
             >
@@ -3912,7 +3923,7 @@ export default function AdminPage() {
               </div>
 
               <div className="p-3 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] text-[11px] text-[#5A382A]">
-                ℹ️ This admin account will be saved to Supabase <strong>public.admin_users</strong> table and can log in immediately.
+                ℹ️ This admin account will be saved to system database and can log in immediately.
               </div>
 
               <div className="flex gap-2 pt-2">

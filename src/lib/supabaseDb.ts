@@ -5,6 +5,8 @@ export interface DbProfile {
   name: string;
   email: string;
   phone?: string;
+  country_code?: string;
+  has_whatsapp?: boolean;
   star?: string;
   dob?: string;
   place?: string;

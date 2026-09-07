@@ -17,7 +17,7 @@ import {
   UserCheck,
 } from 'lucide-react';
 
-export const ContactSection: React.FC = () => {
+export const ContactSection: React.FC<{ hideHeader?: boolean }> = ({ hideHeader = false }) => {
   const { language, t } = useLanguage();
   const { contactInfo } = useContent();
   const { isAuthenticated, openAuthModal } = useAuth();
@@ -32,25 +32,27 @@ export const ContactSection: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-16 md:py-24 bg-[#F3EBD7] relative">
+    <section id="contact" className={`py-16 md:py-24 bg-[#F3EBD7] relative ${hideHeader ? 'pt-8 md:pt-12' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#610C1B]/10 border border-[#610C1B]/20 text-xs font-bold text-[#610C1B] uppercase tracking-widest mb-3">
-            <Phone className="w-3.5 h-3.5 text-[#C99738]" />
-            <span>{t('contact_eyebrow')}</span>
+        {!hideHeader && (
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#610C1B]/10 border border-[#610C1B]/20 text-xs font-bold text-[#610C1B] uppercase tracking-widest mb-3">
+              <Phone className="w-3.5 h-3.5 text-[#C99738]" />
+              <span>{t('contact_eyebrow')}</span>
+            </div>
+
+            <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-bold text-[#38050E] mb-3">
+              {t('contact_title')}
+            </h2>
+
+            <p className="text-sm sm:text-base text-[#5A382A] font-light leading-relaxed">
+              {t('contact_subtitle')}
+            </p>
+
+            <MuralDivider variant="simple" className="my-2" />
           </div>
-
-          <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-bold text-[#38050E] mb-3">
-            {t('contact_title')}
-          </h2>
-
-          <p className="text-sm sm:text-base text-[#5A382A] font-light leading-relaxed">
-            {t('contact_subtitle')}
-          </p>
-
-          <MuralDivider variant="simple" className="my-2" />
-        </div>
+        )}
 
         {/* 4 Contact Quick Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12 max-w-6xl mx-auto">

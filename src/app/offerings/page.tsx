@@ -37,7 +37,7 @@ export default function OfferingsPage() {
       </div>
 
       {/* Offerings Catalog Section */}
-      <OfferingsSection onSelectOffering={handleSelectOffering} />
+      <OfferingsSection onSelectOffering={handleSelectOffering} hideHeader />
 
       {/* Vazhipadu Booking Modal */}
       <OfferingModal

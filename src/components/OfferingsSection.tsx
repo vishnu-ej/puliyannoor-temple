@@ -29,10 +29,12 @@ import {
 
 interface OfferingsSectionProps {
   onSelectOffering: (offering: OfferingItem) => void;
+  hideHeader?: boolean;
 }
 
 export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
   onSelectOffering,
+  hideHeader = false,
 }) => {
   const { language, t } = useLanguage();
   const { offerings, contactInfo } = useContent();
@@ -106,25 +108,27 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
   };
 
   return (
-    <section id="offerings" className="py-12 md:py-20 bg-[#FAF5E8] relative">
+    <section id="offerings" className={`py-12 md:py-20 bg-[#FAF5E8] relative ${hideHeader ? 'pt-6 md:pt-10' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#610C1B]/10 border border-[#610C1B]/20 text-xs font-bold text-[#610C1B] uppercase tracking-widest mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-[#C99738]" />
-            <span>{t('offerings_eyebrow')}</span>
+        {!hideHeader && (
+          <div className="text-center max-w-3xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#610C1B]/10 border border-[#610C1B]/20 text-xs font-bold text-[#610C1B] uppercase tracking-widest mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-[#C99738]" />
+              <span>{t('offerings_eyebrow')}</span>
+            </div>
+
+            <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-bold text-[#38050E] mb-3">
+              {t('offerings_title')}
+            </h2>
+
+            <p className="text-xs sm:text-base text-[#5A382A] font-light leading-relaxed">
+              {t('offerings_subtitle')}
+            </p>
+
+            <MuralDivider variant="simple" className="my-3" />
           </div>
-
-          <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-bold text-[#38050E] mb-3">
-            {t('offerings_title')}
-          </h2>
-
-          <p className="text-xs sm:text-base text-[#5A382A] font-light leading-relaxed">
-            {t('offerings_subtitle')}
-          </p>
-
-          <MuralDivider variant="simple" className="my-3" />
-        </div>
+        )}
 
         {/* Search Bar & Category Filters */}
         <div className="space-y-4 mb-8 max-w-5xl mx-auto">

@@ -28,7 +28,7 @@ export default function EventsPage() {
       </div>
 
       {/* Events & Festivals Section with Countdown */}
-      <EventsSection />
+      <EventsSection hideHeader />
     </div>
   );
 }
