@@ -104,7 +104,7 @@ export async function POST(req: Request) {
                 ॐ
               </div>
               <h1 style="margin: 0; color: #FAF5E8; font-size: 20px; font-weight: 700; letter-spacing: 0.5px;">
-                പുളിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രം
+                പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രം
               </h1>
               <p style="margin: 4px 0 0 0; color: #E6BE65; font-size: 13px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">
                 Puliyannoor Sree Mahadeva Temple • Pala

@@ -27,9 +27,11 @@
 }
 
 html {
+  background-color: #1A0409;
   scroll-behavior: smooth;
   width: 100%;
   -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
 }
 
 body {

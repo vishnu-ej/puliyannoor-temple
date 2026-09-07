@@ -62,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" id="htmlRoot" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="en" id="htmlRoot" className="bg-[#1A0409]" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col bg-[#FAF5E8] text-[#2B150F] selection:bg-[#C99738]/30 selection:text-[#610C1B]">
         <LanguageProvider>
           <AuthProvider>

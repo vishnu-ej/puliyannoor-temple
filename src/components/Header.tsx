@@ -73,9 +73,12 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full shadow-lg bg-[#FAF5E8] transition-all duration-200">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full shadow-lg bg-[#1A0409] transition-all duration-200">
+      {/* Brown background extension preventing white gap on top overscroll / bounce */}
+      <div className="absolute -top-[1000px] inset-x-0 h-[1000px] bg-[#1A0409] pointer-events-none" />
+
       {/* Top Micro-Bar */}
-      <div className="bg-[#1A0409] text-[#FAF5E8] text-xs py-1 px-3 sm:px-4 border-b border-[#C99738]/40">
+      <div className="bg-[#1A0409] text-[#FAF5E8] text-xs py-1 px-3 sm:px-4 border-b border-[#C99738]/40 relative z-10">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 overflow-hidden">
             <LiveStatusBadge compact />
