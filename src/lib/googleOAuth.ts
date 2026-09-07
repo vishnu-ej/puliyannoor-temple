@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { upsertProfileInSupabase, getProfileByEmailFromSupabase } from './supabaseDb';
+import { getClientIp, authRateLimiter } from './rateLimit';
 
 function escapeHtml(str: string): string {
   return str
@@ -16,15 +17,25 @@ function escapeHtml(str: string): string {
  * upserts devotee into Supabase profiles, establishes session, and redirects.
  */
 export async function handleGoogleOAuthCallback(request: NextRequest) {
+  // Resolve accurate origin
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.host;
+  const proto = request.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
+  let origin = `${proto}://${host}`;
+
+  // IP rate limiting against brute force
+  const clientIp = getClientIp(request);
+  const rateCheck = authRateLimiter.check(`oauth_cb_${clientIp}`);
+  if (!rateCheck.success) {
+    return NextResponse.redirect(
+      `${origin}/?auth_error=${encodeURIComponent('Too many callback requests. Please wait a few moments.')}`
+    );
+  }
+
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get('code');
   const error = searchParams.get('error');
   const stateRaw = searchParams.get('state');
 
-  // Resolve accurate origin
-  const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.host;
-  const proto = request.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
-  let origin = `${proto}://${host}`;
   let redirectTarget = '/profile';
   let callbackPath = request.nextUrl.pathname;
 
@@ -47,12 +58,20 @@ export async function handleGoogleOAuthCallback(request: NextRequest) {
   const clientId = (
     process.env.GOOGLE_CLIENT_ID ||
     process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
-    '939817290396-hhdl90u9oucu82j61u6evhrh0p15pa0e.apps.googleusercontent.com'
+    ''
   ).replace(/['"]/g, '').trim();
 
   const clientSecret = (
     process.env.GOOGLE_CLIENT_SECRET || ''
   ).replace(/['"]/g, '').trim();
+
+  if (!clientId || !clientSecret) {
+    return NextResponse.redirect(
+      `${origin}/?auth_error=${encodeURIComponent(
+        'Google OAuth credentials (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET) are missing in Vercel Environment Variables. Please add them in Vercel Settings > Environment Variables.'
+      )}`
+    );
+  }
 
   const redirectUri = `${origin}${callbackPath}`;
 

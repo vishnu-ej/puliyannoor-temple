@@ -1,8 +1,33 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { getClientIp, otpIpLimiter, otpEmailLimiter } from '@/lib/rateLimit';
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
   try {
+    // 1. Client IP rate limiting (Max 5 requests per 10 minutes)
+    const clientIp = getClientIp(req);
+    const ipCheck = otpIpLimiter.check(`otp_ip_${clientIp}`);
+    if (!ipCheck.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Too many OTP requests from this network. Please wait a few minutes before trying again.',
+        },
+        { status: 429 }
+      );
+    }
+
     const apiKey = process.env.RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY || '';
     const resend = new Resend(apiKey);
     const { email, otp, purpose, name } = await req.json();
@@ -15,7 +40,27 @@ export async function POST(req: Request) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const recipientName = name ? name.trim() : 'Devotee Pilgrim';
+
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid email address format' },
+        { status: 400 }
+      );
+    }
+
+    // 2. Target email rate limiting (Max 3 requests per 10 minutes)
+    const emailCheck = otpEmailLimiter.check(`otp_email_${cleanEmail}`);
+    if (!emailCheck.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Too many OTP requests for this email address. Please check your inbox or wait a few minutes.',
+        },
+        { status: 429 }
+      );
+    }
+
+    const recipientName = name ? escapeHtml(name.trim()) : 'Devotee Pilgrim';
 
     // Purpose mapping for titles and descriptions
     let titleText = 'OTP Verification Code';

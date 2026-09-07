@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getClientIp, authRateLimiter } from '@/lib/rateLimit';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,19 +8,28 @@ export const dynamic = 'force-dynamic';
  * Connects directly to Google OAuth without using Supabase OAuth intermediary.
  */
 export async function GET(request: NextRequest) {
-  const clientId = (
-    process.env.GOOGLE_CLIENT_ID ||
-    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
-    '939817290396-hhdl90u9oucu82j61u6evhrh0p15pa0e.apps.googleusercontent.com'
-  ).replace(/['"]/g, '').trim();
-
-  const searchParams = request.nextUrl.searchParams;
-  const redirectTarget = searchParams.get('redirect') || '/profile';
-
   // Accurately resolve origin for both localhost and production
   const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.host;
   const proto = request.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
   const origin = `${proto}://${host}`;
+
+  // IP rate limiting against brute-force / DoS
+  const clientIp = getClientIp(request);
+  const rateCheck = authRateLimiter.check(`oauth_init_${clientIp}`);
+  if (!rateCheck.success) {
+    return NextResponse.redirect(
+      `${origin}/?auth_error=${encodeURIComponent('Too many sign-in attempts. Please wait a few moments before trying again.')}`
+    );
+  }
+
+  const clientId = (
+    process.env.GOOGLE_CLIENT_ID ||
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+    ''
+  ).replace(/['"]/g, '').trim();
+
+  const searchParams = request.nextUrl.searchParams;
+  const redirectTarget = searchParams.get('redirect') || '/profile';
 
   const callbackPath = searchParams.get('callback') || '/auth/callback/google';
   const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${origin}${callbackPath}`;
