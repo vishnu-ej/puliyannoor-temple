@@ -37,7 +37,7 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
   hideHeader = false,
 }) => {
   const { language, t } = useLanguage();
-  const { offerings, contactInfo } = useContent();
+  const { offerings, contactInfo, showOfferingSignificance = true } = useContent();
   const [selectedCategory, setSelectedCategory] = useState<OfferingCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(9);
@@ -74,8 +74,8 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
       item.description.en.toLowerCase().includes(query) ||
       item.description.ml.toLowerCase().includes(query);
     const matchesBenefit =
-      item.significance.en.toLowerCase().includes(query) ||
-      item.significance.ml.toLowerCase().includes(query);
+      item.significance?.en?.toLowerCase().includes(query) ||
+      item.significance?.ml?.toLowerCase().includes(query);
 
     return matchesCategory && (matchesSlNo || matchesName || matchesDesc || matchesBenefit);
   });
@@ -244,14 +244,25 @@ export const OfferingsSection: React.FC<OfferingsSectionProps> = ({
                   </div>
 
                   <div>
-                    {/* Significance / Benefits Callout */}
-                    <div className="p-2.5 sm:p-3 rounded-xl bg-[#F3EBD7]/80 border border-[#E4D5AE] mb-4 text-xs text-[#5A382A]">
-                      <span className="font-bold text-[#8C6219] block mb-0.5 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3 text-[#1F4E34]" />
-                        {t('lbl_benefits')}:
-                      </span>
-                      <span>{offering.significance[language]}</span>
-                    </div>
+                    {/* Significance / Benefits Callout - Only shown if global toggle is ON and offering has non-blank significance text */}
+                    {showOfferingSignificance &&
+                      Boolean(
+                        offering.significance?.[language]?.trim() ||
+                        offering.significance?.en?.trim() ||
+                        offering.significance?.ml?.trim()
+                      ) && (
+                        <div className="p-2.5 sm:p-3 rounded-xl bg-[#F3EBD7]/80 border border-[#E4D5AE] mb-4 text-xs text-[#5A382A]">
+                          <span className="font-bold text-[#8C6219] block mb-0.5 flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 text-[#1F4E34]" />
+                            {t('lbl_benefits')}:
+                          </span>
+                          <span>
+                            {offering.significance?.[language]?.trim() ||
+                              offering.significance?.en?.trim() ||
+                              offering.significance?.ml?.trim()}
+                          </span>
+                        </div>
+                    )}
 
                     {/* Action Button: Inquire */}
                     <button

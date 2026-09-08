@@ -23,7 +23,7 @@ export interface OfferingItem {
     en: string;
     ml: string;
   };
-  significance: {
+  significance?: {
     en: string;
     ml: string;
   };

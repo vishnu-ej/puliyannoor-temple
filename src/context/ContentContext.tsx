@@ -127,6 +127,9 @@ interface ContentContextType {
   chats: ChatConversation[];
   annualCalendar: AnnualCalendarData;
   countdownConfig: FestivalCountdownConfig;
+  showOfferingSignificance: boolean;
+  setShowOfferingSignificance: (show: boolean) => void;
+  toggleOfferingSignificance: () => void;
   addOffering: (offering: Omit<OfferingItem, 'slNo'> & { slNo?: number }) => void;
   updateOffering: (id: string, updatedFields: Partial<OfferingItem>) => void;
   deleteOffering: (id: string) => void;
@@ -180,10 +183,16 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [chats, setChats] = useState<ChatConversation[]>(DEFAULT_CHATS);
   const [annualCalendar, setAnnualCalendar] = useState<AnnualCalendarData>(DEFAULT_ANNUAL_CALENDAR);
   const [countdownConfig, setCountdownConfig] = useState<FestivalCountdownConfig>(DEFAULT_COUNTDOWN_CONFIG);
+  const [showOfferingSignificance, setShowOfferingSignificanceState] = useState<boolean>(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     try {
+      const savedSignificance = localStorage.getItem('puliyannoor_show_significance');
+      if (savedSignificance !== null) {
+        setShowOfferingSignificanceState(savedSignificance === 'true');
+      }
+
       const savedOfferings = localStorage.getItem('puliyannoor_offerings');
       if (savedOfferings) {
         const sanitized = savedOfferings.replaceAll('പുളിയ', 'പുലിയ');
@@ -392,6 +401,17 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return filtered.map((item, idx) => ({ ...item, slNo: idx + 1 }));
     });
     deleteOfferingFromSupabase(id);
+  };
+
+  const setShowOfferingSignificance = (show: boolean) => {
+    setShowOfferingSignificanceState(show);
+    try {
+      localStorage.setItem('puliyannoor_show_significance', show ? 'true' : 'false');
+    } catch (e) {}
+  };
+
+  const toggleOfferingSignificance = () => {
+    setShowOfferingSignificance(!showOfferingSignificance);
   };
 
   // Festival actions (Synced to Supabase public.festivals table)
@@ -837,6 +857,9 @@ export const ContentProvider: React.FC<{ children: React.ReactNode }> = ({ child
         chats,
         annualCalendar,
         countdownConfig,
+        showOfferingSignificance,
+        setShowOfferingSignificance,
+        toggleOfferingSignificance,
         addOffering,
         updateOffering,
         deleteOffering,

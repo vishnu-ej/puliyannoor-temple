@@ -64,6 +64,7 @@ import {
   Timer,
   CheckSquare,
   ListChecks,
+  Info,
 } from 'lucide-react';
 
 type AdminTab = 'chats' | 'offerings' | 'festivals' | 'contacts' | 'profile';
@@ -76,6 +77,8 @@ export default function AdminPage() {
     chats,
     annualCalendar,
     countdownConfig,
+    showOfferingSignificance,
+    setShowOfferingSignificance,
     addOffering,
     updateOffering,
     deleteOffering,
@@ -501,7 +504,7 @@ export default function AdminPage() {
       item.slNo.toString() === q ||
       item.name.en.toLowerCase().includes(q) ||
       item.name.ml.toLowerCase().includes(q) ||
-      item.significance.en.toLowerCase().includes(q);
+      (item.significance?.en ? item.significance.en.toLowerCase().includes(q) : false);
     return matchesCat && matchesSearch;
   });
 
@@ -1599,6 +1602,98 @@ export default function AdminPage() {
                 )}
               </div>
 
+              {/* Global Display Configuration: Significance Section Master Toggle with Explanatory Hover Tooltip */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-[#FAF5E8] p-3.5 sm:px-5 sm:py-3 rounded-2xl border border-[#E4D5AE] shadow-xs">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-[#C99738]/20 border border-[#C99738]/40 flex items-center justify-center text-[#8C6219] flex-shrink-0">
+                    <Sparkles className="w-4 h-4 text-[#C99738]" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-[#38050E] font-cinzel">
+                        Significance / Benefits Display
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                          showOfferingSignificance
+                            ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                            : 'bg-amber-100 text-amber-800 border-amber-300'
+                        }`}
+                      >
+                        {showOfferingSignificance ? 'ACTIVE (Visible)' : 'OFF (Hidden Globally)'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-[#8C6219] mt-0.5">
+                      Toggle whether the &quot;Significance / Benefits&quot; box is shown on offering cards across the website.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Master Toggle Switch with Tooltip */}
+                <div className="relative group self-end sm:self-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const nextVal = !showOfferingSignificance;
+                      setShowOfferingSignificance(nextVal);
+                      showToast(
+                        nextVal
+                          ? 'Significance / Benefits section enabled for all offerings'
+                          : 'Significance / Benefits section hidden across all offerings'
+                      );
+                    }}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border shadow-xs transition-all cursor-pointer select-none ${
+                      showOfferingSignificance
+                        ? 'bg-white border-emerald-500 text-emerald-800 hover:bg-emerald-50'
+                        : 'bg-white border-amber-500 text-amber-900 hover:bg-amber-50'
+                    }`}
+                    aria-label="Toggle Significance Section Display"
+                  >
+                    <span className="text-xs font-bold">
+                      {showOfferingSignificance ? 'Turn Off Benefits' : 'Turn On Benefits'}
+                    </span>
+
+                    {/* Toggle Slider UI */}
+                    <div
+                      className={`w-9 h-5 flex items-center rounded-full p-0.5 transition-colors ${
+                        showOfferingSignificance ? 'bg-[#1F4E34]' : 'bg-gray-300'
+                      }`}
+                    >
+                      <div
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                          showOfferingSignificance ? 'translate-x-4' : 'translate-x-0'
+                        }`}
+                      />
+                    </div>
+
+                    <Info className="w-3.5 h-3.5 text-[#8C6219] group-hover:text-[#610C1B] transition-colors" />
+                  </button>
+
+                  {/* Tooltip explaining what will be affected */}
+                  <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 p-3.5 bg-[#1A0409] text-[#FAF5E8] text-[11px] leading-relaxed rounded-2xl shadow-2xl border border-[#C99738]/50 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
+                    <div className="font-bold text-[#E6BE65] mb-1.5 flex items-center gap-1.5 font-cinzel">
+                      <Sparkles className="w-3.5 h-3.5 text-[#E6BE65]" />
+                      <span>What will this toggle do?</span>
+                    </div>
+                    <p className="text-[#FAF5E8]/90">
+                      {showOfferingSignificance ? (
+                        <>
+                          <strong>Turning this OFF:</strong> Completely hides the entire <em>&quot;Significance / Benefits&quot;</em> card across all 88 offerings on the public website (<code className="text-[#E6BE65]">/offerings</code> catalog). Devotees will only see the Name, Price, and Description.
+                        </>
+                      ) : (
+                        <>
+                          <strong>Turning this ON:</strong> Restores the <em>&quot;Significance / Benefits&quot;</em> card for all offerings that have spiritual benefit notes filled in. Offerings where significance is kept blank will continue to omit the box.
+                        </>
+                      )}
+                    </p>
+                    <div className="mt-2 pt-2 border-t border-white/15 text-[10px] text-[#E6BE65] flex items-center gap-1">
+                      <span>💡</span>
+                      <span>Controls all offerings at once with a single click.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Offerings Table */}
               <div className="bg-white rounded-3xl border border-[#E4D5AE] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
@@ -1632,8 +1727,12 @@ export default function AdminPage() {
                           <td className="p-3 text-right font-mono font-bold text-[#610C1B] text-sm">
                             ₹{item.price.toLocaleString('en-IN')}
                           </td>
-                          <td className="p-3 text-[11px] text-[#5A382A] max-w-xs truncate" title={item.significance.en}>
-                            {item.significance.en}
+                          <td className="p-3 text-[11px] text-[#5A382A] max-w-xs truncate" title={item.significance?.en || 'None'}>
+                            {item.significance?.en?.trim() ? (
+                              <span>{item.significance.en}</span>
+                            ) : (
+                              <span className="text-gray-400 italic">None (Box hidden)</span>
+                            )}
                           </td>
                           <td className="p-3 text-center">
                             {activeRole === 'super_admin' ? (
@@ -1666,6 +1765,36 @@ export default function AdminPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Table Footer Summary & Bottom Toggle */}
+                <div className="bg-[#FAF5E8] border-t border-[#E4D5AE] px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <span className="text-[#5A382A]">
+                    Showing <strong>{filteredOfferings.length}</strong> of <strong>{offerings.length}</strong> offerings
+                  </span>
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-[#8C6219] font-medium text-[11px]">
+                      Significance Display: <strong className={showOfferingSignificance ? 'text-[#1F4E34]' : 'text-amber-700'}>{showOfferingSignificance ? 'Visible' : 'Hidden'}</strong>
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextVal = !showOfferingSignificance;
+                        setShowOfferingSignificance(nextVal);
+                        showToast(
+                          nextVal
+                            ? 'Significance / Benefits section enabled for all offerings'
+                            : 'Significance / Benefits section hidden across all offerings'
+                        );
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-white border border-[#E4D5AE] hover:border-[#C99738] text-[#610C1B] font-bold text-xs cursor-pointer shadow-2xs transition-all"
+                      title="Toggle Significance / Benefits section visibility for all offerings"
+                    >
+                      {showOfferingSignificance ? 'Turn Off Benefits (All)' : 'Turn On Benefits (All)'}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1772,18 +1901,44 @@ export default function AdminPage() {
                       </div>
 
                       <div>
-                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel">Significance / Benefits</label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="font-bold text-[#8C6219] font-cinzel text-xs sm:text-sm">
+                            Significance / Benefits <span className="text-gray-400 font-normal text-xs">(Optional)</span>
+                          </label>
+                          {Boolean(editingOffering.significance?.en?.trim()) && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setEditingOffering({
+                                  ...editingOffering,
+                                  significance: { en: '', ml: '' },
+                                })
+                              }
+                              className="text-[11px] text-[#610C1B] hover:underline cursor-pointer font-medium"
+                            >
+                              Clear (Keep Blank)
+                            </button>
+                          )}
+                        </div>
                         <textarea
                           rows={2}
-                          value={editingOffering.significance.en}
+                          placeholder="Optional: Enter spiritual benefits or leave blank to hide this box on the offering card..."
+                          value={editingOffering.significance?.en || ''}
                           onChange={(e) =>
                             setEditingOffering({
                               ...editingOffering,
-                              significance: { ...editingOffering.significance, en: e.target.value },
+                              significance: {
+                                ...editingOffering.significance,
+                                en: e.target.value,
+                                ml: editingOffering.significance?.ml || e.target.value,
+                              },
                             })
                           }
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] text-sm text-[#2B150F] focus:outline-none focus:ring-2 focus:ring-[#C99738] resize-none"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-[#E4D5AE] text-sm text-[#2B150F] placeholder:text-gray-400 placeholder:text-xs focus:outline-none focus:ring-2 focus:ring-[#C99738] resize-none"
                         />
+                        <p className="text-[11px] text-gray-500 mt-1">
+                          💡 <em>Optional</em>: If kept blank, the offering card on the website will not display the &quot;Significance / Benefits&quot; box.
+                        </p>
                       </div>
                     </div>
 
@@ -1799,7 +1954,14 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          updateOffering(editingOffering.id, editingOffering);
+                          const sanitized = {
+                            ...editingOffering,
+                            significance: {
+                              en: editingOffering.significance?.en?.trim() || '',
+                              ml: editingOffering.significance?.ml?.trim() || editingOffering.significance?.en?.trim() || '',
+                            },
+                          };
+                          updateOffering(editingOffering.id, sanitized);
                           setEditingOffering(null);
                           showToast(`Updated ${editingOffering.name.en} successfully!`);
                         }}
@@ -1926,10 +2088,12 @@ export default function AdminPage() {
                       </div>
 
                       <div>
-                        <label className="block font-bold text-[#8C6219] mb-1">Significance / Benefits</label>
+                        <label className="block font-bold text-[#8C6219] mb-1 font-cinzel text-xs sm:text-sm">
+                          Significance / Benefits <span className="text-gray-400 font-normal text-xs">(Optional)</span>
+                        </label>
                         <textarea
                           rows={2}
-                          placeholder="Benefits of performing this offering..."
+                          placeholder="Optional: Enter spiritual benefits or leave blank to hide this box on the offering card..."
                           value={newOfferingForm.significance?.en || ''}
                           onChange={(e) =>
                             setNewOfferingForm({
@@ -1940,15 +2104,18 @@ export default function AdminPage() {
                               },
                             })
                           }
-                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE]"
+                          className="w-full px-3 py-2 rounded-xl border border-[#E4D5AE] text-sm text-[#2B150F] placeholder:text-gray-400 placeholder:text-xs focus:outline-none focus:ring-2 focus:ring-[#C99738] resize-none"
                         />
+                        <p className="text-[11px] text-gray-500 mt-1">
+                          💡 <em>Optional</em>: If kept blank, the offering card on the website will not display the &quot;Significance / Benefits&quot; box.
+                        </p>
                       </div>
                     </div>
 
                     <div className="flex justify-end gap-2 pt-2 border-t border-[#E4D5AE]">
                       <button
                         onClick={() => setIsAddingOffering(false)}
-                        className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-xs font-bold"
+                        className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 text-xs font-bold cursor-pointer"
                       >
                         Cancel
                       </button>
@@ -1966,8 +2133,8 @@ export default function AdminPage() {
                               ml: newOfferingForm.description?.ml || newOfferingForm.name.ml,
                             },
                             significance: {
-                              en: newOfferingForm.significance?.en || 'Spiritual welfare and divine blessings.',
-                              ml: newOfferingForm.significance?.ml || 'ആയുരാരോഗ്യ സൗഖ്യത്തിനും അഭീഷ്ടസിദ്ധിക്കും.',
+                              en: newOfferingForm.significance?.en?.trim() || '',
+                              ml: newOfferingForm.significance?.ml?.trim() || newOfferingForm.significance?.en?.trim() || '',
                             },
                             price: Number(newOfferingForm.price) || 100,
                             category: newOfferingForm.category || 'archana_pushpanjali',
@@ -1975,7 +2142,7 @@ export default function AdminPage() {
                           setIsAddingOffering(false);
                           showToast('Added new Vazhipadu successfully!');
                         }}
-                        className="px-4 py-2 rounded-xl bg-[#610C1B] text-white text-xs font-bold flex items-center gap-1.5"
+                        className="px-4 py-2 rounded-xl bg-[#610C1B] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm"
                       >
                         <Plus className="w-3.5 h-3.5 text-[#E6BE65]" />
                         <span>Add Offering</span>
