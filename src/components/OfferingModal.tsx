@@ -170,7 +170,7 @@ _Inquiry submitted via official temple web portal_`;
             </div>
             <div>
               <div className="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider text-[#E6BE65]/90">
-                <span>ॐ ശ്രീ പുലിയന്നൂർ മഹാദേവ ക്ഷേത്രം ॐ</span>
+                <span>ॐ പുലിയന്നൂർ ശ്രീ മഹാദേവ ക്ഷേത്രം ॐ</span>
               </div>
               <h2 className="font-cinzel text-lg sm:text-xl font-bold text-[#FFFDF9] leading-snug">
                 {language === 'en' ? 'Offering Booking & Inquiry' : 'വഴിപാട് ബുക്കിംഗും അന്വേഷണവും'}
