@@ -235,6 +235,8 @@ export default function AdminPage() {
   const [dbAdminUsers, setDbAdminUsers] = useState<DbAdminUser[]>([]);
   const [currentAdminUser, setCurrentAdminUser] = useState<DbAdminUser | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [adminUserToDelete, setAdminUserToDelete] = useState<DbAdminUser | null>(null);
+  const [isDeletingAdmin, setIsDeletingAdmin] = useState(false);
 
   // Admin Password Change / Reset State
   const [currentAdminPassword, setCurrentAdminPassword] = useState('');
@@ -3814,11 +3816,7 @@ export default function AdminPage() {
                         </div>
                         {u.username !== 'PDTemple' && (
                           <button
-                            onClick={async () => {
-                              await deleteAdminUserFromSupabase(u.id);
-                              setDbAdminUsers(dbAdminUsers.filter((x) => x.id !== u.id));
-                              showToast(`Removed admin user ${u.name} from system database`);
-                            }}
+                            onClick={() => setAdminUserToDelete(u)}
                             className="p-1.5 text-[#610C1B] hover:bg-rose-50 rounded-lg cursor-pointer transition-colors"
                             title="Delete Admin User"
                           >
@@ -4279,6 +4277,77 @@ export default function AdminPage() {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ----------------------------------------------------------------- */}
+      {/* MODAL: CONFIRM DELETE ADMIN USER */}
+      {/* ----------------------------------------------------------------- */}
+      {adminUserToDelete && (
+        <div
+          onClick={() => !isDeletingAdmin && setAdminUserToDelete(null)}
+          className="fixed inset-0 z-50 bg-[#1A0409]/85 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border-2 border-[#C99738] space-y-4 animate-scaleUp text-left"
+          >
+            <div className="flex items-center gap-3 border-b border-[#E4D5AE] pb-3">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center text-[#610C1B] shrink-0">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-cinzel font-bold text-base text-[#38050E]">
+                  Remove Administrator?
+                </h3>
+                <p className="text-xs text-[#8C6219]">
+                  അഡ്മിൻ അക്കൗണ്ട് നീക്കം ചെയ്യൽ
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-[#5A382A] leading-relaxed">
+              Are you sure you want to remove administrator <strong className="text-[#38050E]">{adminUserToDelete.name}</strong> (<code className="text-[#610C1B] font-bold">@{adminUserToDelete.username}</code>)?
+              This staff member will immediately lose access to the Devaswom Admin Workstation.
+            </p>
+
+            <div className="p-3 rounded-xl bg-[#FAF5E8] border border-[#E4D5AE] text-[11px] text-[#5A382A] space-y-0.5">
+              <div><strong>Email:</strong> {adminUserToDelete.email || 'N/A'}</div>
+              <div><strong>Role Privilege:</strong> {adminUserToDelete.role === 'super_admin' ? 'Super Admin' : 'Staff Admin'}</div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setAdminUserToDelete(null)}
+                disabled={isDeletingAdmin}
+                className="px-4 py-2.5 rounded-xl border border-[#E4D5AE] text-[#5A382A] text-xs font-bold hover:bg-[#FAF5E8] transition-colors cursor-pointer"
+              >
+                Cancel / റദ്ദാക്കുക
+              </button>
+              <button
+                type="button"
+                disabled={isDeletingAdmin}
+                onClick={async () => {
+                  try {
+                    setIsDeletingAdmin(true);
+                    await deleteAdminUserFromSupabase(adminUserToDelete.id);
+                    setDbAdminUsers((prev) => prev.filter((x) => x.id !== adminUserToDelete.id));
+                    showToast(`Removed admin user ${adminUserToDelete.name} from system database`);
+                    setAdminUserToDelete(null);
+                  } catch (err: any) {
+                    showToast(`Failed to remove admin: ${err.message || 'Error'}`);
+                  } finally {
+                    setIsDeletingAdmin(false);
+                  }
+                }}
+                className="px-5 py-2.5 rounded-xl bg-[#610C1B] hover:bg-[#8B1428] text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{isDeletingAdmin ? 'Removing...' : 'Yes, Remove Admin'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
